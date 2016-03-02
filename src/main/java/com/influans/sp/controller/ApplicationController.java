@@ -23,7 +23,7 @@ public class ApplicationController {
 
 	@RequestMapping("/config")
 	public @ResponseBody Map<String,String> config() {
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 
 		params.put("projectName", applicationService.getProjectName());
 		params.put("projectAuthor", applicationService.getProjectAuthor());

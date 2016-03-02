@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.influans.sp</groupId>
 	<artifactId>scrum_poker</artifactId>
-	<version>A1</version>
+	<version>0.0.1</version>
 	<packaging>war</packaging>
   
 	<build>
