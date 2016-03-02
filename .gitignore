@@ -2,3 +2,5 @@ target
 node_modules
 .settings
 bower_components
+.idea
+*.iml
