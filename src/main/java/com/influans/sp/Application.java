@@ -1,31 +1,25 @@
 package com.influans.sp;
 
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.ApplicationContext;
 
-import java.util.Locale;
+import java.util.Arrays;
 
-@ComponentScan(basePackages = {"com.influans.sp"})
-@PropertySource("classpath:/websocket.properties")
+@SpringBootApplication
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        new Application().configure(new SpringApplicationBuilder(Application.class)).run(args);
-    }
+        ApplicationContext ctx = SpringApplication.run(Application.class, args);
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
+        System.out.println("Let's inspect the beans provided by Spring Boot:");
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        Locale.setDefault(Locale.ENGLISH);
-        return application.sources(Application.class);
+        String[] beanNames = ctx.getBeanDefinitionNames();
+        Arrays.sort(beanNames);
+        for (String beanName : beanNames) {
+            System.out.println(beanName);
+        }
     }
 
 }
