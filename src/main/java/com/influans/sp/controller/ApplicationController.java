@@ -1,37 +1,23 @@
 package com.influans.sp.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
 import com.influans.sp.service.ApplicationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class ApplicationController {
 
-	@Autowired
-	private ApplicationService applicationService;
+    @Autowired
+    ApplicationService applicationService;
 
-	private Logger logger = Logger.getLogger(getClass().getName());
 
-	public ApplicationController() { }
-
-	@RequestMapping("/config")
-	public @ResponseBody Map<String,String> config() {
-		Map<String, String> params = new HashMap<>();
-
-		params.put("projectName", applicationService.getProjectName());
-		params.put("projectAuthor", applicationService.getProjectAuthor());
-		params.put("projectWebsite", applicationService.getProjectWebsite());
-
-		logger.info("Querying /config");
-
-		return params;
-	}
-
+    @RequestMapping(value = "/params", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getParams() {
+        return new ResponseEntity<>(applicationService.getProjectName(), HttpStatus.OK);
+    }
 }

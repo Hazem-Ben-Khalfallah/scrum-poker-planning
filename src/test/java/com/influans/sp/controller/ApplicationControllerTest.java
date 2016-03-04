@@ -1,28 +1,30 @@
 package com.influans.sp.controller;
 
-import java.util.Map;
-
+import com.influans.sp.Application;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring/application-config.xml", "classpath:spring/mvc-config.test.xml" })
+@SpringApplicationConfiguration(classes = Application.class)
+@ActiveProfiles("test")
 public class ApplicationControllerTest {
 
-	@Autowired
-	private ApplicationController applicationController;
-	
-	@Test
-	public void testConfigEndpoint() {
-		Map<String, String> res = applicationController.config();
-		
-		Assert.notNull(res);
-		Assert.notEmpty(res);
-		Assert.isTrue(res.size() == 3);
-	}
-	
+    @Autowired
+    private ApplicationController applicationController;
+
+    @Test
+    public void testConfigEndpoint() {
+        final ResponseEntity<String> res = applicationController.getParams();
+        Assertions.assertThat(res).isNotNull();
+        Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(res.getBody()).isEqualTo("scrum_poker");
+    }
+
 }

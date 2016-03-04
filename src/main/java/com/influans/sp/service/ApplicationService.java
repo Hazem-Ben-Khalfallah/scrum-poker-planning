@@ -9,24 +9,8 @@ public class ApplicationService {
 	@Value("${project.name}")
 	private String projectName;
 
-	@Value("${project.author}")
-	private String projectAuthor;
-
-	@Value("${project.website}")
-	private String projectWebsite;
-
-	public ApplicationService() { }
-
 	public String getProjectName() {
 		return projectName;
-	}
-
-	public String getProjectAuthor() {
-		return projectAuthor;
-	}
-
-	public String getProjectWebsite() {
-		return projectWebsite;
 	}
 
 }

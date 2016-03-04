@@ -1,14 +1,19 @@
 package com.influans.sp.service;
 
+import com.influans.sp.Application;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring/application-config.xml", "classpath:spring/mvc-config.test.xml" })
+@SpringApplicationConfiguration(classes = Application.class)
+@ActiveProfiles("test")
 public class ApplicationServiceTest {
 
 	@Autowired
@@ -16,9 +21,7 @@ public class ApplicationServiceTest {
 	
 	@Test
 	public void testConfigParams() {
-		Assert.notNull(applicationService.getProjectName());
-		Assert.notNull(applicationService.getProjectAuthor());
-		Assert.notNull(applicationService.getProjectWebsite());
+		Assertions.assertThat(applicationService.getProjectName()).isEqualTo("scrum_poker");
 	}
 	
 }

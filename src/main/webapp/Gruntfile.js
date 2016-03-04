@@ -39,10 +39,6 @@ module.exports = function(grunt) {
     },
 
     copy: {
-      tomcat: {
-        src: ['<%= folders.webapp.root %>/web.xml'],
-        dest: '<%= folders.webapp.build %>/web.xml'
-      },
       resources: {
         expand: true,
         cwd: '<%= folders.webapp.root %>/../resources/',
