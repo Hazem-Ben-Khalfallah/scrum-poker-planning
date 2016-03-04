@@ -1,1 +1,1 @@
-web:  mvn spring-boot:run -Dserver.port=$PORT
+web: java -Dserver.port=$PORT -jar  target/scrum_poker.jar
