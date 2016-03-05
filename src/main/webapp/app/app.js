@@ -1,6 +1,18 @@
-'use strict';
+var countryApp = angular.module('scrumPokApp', [
+  'ngRoute',
+  'homeControllers',
+  'homeFactory',
+  'homeDirective',
+  'ui.bootstrap'
+]);
 
-/* Init application */
-var app = angular
-    .module('app', ['ngAnimate', 'ngRoute', 'ngSanitize']);
-
+countryApp.config(function($routeProvider) {
+  $routeProvider.
+    when('/', {
+      templateUrl: 'app/components/home/home.html',
+      controller: 'homeListCtrl'
+    }).
+    otherwise({
+      redirectTo: '/'
+    });
+});

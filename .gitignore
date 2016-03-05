@@ -13,3 +13,7 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+.springBeans
+src/main/main.iml
+src/test/test.iml
+

@@ -1,34 +1,23 @@
-<!doctype html>
-<html ng-app="app">
+<html ng-app="scrumPokApp">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Hazem_Khairy">
-    <meta name="generator" content="angular-spring">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <title>Scrum Poker</title>
 
-    <link rel="stylesheet" href="style/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular-route.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.1/ui-bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.1/ui-bootstrap-tpls.js
+"></script>
 
-    <title>scrum_poker</title>
-
+    <script src="app/components/home/homeControllers.js"></script>
+    <script src="app/components/home/homeFactory.js"></script>
+    <script src="app/components/home/homeDirective.js"></script>
+    <script src="app/app.js"></script>
   </head>
   <body>
-  <div id="siteWrapper" >
-    <div data-ng-include="'templates/header.html'"></div>
-    <div ui-view></div>
-  </div>
-
-  <!-- js libs -->
-  <!-- angular js -->
-  <script src="app/vendors/angular/angular.min.js"></script>
-  <script src="app/vendors/angular-route/angular-route.min.js"></script>
-  <script src="app/vendors/angular-ui-router/release/angular-ui-router.min.js"></script>
-  <script src="app/vendors/angular-animate/angular-animate.min.js"></script>
-  <script src="app/vendors/angular-sanitize/angular-sanitize.min.js"></script>
-  <!-- app js -->
-  <script src="app/app.js"></script>
-  <script src="app/config.js"></script>
-  <script src="app/routes.js"></script>
-  <script src="app/components/main/controllers/homeCtrl.js"></script>
+    <div ng-view></div>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="style/style.css" rel="stylesheet" type="text/css"> 
+     
   </body>
 </html>
