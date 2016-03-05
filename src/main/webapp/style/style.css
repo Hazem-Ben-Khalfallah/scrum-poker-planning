@@ -1,17 +1,18 @@
-body { padding-top: 55px;
+body { 
+	padding-top: 55px;
 	background-image:linear-gradient(white,#6666ff);
 }
 .navbar {
-    background-color: #7e7e7e;
-     color:white;
+    background-color: #729fcf;
+     font-color:white;
 }
-.navbar a {
-    color:red;
+li{
+     color:white;
 }
 .navbar .divider-vertical {
 	color:black;
-	height: 40px;
-	margin: 4px 2px;
+	height: 50px;
+	margin: 1px 1px;
 	border-left: 1px solid #f2f2f2;
 	border-right: 1px solid #ffffff;
 }
