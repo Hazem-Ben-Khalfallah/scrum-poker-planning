@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="homeCtrl as hc">
     <!-- Navigation -->
     <nav class="navbar navbar-fixed-top" role="navigation">
         <div>
@@ -38,7 +38,7 @@
                     <li>
                     	<center style="padding-right:10px;padding-left:10px">
 	                    	<br>
-	                        <span style="color:blue"><u>HAZEM</u></span>
+	                        <span style="color:blue"><u>{{username}}</u></span>
                         </center>
                     </li>
                     <li class="divider-vertical">
@@ -138,4 +138,3 @@
     </div>
     <!-- /.container -->
 </div>
- <link href="home.css" rel="stylesheet" type="text/css"> 

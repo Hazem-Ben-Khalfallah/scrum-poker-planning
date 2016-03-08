@@ -1,4 +1,4 @@
-var countryApp = angular.module('scrumPokApp', [
+var myApp = angular.module('scrumPokApp', [
   'ngRoute',
   'homeControllers',
   'homeFactory',
@@ -8,17 +8,26 @@ var countryApp = angular.module('scrumPokApp', [
   'ui.bootstrap'
 ]);
 
-countryApp.config(function($routeProvider) {
+myApp.config(function($routeProvider) {
   $routeProvider.
-    when('/', {
+    when('/home', {
       templateUrl: 'app/components/home/home.html',
-      controller: 'homeListCtrl'
     }).
     when('/login', {
-        templateUrl: 'app/components/login/login.html',
-        controller: 'homeListCtrl'
-      }).
+        templateUrl: 'app/components/login/login.html'
+    }).
     otherwise({
-      redirectTo: '/'
+      redirectTo: '/login'
     });
+});
+
+
+myApp.factory('DATA', function(){
+  return {
+    user: {
+      username: '',
+      id:'',
+      admin:false
+    }
+  };
 });
