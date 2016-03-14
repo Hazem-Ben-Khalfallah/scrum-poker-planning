@@ -5,29 +5,47 @@ var myApp = angular.module('scrumPokApp', [
   'homeDirective',
   'loginControllers',
   'loginFactory',
-  'ui.bootstrap'
+  //'ui.bootstrap',
+  'ngStomp'
 ]);
 
+
+
 myApp.config(function($routeProvider) {
-  $routeProvider.
-    when('/home', {
-      templateUrl: 'app/components/home/home.html',
-    }).
-    when('/login', {
-        templateUrl: 'app/components/login/login.html'
-    }).
-    otherwise({
-      redirectTo: '/login'
-    });
+	  $routeProvider.
+	    when('/home', {
+	      templateUrl: 'app/components/home/home.html',
+	    }).
+	    when('/login', {
+	        templateUrl: 'app/components/login/login.html'
+	    }).
+	    otherwise({
+	      redirectTo: '/login'
+	    });
 });
 
+myApp.factory('Services',function($tomp,$log){
+	$stomp.setDebug(function (args) {
+	    $log.debug(args)
+	  })
+});
 
 myApp.factory('DATA', function(){
-  return {
-    user: {
-      username: '',
-      id:'',
-      admin:false
-    }
-  };
+	  return {
+	    user: {
+	      username: '',
+	      isAdmin:false
+	    },
+	    listUsers:[],
+	    notExistant:function(liste,user){
+	    	for(var i=0;i<liste;i++){
+	    		if(liste[i].username===user){
+	    			return false;
+	    		}
+	    	}
+	    	return true;
+	    }
+	  };
 });
+
+

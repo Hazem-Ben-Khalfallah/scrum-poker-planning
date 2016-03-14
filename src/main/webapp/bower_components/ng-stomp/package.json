@@ -1,0 +1,33 @@
+{
+  "name": "ng-stomp",
+  "version": "0.2.0",
+  "description": "STOMP for AngularJS",
+  "main": "src/ng-stomp.js",
+  "dependencies": {
+    "sockjs": "^0.3.15",
+    "stompjs": "^2.3.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "^0.11.1",
+    "grunt-standard": "^2.0.0"
+  },
+  "scripts": {
+    "test": "grunt --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beevelop/ng-stomp.git"
+  },
+  "keywords": [
+    "AngularJS",
+    "STOMP",
+    "websocket"
+  ],
+  "author": "Maik Hummel <m@ikhummel.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/beevelop/ng-stomp/issues"
+  },
+  "homepage": "https://github.com/beevelop/ng-stomp"
+}

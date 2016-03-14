@@ -5,15 +5,15 @@
                 <img class="profile-img" src="app/components/login/img/pok.png"
                     alt="">
                 <form class="form-signin">
-	                <input type="text" class="form-control" placeholder="user" autofocus ng-model="username">
+	                <input type="text" class="form-control" placeholder="user" autofocus ng-model="username"/>
 	                <br>
 	                <center>
 		                <label class="label label-primary label-sm">Admin</label>
 	                </center>
 	                <center>
-	                	<input type="checkbox"  style="margin-top:15px;margin-bottom:15px">
+	                	<input ng-model="isAdmin" type="checkbox"  style="margin-top:15px;margin-bottom:15px"/>
 	                </center>
-	                <button class="btn btn-lg btn-primary btn-block" ng-click="connecter(username)">
+	                <button class="btn btn-lg btn-primary btn-block" ng-click="connecter(username,isAdmin)">
 	                    Connect
 	                </button>
                 </form>
