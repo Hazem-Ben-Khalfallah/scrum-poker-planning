@@ -32,13 +32,19 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,DATA){
 	
 	$scope.cardsMine=['Jani','Hege','Kai','Jani1','Hege1','Kai1','Jani2','Hege2','Kai2'];
 	$scope.cardsChosen=[];
-	 $scope.dropSuccessHandler = function($event,$data,index,type){
-		 if(type==='chosen'){
-			 $scope.cardsMine.splice(index,1);
-			 $scope.cardsChosen.push($data);
-		 }else{
+	 $scope.dropSuccessHandler = function($event,index,type,card){
+		 if(type==='from_chosen'){
+			 console.log("adding to mine");
 			 $scope.cardsChosen.splice(index,1);
-			 $scope.cardsMine.push($data);
+			 console.log(card);
+			 $scope.cardsMine.push(card);
+		 }else if(type==='from_mine'){
+			 console.log("adding to chosen")
+			 $scope.cardsMine.splice(index,1);
+			 console.log(card);
+			 $scope.cardsChosen.push(card);
+		 }else{
+			 console.log(type);
 		 }
      };
 
