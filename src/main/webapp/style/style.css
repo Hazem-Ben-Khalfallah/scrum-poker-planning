@@ -98,3 +98,14 @@ li{
     display: block;
     margin-top: 10px;
 }
+
+.myCard {
+	cursor: hand;
+	width: 75px;
+	border: 1px solid gray;
+	box-shadow: 1px 1px 3px #888;
+	border-top: 20px solid green;
+	min-height: 100px;
+	padding-: 10px;
+	margin: 10px;
+}
