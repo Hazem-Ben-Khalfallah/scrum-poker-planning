@@ -60,13 +60,29 @@
         <div class="row">
             <div class="col-md-8">
 	            <div class="zone">
+	            <div>
+					    <div ng-repeat="x in cardsChosen">
+					    <span class="col-md-4 card" height="30px" ui-draggable="true" drag="x"
+					    on-drop-success="dropSuccessHandler($event,$data,$index,'chosen')">
+					      {{ x }}
+					     </span>
+					    </div>
+					</div>
 	            </div>
             </div>
-
             <div class="col-md-4">
-            	<div class="zone"></div>
+            	<div class="zone">
+            		<div>
+					    <div ng-repeat="x in cardsMine">
+					    <span class="col-md-4 card" height="30px" ui-draggable="true" drag="x"
+					    drag="x"
+					    on-drop-success="dropSuccessHandler($event,$data,$index,'mine')">
+					      {{ x }}
+					     </span>
+					    </div>
+					</div>
+            	</div>
             </div>
-
         </div>
         <!-- /.row -->
 		<div  class="row" style="padding-top:2px">

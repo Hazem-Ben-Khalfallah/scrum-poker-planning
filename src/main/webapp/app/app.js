@@ -5,11 +5,10 @@ var myApp = angular.module('scrumPokApp', [
   'homeDirective',
   'loginControllers',
   'loginFactory',
-  //'ui.bootstrap',
+  'ui.bootstrap',
+  'ang-drag-drop',
   'ngStomp'
 ]);
-
-
 
 myApp.config(function($routeProvider) {
 	  $routeProvider.
@@ -27,11 +26,12 @@ myApp.config(function($routeProvider) {
 myApp.factory('Services',function($tomp,$log){
 	$stomp.setDebug(function (args) {
 	    $log.debug(args)
-	  })
+	  });
 });
 
 myApp.factory('DATA', function(){
 	  return {
+		websocket:null,
 	    user: {
 	      username: '',
 	      isAdmin:false
