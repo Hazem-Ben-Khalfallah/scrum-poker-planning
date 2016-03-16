@@ -101,11 +101,23 @@ li{
 
 .myCard {
 	cursor: pointer;
-	width: 75px;
+	width: 80px;
 	border: 1px solid gray;
 	box-shadow: 1px 1px 3px #888;
 	border-top: 20px solid green;
+	min-height: 120px;
+	padding-: 10px;
+	margin: 10px;
+}
+
+.myTicket{
+	cursor: pointer;
+	width: 200px;
+	border: 1px solid gray;
+	box-shadow: 1px 1px 3px #888;
 	min-height: 100px;
 	padding-: 10px;
 	margin: 10px;
+	background: white;
+	border-bottom: 20px solid gray;
 }

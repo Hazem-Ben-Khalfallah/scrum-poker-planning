@@ -29,9 +29,9 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,DATA){
 		});
 	}
 	
-	
+	$scope.tickets=["WEB-1","WEB-2","WEB-3","WEB-4","WEB-5","WEB-6"]
 	$scope.cardsMine=[
-	                  {
+	                  	  {
 	                	    "value": "0",
 	                	    "id": 1
 	                	  },
@@ -80,7 +80,7 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,DATA){
 	                	    "id": 12
 	                	  }
 	                	];
-	$scope.cardsChosen=[];
+	 $scope.cardsChosen=[];
 	 $scope.dropSuccessHandler = function($event,index,type,card){
 		 if(type==='from_chosen'){
 			 console.log("adding to mine");
