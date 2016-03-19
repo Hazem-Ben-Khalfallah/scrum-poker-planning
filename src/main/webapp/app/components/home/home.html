@@ -44,7 +44,7 @@
                     <li class="divider-vertical">
                     </li>
                     <li>
-                        <a href="#">Logout</a>
+                        <a href="#" ng-click="logout()">Logout</a>
                     </li>
                      </li>
                     
@@ -62,9 +62,9 @@
 	            <div class="zone">
 	            <div>
 					    <div ng-repeat="card in cardsChosen">
-					    <span class="col-md-4 myCard" height="30px" ui-draggable="true" drag="card"
-					    on-drop-success="dropSuccessHandler($event,$index,'from_chosen',card)">
-						       <center style="padding-top:18px;font-size:32px">{{ card.value }}</center>
+					    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
+					    ng-click="card.isMine===false || removeFromChosen($index,card)">
+						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard) }}</center>
 					     </span>
 					    </div>
 					</div>
@@ -74,10 +74,9 @@
             	<div class="zone">
             		<div>
 					    <div ng-repeat="card in cardsMine">
-						    <span class="col-md-4 myCard" height="30px" ui-draggable="true" drag="card"
-						    drag="card"
-						    on-drop-success="dropSuccessHandler($event,$index,'from_mine',card)">
-						       <center style="padding-top:18px;font-size:32px">{{ card.value }}</center>
+						    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
+						    ng-click="addToChosen($index,card)">
+						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard)  }}</center>
 						     </span>
 					    </div>
 					</div>

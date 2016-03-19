@@ -7,12 +7,13 @@ var myApp = angular.module('scrumPokApp', [
   'loginFactory',
   'ui.bootstrap',
   'ang-drag-drop',
-  'ngStomp'
+  'ngStomp',
+  'ngStorage'
 ]);
 
 myApp.config(function($routeProvider) {
 	  $routeProvider.
-	    when('/home', {
+	    when('/home/:sessioId', {
 	      templateUrl: 'app/components/home/home.html',
 	    }).
 	    when('/login', {
@@ -21,12 +22,28 @@ myApp.config(function($routeProvider) {
 	    otherwise({
 	      redirectTo: '/login'
 	    });
+	  
+	
 });
 
-myApp.factory('Services',function($tomp,$log){
-	$stomp.setDebug(function (args) {
-	    $log.debug(args)
-	  });
+myApp.factory('Services',function($stomp,$log){
+	var sub = function (topic,callback,data){
+		if($stomp.stomp!=null){
+			$stomp.subscribe('/topic/'+topic,callback);
+			$stomp.send('/app/'+topic, data);
+		}else{
+			 $stomp.connect('/sp')
+			  .then(function (frame) {
+				  $stomp.setDebug(function (args) {
+					  $log.debug(args)
+				   });
+				  sub(topic,callback,data);
+			  });
+		}
+	};
+	return {
+		subscribe : sub
+	}	
 });
 
 myApp.factory('DATA', function(){
@@ -44,8 +61,24 @@ myApp.factory('DATA', function(){
 	    		}
 	    	}
 	    	return true;
+	    },
+	    cards : {
+	    		"1":"0",
+	    		"2":"1/2",
+	    		"3":"1",
+	    		"4":"2",
+	    		"5":"3",
+	    		"6":"5",
+	    		"7":"8",
+	    		"8":"13",
+	    		"9":"20",
+	    		"10":"40",
+	    		"11":"100",
+	    		"12":"?",
 	    }
 	  };
 });
+
+
 
 
