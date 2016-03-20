@@ -6,15 +6,15 @@ var myApp = angular.module('scrumPokApp', [
   'loginControllers',
   'loginFactory',
   'ui.bootstrap',
-  'ang-drag-drop',
   'ngStomp',
   'ngStorage'
 ]);
 
 myApp.config(function($routeProvider) {
 	  $routeProvider.
-	    when('/home/:sessioId', {
+	    when('/home/:sessionId', {
 	      templateUrl: 'app/components/home/home.html',
+	      contorller:"homeCtrl"
 	    }).
 	    when('/login', {
 	        templateUrl: 'app/components/login/login.html'

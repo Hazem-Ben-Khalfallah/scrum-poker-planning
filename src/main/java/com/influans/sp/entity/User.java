@@ -1,26 +1,18 @@
 package com.influans.sp.entity;
 
+import org.springframework.data.annotation.Id;
 
 public class User {
-
-    private String id;
-
     private String username;
+    private String color;
+    private Boolean isAdmin;
 
     public User() {}
 
-    public User(String username) {
+    public User(String username,String color,Boolean isAdmin) {
         this.username = username;
+        this.isAdmin=isAdmin;
     }
-
-    
-    public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getUsername() {
 		return username;
@@ -35,5 +27,21 @@ public class User {
     public String toString() {
         return "";
     }
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public Boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 }

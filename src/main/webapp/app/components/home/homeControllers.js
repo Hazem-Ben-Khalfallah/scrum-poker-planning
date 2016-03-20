@@ -3,18 +3,24 @@ var homeControllers = angular.module('homeControllers', []);
 homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStorage,$location,DATA,Services){
 	$scope.username=$sessionStorage.username;
 	$scope.sessionId=$sessionStorage.sessionId;	
+ 	$scope.ticket_name="";
 
+	console.log($sessionStorage.username);
+	if($sessionStorage.username===undefined || $sessionStorage.sessionId===undefined){
+		$location.path('/login'); 
+	}
 	Services.subscribe("new_user",function (payload, headers, res) {
-		$scope.cardsMine= payload.body.myCards;
-		console.log(payload.body.myCards);
-		$scope.cardsChosen=payload.body.chosenCard;
+		//$scope.cardsMine= payload.body.myCards;
+		console.log(payload.body);
+		//$scope.cardsChosen=payload.body.chosenCard;
+		$scope.tickets=payload.body.tickets;
 		$scope.$apply();
 	},{
 		username:$sessionStorage.username,
 		sessionId:$sessionStorage.sessionId
 	});
 		
-	$scope.tickets=["WEB-1","WEB-2","WEB-3","WEB-4","WEB-5","WEB-6","WEB-7","WEB-8"]
+	
 	
      $scope.removeFromChosen = function(index,card){
 		 $scope.cardsChosen.splice(index,1);
@@ -36,6 +42,30 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStor
 		 console.log("add chosen: "+$scope.cardsMine.length);
      }; 
      
+ 	 $scope.newTicket = function(ticket_name){
+ 	 	Services.subscribe("new_ticket",function (payload, headers, res) {
+ 			//$scope.cardsMine= payload.body.myCards;
+ 			console.log(payload);
+ 			//$scope.cardsChosen=payload.body.chosenCard;
+ 			$scope.tickets=payload.body.tickets;
+ 			$scope.$apply();
+ 		},{
+ 			name:ticket_name,
+ 			sessionId:$sessionStorage.sessionId
+ 		});
+     }; 
+ 	
+     $scope.loadTicket = function(name){
+    	 console.log("-------")
+    	 for(var i=0;i<$scope.tickets.length;i++){
+    		if($scope.tickets[i].name===name){
+    	    	 console.log($scope.tickets[i].name);
+    	    	$scope.ticket_name=$scope.tickets[i].name;
+    			$scope.cardsChosen=$scope.tickets[i].chosenCards;
+    		}
+    	 }
+     }; 
+          
      $scope.getCardValue = function(idCard){
 		 return DATA.cards[idCard]
      }; 
