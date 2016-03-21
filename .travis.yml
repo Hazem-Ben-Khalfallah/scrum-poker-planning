@@ -5,3 +5,5 @@ services:
   - mongodb
 sudo: false
 install: true
+script:
+  - ./mvn clean verify
