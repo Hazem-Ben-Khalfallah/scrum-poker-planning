@@ -13,6 +13,4 @@ public class Utils {
 		String hex = String.format("#%02x%02x%02x", r, g, b);
 		return hex;
 	}
-	
-	
 }

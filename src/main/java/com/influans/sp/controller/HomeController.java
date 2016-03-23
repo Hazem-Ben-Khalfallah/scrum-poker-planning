@@ -31,6 +31,7 @@ public class HomeController {
     public ResponseEntity<Session> new_user(Connexion cnx) throws Exception {
     	Session session = sessionRepo.findBySessionId(cnx.getSessionId());
     	if(session!=null){
+    		System.err.println("session!=null");
     		Boolean userExist=false;
     		List<User> users =  session.getUsers();
         	for(User user:users){
@@ -39,11 +40,15 @@ public class HomeController {
         			break;
         		}
         	}
-        	if(!userExist){
+        	if(userExist==false){
+        		System.err.println("userExist==false");
         		session.getUsers().add(new User(cnx.getUsername(),Utils.getRandomColor(),false));
+        	}else{
+        		System.err.println("userExist==true");
         	}
         	
     	}else{
+    		System.err.println("session==null");
     		List<User> users = new ArrayList<User>();
     		users.add(new User(cnx.getUsername(),Utils.getRandomColor(),true));
     		session = new Session(cnx.getSessionId(), new ArrayList<Ticket>(),users);

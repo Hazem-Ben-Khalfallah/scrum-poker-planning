@@ -1,7 +1,5 @@
 package com.influans.sp.entity;
 
-import org.springframework.data.annotation.Id;
-
 public class User {
     private String username;
     private String color;
@@ -11,7 +9,9 @@ public class User {
 
     public User(String username,String color,Boolean isAdmin) {
         this.username = username;
+        this.color=color;
         this.isAdmin=isAdmin;
+
     }
 
 	public String getUsername() {
