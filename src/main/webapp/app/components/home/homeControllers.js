@@ -3,13 +3,15 @@ var homeControllers = angular.module('homeControllers', []);
 homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStorage,$location,DATA,Services){
 	$scope.username=$sessionStorage.username;
 	$scope.sessionId=$sessionStorage.sessionId;	
+	$scope.isAdmin=$sessionStorage.isAdmin;	
+	$scope.color=$sessionStorage.color;	
  	$scope.ticket_name="";
 
 	console.log($sessionStorage.username);
 	if($sessionStorage.username===undefined || $sessionStorage.sessionId===undefined){
 		$location.path('/login'); 
 	}
-	Services.subscribe("new_user",function (payload, headers, res) {
+	Services.subscribe("load_data",function (payload, headers, res) {
 		//$scope.cardsMine= payload.body.myCards;
 		console.log(payload.body);
 		//$scope.cardsChosen=payload.body.chosenCard;
@@ -43,7 +45,7 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStor
      }; 
      
  	 $scope.newTicket = function(ticket_name){
- 	 	Services.subscribe("new_ticket",function (payload, headers, res) {
+ 	 	Services.subscribe("create_ticket",function (payload, headers, res) {
  			//$scope.cardsMine= payload.body.myCards;
  			console.log(payload);
  			//$scope.cardsChosen=payload.body.chosenCard;

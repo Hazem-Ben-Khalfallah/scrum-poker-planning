@@ -1,15 +1,30 @@
 var loginControllers = angular.module('loginControllers', []);
 
-loginControllers.controller('loginCtrl', function ($scope,$location,$sessionStorage,$stomp,$log,DATA){
+loginControllers.controller('loginCtrl', function ($scope,$location,$sessionStorage,$stomp,$log,DATA,Services){
 	console.log("username:"+$sessionStorage.username);
 	console.log("sessionId:"+$sessionStorage.sessionId);
+
 	if($sessionStorage.username && $sessionStorage.sessionId){
 		$location.path('/home/'+$sessionStorage.sessionId); 
 	}
 	$scope.connecter=function(username,sessionId){
-		$sessionStorage.username=username;
-		$sessionStorage.sessionId=sessionId;
-		$location.path('/home/'+$sessionStorage.sessionId); 
+		console.log()
+		Services.subscribe("connect",function (payload, headers, res) {
+			if(payload.statusCode=="OK"){
+				console.log(payload);
+				$sessionStorage.username=username;
+				$sessionStorage.sessionId=sessionId;
+				$sessionStorage.isAdmin=payload.body.isAdmin;
+				$sessionStorage.color=payload.body.color;
+				$location.path('/home/'+$sessionStorage.sessionId); 
+				$scope.$apply();
+			}else{
+				console.log("probleme in connection");
+			}
+		},{
+			username:username,
+			sessionId:sessionId
+		});		
 	}
 	var c = 1;
 	$scope.generateIdSession=function(){

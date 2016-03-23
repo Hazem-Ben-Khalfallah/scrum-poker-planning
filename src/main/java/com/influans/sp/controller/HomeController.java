@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -26,12 +25,12 @@ public class HomeController {
 	@Autowired
 	SessionRepository sessionRepo;
 	
-    @MessageMapping("/new_user")
-    @SendTo("/topic/new_user")
-    public ResponseEntity<Session> new_user(Connexion cnx) throws Exception {
+	@MessageMapping("/connect")
+    @SendTo("/topic/connect")
+    public ResponseEntity<User> connect(Connexion cnx) throws Exception {
     	Session session = sessionRepo.findBySessionId(cnx.getSessionId());
+    	User new_user=null;
     	if(session!=null){
-    		System.err.println("session!=null");
     		Boolean userExist=false;
     		List<User> users =  session.getUsers();
         	for(User user:users){
@@ -41,24 +40,31 @@ public class HomeController {
         		}
         	}
         	if(userExist==false){
-        		System.err.println("userExist==false");
-        		session.getUsers().add(new User(cnx.getUsername(),Utils.getRandomColor(),false));
+        		new_user=new User(cnx.getUsername(),Utils.getRandomColor(),false);
+        		session.getUsers().add(new_user);
         	}else{
-        		System.err.println("userExist==true");
+            	return new ResponseEntity<User>(new_user,HttpStatus.IM_USED);
         	}
         	
     	}else{
-    		System.err.println("session==null");
     		List<User> users = new ArrayList<User>();
     		users.add(new User(cnx.getUsername(),Utils.getRandomColor(),true));
     		session = new Session(cnx.getSessionId(), new ArrayList<Ticket>(),users);
+    		new_user=new User(cnx.getUsername(),Utils.getRandomColor(),true);
     	}
     	sessionRepo.save(session);
+    	return new ResponseEntity<User>(new_user,HttpStatus.OK);
+    }
+	
+    @MessageMapping("/load_data")
+    @SendTo("/topic/load_data")
+    public ResponseEntity<Session> new_user(Connexion cnx) throws Exception {
+    	Session session = sessionRepo.findBySessionId(cnx.getSessionId());
     	return new ResponseEntity<Session>(session,HttpStatus.OK);
     }
     
-    @MessageMapping("/new_ticket")
-    @SendTo("/topic/new_ticket")
+    @MessageMapping("/create_ticket")
+    @SendTo("/topic/create_ticket")
     public ResponseEntity<Session> new_ticket(String data) throws Exception {
     	JSONObject obj = new JSONObject(data);
     	String ticket_name = (String) obj.get("name");
