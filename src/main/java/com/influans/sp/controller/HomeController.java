@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.influans.sp.entity.Card;
 import com.influans.sp.entity.Connexion;
@@ -65,7 +67,7 @@ public class HomeController {
     
     @MessageMapping("/create_ticket")
     @SendTo("/topic/create_ticket")
-    public ResponseEntity<Session> new_ticket(String data) throws Exception {
+    public ResponseEntity<Session> create_ticket(String data) throws Exception {
     	JSONObject obj = new JSONObject(data);
     	String ticket_name = (String) obj.get("name");
     	String sessionId = (String) obj.get("sessionId");
@@ -80,5 +82,5 @@ public class HomeController {
     	sessionRepo.save(session);
     	return new ResponseEntity<Session>(session,HttpStatus.OK);
     }
-    
+        
 }

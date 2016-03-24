@@ -8,7 +8,6 @@ loginControllers.controller('loginCtrl', function ($scope,$location,$sessionStor
 		$location.path('/home/'+$sessionStorage.sessionId); 
 	}
 	$scope.connecter=function(username,sessionId){
-		console.log()
 		Services.subscribe("connect",function (payload, headers, res) {
 			if(payload.statusCode=="OK"){
 				console.log(payload);

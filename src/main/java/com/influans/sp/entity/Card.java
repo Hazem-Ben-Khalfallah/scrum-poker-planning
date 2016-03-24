@@ -2,19 +2,24 @@ package com.influans.sp.entity;
 
 
 public class Card {
-	    private String idCard;
+	    private int idCard;
 	    private User user;
 	    public Card() {}
 	    
-		public Card(String idCard,User user) {
+		public Card(int idCard,User user) {
+			this.idCard = idCard;
+			this.user=user;
+		}
+		
+		public Card(int idCard) {
 			this.idCard = idCard;
 		}
 
-		public String getIdCard() {
+		public int getIdCard() {
 			return idCard;
 		}
 
-		public void setIdCard(String idCard) {
+		public void setIdCard(int idCard) {
 			this.idCard = idCard;
 		}
 

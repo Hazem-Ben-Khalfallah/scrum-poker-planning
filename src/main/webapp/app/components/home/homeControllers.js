@@ -6,6 +6,7 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStor
 	$scope.isAdmin=$sessionStorage.isAdmin;	
 	$scope.color=$sessionStorage.color;	
  	$scope.ticket_name="";
+ 	$scope.cardsMine=[];
 
 	console.log($sessionStorage.username);
 	if($sessionStorage.username===undefined || $sessionStorage.sessionId===undefined){
@@ -14,8 +15,11 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStor
 	Services.subscribe("load_data",function (payload, headers, res) {
 		//$scope.cardsMine= payload.body.myCards;
 		console.log(payload.body);
-		//$scope.cardsChosen=payload.body.chosenCard;
+		$scope.cardsChosen=payload.body.chosenCard;
 		$scope.tickets=payload.body.tickets;
+		if($scope.tickets.length>0){
+			$scope.loadTicket($scope.tickets[0].name);
+		}
 		$scope.$apply();
 	},{
 		username:$sessionStorage.username,
@@ -59,16 +63,31 @@ homeControllers.controller('homeCtrl', function ($stomp,$log,$scope,$sessionStor
  	
      $scope.loadTicket = function(name){
     	 console.log("-------")
+    	 var cardsMine=[{idCard:1},{idCard:2},{idCard:3},{idCard:4},{idCard:5},{idCard:6},{idCard:7},{idCard:8},{idCard:9},{idCard:10},{idCard:11},{idCard:12}];
     	 for(var i=0;i<$scope.tickets.length;i++){
     		if($scope.tickets[i].name===name){
-    	    	 console.log($scope.tickets[i].name);
+    	    	console.log($scope.tickets[i].name);
     	    	$scope.ticket_name=$scope.tickets[i].name;
     			$scope.cardsChosen=$scope.tickets[i].chosenCards;
+    			var myIdCard=null;
+    			for(var i=0;i<$scope.cardsChosen;i++){
+    				if($scope.cardsChosen[i].user.username==$scope.username){
+    					myIdCard=$scope.cardsChosen[i].idCard;
+    					var index = array.indexOf({idCard:myIdCard});
+    					if (index > -1) {
+    						cardsMine.splice(index, 1);
+    					}
+    					
+    					break;
+    				}
+    			}   			
     		}
     	 }
+    	 $scope.cardsMine=cardsMine;
      }; 
           
      $scope.getCardValue = function(idCard){
+    	 console.log(idCard)
 		 return DATA.cards[idCard]
      }; 
      
