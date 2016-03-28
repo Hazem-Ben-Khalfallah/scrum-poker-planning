@@ -54,7 +54,7 @@
 	            <div class="zone">
 	            <div>
 					    <div ng-repeat="card in cardsChosen">
-					    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.user.color}}"
+					    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
 					    ng-click="card.isMine===false || removeFromChosen($index,card)">
 						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard) }}</center>
 					     </span>
@@ -66,9 +66,9 @@
             	<div class="zone">
             		<div>
 					    <div ng-repeat="card in cardsMine">
-						    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{color}}"
+						    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
 						    ng-click="addToChosen($index,card)">
-						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard)  }}</center>
+						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard) }}</center>
 						     </span>
 					    </div>
 					</div>
@@ -103,9 +103,9 @@
         <!-- Tickets Row -->
         <div class="row">
 	        <div ng-repeat="ticket in tickets">
-	                <span class="col-sm-3 col-xs-6 myTicket" ng-click="loadTicket(ticket.name)">
+	                <span class="col-sm-3 col-xs-6 myTicket" ng-click="loadTicket(ticket.ticketName)">
  						<center style="padding-top:18px;font-size:32px">
- 							{{ ticket.name }}
+ 							{{ ticket.ticketName }}
  						</center>
 					</span>
 			</div>

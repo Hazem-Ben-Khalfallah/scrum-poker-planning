@@ -22,12 +22,10 @@ myApp.config(function($routeProvider) {
 	    otherwise({
 	      redirectTo: '/login'
 	    });
-	  
-	
 });
 
 myApp.factory('Services',function($stomp,$log){
-	var sub = function (topic,callback,data){
+	var subAndSend = function (topic,callback,data){
 		if($stomp.stomp!=null){
 			$stomp.subscribe('/topic/'+topic,callback);
 			$stomp.send('/app/'+topic, data);
@@ -37,12 +35,26 @@ myApp.factory('Services',function($stomp,$log){
 				  $stomp.setDebug(function (args) {
 					  $log.debug(args)
 				   });
-				  sub(topic,callback,data);
+				  subAndSend(topic,callback,data);
+			  });
+		}
+	};
+	var sub = function (topic,callback){
+		if($stomp.stomp!=null){
+			$stomp.subscribe('/topic/'+topic,callback);
+		}else{
+			 $stomp.connect('/sp')
+			  .then(function (frame) {
+				  $stomp.setDebug(function (args) {
+					  $log.debug(args)
+				   });
+				  sub(topic,callback);
 			  });
 		}
 	};
 	return {
-		subscribe : sub
+		sub_send : subAndSend,
+		subscribe: sub
 	}	
 });
 

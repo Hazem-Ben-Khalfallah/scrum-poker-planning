@@ -9,14 +9,16 @@ public class Session {
 	@Id
     private String sessionId;
     private List<Ticket> tickets;
-    private List<User> users;
 
     public Session() {}
 
-	public Session(String sessionId, List<Ticket> tickets,List<User> users) {
+	public Session(String sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public Session(String sessionId, List<Ticket> tickets) {
 		this.sessionId = sessionId;
 		this.tickets = tickets;
-		this.users = users;
 	}
 
 	public String getSessionId() {
@@ -33,15 +35,5 @@ public class Session {
 
 	public void setTickets(List<Ticket> tickets) {
 		this.tickets = tickets;
-	}
-
-	public List<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-	
-    
+	}   
 }

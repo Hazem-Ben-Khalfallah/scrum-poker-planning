@@ -3,18 +3,24 @@ package com.influans.sp.entity;
 
 public class Card {
 	    private int idCard;
-	    private User user;
+	    private String color;
+	    private String username;
 	    public Card() {}
 	    
-		public Card(int idCard,User user) {
+		public Card(int idCard,String color,String username) {
 			this.idCard = idCard;
-			this.user=user;
+			this.color=color;
+			this.username=username;
+		}
+		
+		public Card(int idCard,String username) {
+			this.idCard = idCard;
+			this.username=username;
 		}
 		
 		public Card(int idCard) {
 			this.idCard = idCard;
 		}
-
 		public int getIdCard() {
 			return idCard;
 		}
@@ -23,11 +29,19 @@ public class Card {
 			this.idCard = idCard;
 		}
 
-		public User getUser() {
-			return user;
+		public String getColor() {
+			return color;
 		}
 
-		public void setUser(User user) {
-			this.user = user;
+		public void setColor(String color) {
+			this.color = color;
 		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}		
 }
