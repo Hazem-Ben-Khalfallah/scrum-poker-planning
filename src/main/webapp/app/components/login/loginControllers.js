@@ -8,14 +8,13 @@ loginControllers.controller('loginCtrl', function ($scope,$location,$sessionStor
 		$location.path('/home/'+$sessionStorage.sessionId); 
 	}
 	$scope.connecter=function(username,sessionId){
-		Services.sub_send("connect","connect",function (payload, headers, res) {
+		Services.sub_send("connect",function (payload, headers, res) {
 			if(payload.statusCode=="OK"){
 				console.log(payload);
 				$sessionStorage.username=username;
 				$sessionStorage.sessionId=sessionId;
 				$sessionStorage.isAdmin=payload.body.isAdmin;
 				$sessionStorage.color=payload.body.color;
-				console.log("#########:"+payload.body.color);
 				$location.path('/home/'+$sessionStorage.sessionId); 
 				$scope.$apply();
 			}else{
