@@ -29,7 +29,7 @@
     "tag": "v0.2.0",
     "commit": "4396c2ed6024c4e537a5943804268d13b65af5de"
   },
-  "_source": "git://github.com/beevelop/angular-stomp.git",
+  "_source": "https://github.com/beevelop/angular-stomp.git",
   "_target": "^0.2.0",
   "_originalSource": "ng-stomp"
 }
