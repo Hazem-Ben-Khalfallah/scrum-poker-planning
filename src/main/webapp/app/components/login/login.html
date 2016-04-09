@@ -7,11 +7,9 @@
                 <form class="form-signin">
 	                <input type="text" class="form-control" placeholder="user"  autofocus ng-model="username"/>
 	                <br>
-	                 <input ng-model="sessionId" class="form-control" placeholder="session" 
-	                  type="text"       				  
-       				/>
+	                 <input type="text" class="form-control" placeholder="session" ng-model="sessionId"/>
 	                <br>
-	                <button type="submit" class="btn btn-lg btn-primary btn-block" ng-click="connecter(username,sessionId)">
+	                <button type="submit" class="btn btn-lg btn-primary btn-block" ng-click="connect()">
 	                    Connect
 	                </button>
 	                <button class="btn btn-lg btn-success btn-block" ng-click="generateIdSession()">
