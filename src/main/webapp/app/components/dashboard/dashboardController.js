@@ -8,8 +8,20 @@ dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessio
         }
 
         $scope.convertToStories = function () {
+            $scope.stories = [];
+            var sanitizedValue;
             if ($scope.rowStories) {
-                $scope.stories = $scope.rowStories.replace("\r\n", "\n").split("\n");
+                var values = $scope.rowStories
+                    .replace("\r\n", "\n")
+                    .split("\n");
+                angular.forEach(values, function (value) {
+                    var sanitizedValue = value.trim();
+                    if (sanitizedValue.length > 0) {
+                        if ($scope.stories.indexOf(sanitizedValue) < 0) {
+                            $scope.stories.push(sanitizedValue);
+                        }
+                    }
+                });
             }
         };
 
