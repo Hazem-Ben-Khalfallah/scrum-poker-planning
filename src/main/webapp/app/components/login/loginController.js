@@ -1,7 +1,8 @@
 var loginController = angular.module('loginController', []);
 
-loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'DATA', 'Services',
-    function ($scope, $location, $sessionStorage, $log, DATA, Services) {
+loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'webSocketFactory',
+    function ($scope, $location, $sessionStorage, $log, webSocketFactory) {
+
         function init() {
             $log.info("username:" + $sessionStorage.username);
             $log.info("sessionId:" + $sessionStorage.sessionId);
@@ -12,7 +13,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
         }
 
         $scope.connect = function () {
-            Services.send("connect", function (payload, headers, res) {
+            webSocketFactory.send("connect", function (payload, headers, res) {
                 if (payload.statusCode == "OK") {
                     $log.info("ws send!!");
                     $log.info(payload);
@@ -39,9 +40,9 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
     }]);
 
 loginController.resolve = {
-    ws: ['Services', '$q', function (Services, $q) {
+    ws: ['webSocketFactory', '$q', function (webSocketFactory, $q) {
         var delay = $q.defer();
-        Services.connect();
+        webSocketFactory.connect();
         delay.resolve();
         return delay.promise;
     }]

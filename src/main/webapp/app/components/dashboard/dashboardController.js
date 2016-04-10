@@ -1,7 +1,7 @@
 var dashboardController = angular.module('dashboardController', []);
 
-dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'DATA', 'Services',
-    function ($scope, $location, $sessionStorage, $log, DATA, Services) {
+dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'webSocketFactory',
+    function ($scope, $location, $sessionStorage, $log, webSocketFactory) {
         function init() {
             $scope.stories = [];
             $scope.cardSet = 'time';

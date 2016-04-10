@@ -1,7 +1,7 @@
 var homeController = angular.module('homeController', []);
 
-homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'DATA', 'Services', 'homeFactory',
-    function ($http, $log, $scope, $sessionStorage, $location, DATA, Services, homeFactory) {
+homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'homeFactory',
+    function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, homeFactory) {
         $scope.username = $sessionStorage.username;
         $scope.sessionId = $sessionStorage.sessionId;
         $scope.isAdmin = $sessionStorage.isAdmin;
@@ -28,7 +28,7 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
         }
 
         $scope.removeFromChosen = function (index, card) {
-            Services.send("remove_card", function (payload, headers, res) {
+            webSocketFactory.send("remove_card", function (payload, headers, res) {
 
             }, {
                 sessionId: $sessionStorage.sessionId,
@@ -39,7 +39,7 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
         };
 
         $scope.addToChosen = function (index, card) {
-            Services.send("add_card", function (payload, headers, res) {
+            webSocketFactory.send("add_card", function (payload, headers, res) {
                 $log.info(payload.body);
             }, {
                 sessionId: $sessionStorage.sessionId,
@@ -51,7 +51,7 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
         };
 
         $scope.newTicket = function (tName) {
-            Services.send("create_ticket", function (payload, headers, res) {
+            webSocketFactory.send("create_ticket", function (payload, headers, res) {
                 $log.info(payload.body);
 
             }, {
@@ -60,13 +60,9 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
             });
         };
 
-        $scope.getCardValue = function (idCard) {
-            return DATA.cards[idCard]
-        };
-
         $scope.logout = function () {
             $sessionStorage.$reset();
-            Services.disconnect();
+            webSocketFactory.disconnect();
             $location.path('/login');
         };
 
@@ -74,9 +70,9 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
     }]);
 
 homeController.resolve = {
-    ws: ['Services', '$q', function (Services, $q) {
+    ws: ['webSocketFactory', '$q', function (webSocketFactory, $q) {
         var delay = $q.defer();
-        Services.connect();
+        webSocketFactory.connect();
         delay.resolve();
         return delay.promise;
     }]
