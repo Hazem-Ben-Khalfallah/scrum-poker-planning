@@ -10,3 +10,15 @@
     position: absolute;
     top: 20%;
 }
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.main.container {
+    padding: 2em 3em 7em;
+}

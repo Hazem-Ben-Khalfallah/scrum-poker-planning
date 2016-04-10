@@ -7,6 +7,11 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
             if (!$sessionStorage.username || !$sessionStorage.sessionId) {
                 $location.path('/login');
             }
+
+            $scope.info = {
+                selected: 'users'
+            };
+
             $scope.cards = cards.time;
 
             $scope.username = $sessionStorage.username;
@@ -14,6 +19,11 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
             $scope.users = [
                 {name: 'hazem'}, {name: 'khaireddine'}, {name: 'nico'}, {name: 'Seif'},
                 {name: 'Raed'}, {name: 'aymen'}, {name: 'ahmed'}
+            ];
+
+            $scope.tasks = [
+                {name: 'web-1234'}, {name: 'web-1234'}, {name: 'web-1245'}, {name: 'web-1246'},
+                {name: 'web-1256'}, {name: 'web-1258'}, {name: 'web-2568'}
             ];
 
             homeFactory.get($sessionStorage.sessionId, function (data) {

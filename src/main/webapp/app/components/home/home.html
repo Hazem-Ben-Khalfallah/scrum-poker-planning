@@ -33,7 +33,7 @@
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
                     <div class="content">
-                        <a class="header">{{user.name}}</a>
+                        <a class="header capitalize center-text">{{user.name}}</a>
                     </div>
                 </div>
             </div>
@@ -44,8 +44,8 @@
             <div class="ui five link cards">
                 <div class="card {{card.color}}" ng-repeat="card in cards">
                     <div class="content">
-                        <div class="header">{{card.value}}</div>
-                        <div class="meta">
+                        <div class="header capitalize center-text">{{card.value}}</div>
+                        <div class="meta capitalize center-text ">
                             {{card.unit}}
                         </div>
                     </div>
@@ -76,18 +76,24 @@
             </div>
             <!-- info zone -->
             <div class="ui top attached tabular menu">
-                <div class="active item">
+                <div class="item" ng-class="{active: info.selected == 'users'}" ng-click="info.selected = 'users'">
                     <i class="icon users"></i>
                     Users
                 </div>
-                <div class="item">
+                <div class="item" ng-class="{active: info.selected == 'tasks'}" ng-click="info.selected = 'tasks'">
                     <i class="icon tasks"></i>
                     Tasks
                 </div>
             </div>
-            <div class="ui bottom attached active tab segment">
+            <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'users'}">
                 <div class="ui list">
-                    <div class="item" ng-repeat="user in users">{{user.name}}</div>
+                    <div class="item capitalize" ng-repeat="user in users">{{user.name}}</div>
+                </div>
+            </div>
+
+            <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'tasks'}">
+                <div class="ui list">
+                    <div class="item capitalize" ng-repeat="task in tasks">{{task.name}}</div>
                 </div>
             </div>
         </div>

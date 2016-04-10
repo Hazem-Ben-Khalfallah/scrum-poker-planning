@@ -1,46 +1,50 @@
-<div class="ui stacked segment center-vertically">
-    <div class="ui text container" ng-controller="loginCtrl as lc">
-        <div class="ui one column grid">
-            <div class="column">
-                <h2 class="ui teal image header">
+<div class="ui container" style="height: 100%">
+    <div class="ui stacked segment center-vertically">
+        <div class="ui text container" ng-controller="loginCtrl as lc">
+            <div class="ui one column grid">
+                <div class="column">
+                    <h2 class="ui teal image header">
 
-                    <div class="content">
-                        Join planning poker
-                    </div>
-                </h2>
+                        <div class="content">
+                            Join planning poker
+                        </div>
+                    </h2>
 
-                <div class="ui two column middle aligned very relaxed stackable grid">
-                    <div class="column">
-                        <div class="ui form">
-                            <div class="field">
-                                <label>Username</label>
+                    <div class="ui two column middle aligned very relaxed stackable grid">
+                        <div class="column">
+                            <div class="ui form">
+                                <div class="field">
+                                    <label>Username</label>
 
-                                <div class="ui left icon input">
-                                    <i class="user icon"></i>
-                                    <input type="text" name="user" placeholder="user" autofocus ng-model="username">
+                                    <div class="ui left icon input">
+                                        <i class="user icon"></i>
+                                        <input type="text" name="user" placeholder="user" autofocus
+                                               ng-model="username">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="field">
-                                <label>Session</label>
+                                <div class="field">
+                                    <label>Session</label>
 
-                                <div class="ui left icon input">
-                                    <i class="home icon"></i>
-                                    <input type="text" name="sessionId" placeholder="session" ng-model="sessionId">
+                                    <div class="ui left icon input">
+                                        <i class="home icon"></i>
+                                        <input type="text" name="sessionId" placeholder="session"
+                                               ng-model="sessionId">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="ui teal submit button" ng-click="connect()">
-                                <i class="icon sign in"></i>
-                                Join
+                                <div class="ui teal submit button" ng-click="connect()">
+                                    <i class="icon sign in"></i>
+                                    Join
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="ui vertical divider">
-                        Or
-                    </div>
-                    <div class="center aligned column">
-                        <div class="ui big green labeled icon button" ng-click="newSession()">
-                            <i class="wizard icon"></i>
-                            Create session
+                        <div class="ui vertical divider">
+                            Or
+                        </div>
+                        <div class="center aligned column">
+                            <div class="ui big green labeled icon button" ng-click="newSession()">
+                                <i class="wizard icon"></i>
+                                Create session
+                            </div>
                         </div>
                     </div>
                 </div>
