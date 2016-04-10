@@ -1,129 +1,95 @@
-<div class="container-fluid" ng-controller="homeCtrl as hc">
-    <!-- Navigation -->
-    <nav class="navbar navbar-fixed-top" role="navigation">
-        <div>
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+<div class="ui secondary pointing menu">
+    <div class="right menu">
+        <a class="ui item">
+            <span><strong>{{username}}</strong> | </span>
+
+            <div ng-click="logout()">
+                Logout
+                <i class="icon sign out"></i>
             </div>
-            <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav pull-left">
-                    <li>
-                      	<img class="profile-img-bar" src="app/components/login/img/pok.png" alt="POK">
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav pull-right">
-                	<li class="divider-vertical">
-                    </li>
-                    <li>
-	                    <center style="padding-right:10px;padding-left:10px">
-	                        <span>8</span>
-	                        <br>
-	                        <span style="color:green">connected</span>
-	                     </center>
-                    </li>
-                	<li class="divider-vertical">
-                    </li>
-                    <li>
-                    	<center style="padding-right:10px;padding-left:10px">
-	                    	<br>
-	                        <span style="color:blue"><u>{{username}}</u></span>
-                        </center>
-                    </li>
-                    <li class="divider-vertical">
-                    </li>
-                    <li>
-                        <a href="#" ng-click="logout()">Logout</a>
-                    </li>
-                     </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
+        </a>
+    </div>
+</div>
+
+<div class="ui segment">
+    <h2 class="ui header">
+        <img src="/app/components/home/img/jira.png">
+
+        <div class="content">
+            WEB-1785
+            <div class="sub header">Story # 1/4</div>
         </div>
-        <!-- /.container -->
-    </nav>
-    <!-- Page Content -->
-    <div>
-        <!-- Zone card Row -->
-        <div class="row">
-            <div class="col-md-8">
-	            <div class="zone">
-	            <div>
-					    <div ng-repeat="card in cardsChosen">
-					    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
-					    ng-click="card.isMine===false || removeFromChosen($index,card)">
-						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard) }}</center>
-					     </span>
-					    </div>
-					</div>
-	            </div>
+    </h2>
+
+    <div class="ui grid">
+        <div class="ui ten wide column">
+            <!-- voting zone -->
+            <div class="ui horizontal divider">
+                Votes
             </div>
-            <div class="col-md-4">
-            	<div class="zone">
-            		<div>
-					    <div ng-repeat="card in cardsMine">
-						    <span class="col-md-4 myCard" height="30px" style="border-top: 20px solid {{card.color}}"
-						    ng-click="addToChosen($index,card)">
-						       <center style="padding-top:18px;font-size:32px">{{ getCardValue(card.idCard) }}</center>
-						     </span>
-					    </div>
-					</div>
-            	</div>
-            </div>
-        </div>
-        <!-- /.row -->
-		<div  class="row" style="padding-top:2px">
-			<div ng-show="isAdmin" class="col-md-8 ng-hide" disabled="disabled">
-			   <input class="col-md-3" ng-minlength="3" ng-maxlength="10" ng-model="ticket_name" type="text" style="height:46px;font-size:14pt;margin-right:10px;background-color:transparent">
-			   <input class="col-md-2 btn btn-primary btn-lg" ng-click="newTicket(ticket_name)" value="Save" type="button" class="form-control" style="margin-right:10px;">
-			   <input class="col-md-2 btn btn-danger btn-lg" ng-click="removeTicket(ticket_name)" value="Delete" type="button" class="form-control" style="margin-right:10px;">
-	           <span class="col-md-3"></span>
-	           <span class="col-md-4 pull-right">
-	           		<input class="col-md-4" type="image" src="app/components/home/img/play.png">
-	           		<input class="col-md-4" type="image" src="app/components/home/img/pause.png">
-	           		<input class="col-md-4" type="image" src="app/components/home/img/stop.png">
-	           </span>
-	        </div>
-
-            <div class="col-md-4">
-	            <span class="col-md-4" style="height:46px;font-size:20pt">Timer:</span>
-            	<input class="col-md-8" style="height:46px;font-size:25pt;background-color:transparent;text-align:center;" value="01:10">
-            </div>
-
-        </div>
-        <!-- /.row -->
-     <div class="col-lg-12">
-                <center><h3 class="page-header">Tickets</h3></center>
-            </div>
-
-        <!-- Tickets Row -->
-        <div class="row">
-	        <div ng-repeat="ticket in tickets">
-	                <span class="col-sm-3 col-xs-6 myTicket" ng-click="loadTicket(ticket.ticketName)">
- 						<center style="padding-top:18px;font-size:32px">
- 							{{ ticket.ticketName }}
- 						</center>
-					</span>
-			</div>
-        </div>
-        <!-- /.row -->
-
-        <hr>
-
-        <!-- Footer -->
-        <footer>
-            <div class="row">
-                <div class="col-lg-12">
-                    <center><p>Copyright © 2016 POK</p></center>
+            <div class="ui five cards">
+                <div class="ui card" ng-repeat="user in users">
+                    <div class="image">
+                        <img src="/app/components/home/img/cardback.svg">
+                    </div>
+                    <div class="content">
+                        <a class="header">{{user.name}}</a>
+                    </div>
                 </div>
             </div>
-            <!-- /.row -->
-        </footer>
+            <!-- cards zone -->
+            <div class="ui horizontal divider">
+                Select a card
+            </div>
+            <div class="ui five link cards">
+                <div class="card {{card.color}}" ng-repeat="card in cards">
+                    <div class="content">
+                        <div class="header">{{card.value}}</div>
+                        <div class="meta">
+                            {{card.unit}}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+        </div>
+        <div class="ui six wide column">
+            <!-- results -->
+            <div class="ui statistics">
+                <div class="ui yellow statistic">
+                    <div class="label">
+                        Min
+                    </div>
+                    <div class="value">
+                        -
+                    </div>
+                </div>
+
+                <div class="ui orange statistic">
+                    <div class="label">
+                        Max
+                    </div>
+                    <div class="value">
+                        -
+                    </div>
+                </div>
+            </div>
+            <!-- info zone -->
+            <div class="ui top attached tabular menu">
+                <div class="active item">
+                    <i class="icon users"></i>
+                    Users
+                </div>
+                <div class="item">
+                    <i class="icon tasks"></i>
+                    Tasks
+                </div>
+            </div>
+            <div class="ui bottom attached active tab segment">
+                <div class="ui list">
+                    <div class="item" ng-repeat="user in users">{{user.name}}</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.container -->
 </div>

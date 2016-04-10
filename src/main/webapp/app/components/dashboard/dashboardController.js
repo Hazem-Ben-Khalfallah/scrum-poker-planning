@@ -37,12 +37,12 @@ dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessio
         };
 
         $scope.save = function () {
-            $log.info($scope.sprintName);
-            $log.info($scope.cardSet);
-            $log.info($scope.stories);
+            $sessionStorage.username = 'admin';
+            $sessionStorage.sessionId = generateIdSession();
+            $location.path('/home/' + $sessionStorage.sessionId);
         };
 
-        $scope.generateIdSession = function () {
+        function generateIdSession() {
             var hash = "";
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -50,8 +50,8 @@ dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessio
                 hash += possible.charAt(Math.floor(Math.random() * possible.length));
             }
 
-            $scope.sessionId = hash;
-        };
+            return hash;
+        }
 
         init();
     }]);

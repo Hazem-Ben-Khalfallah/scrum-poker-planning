@@ -15,7 +15,6 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
         $scope.connect = function () {
             webSocketFactory.send("connect", function (payload, headers, res) {
                 if (payload.statusCode == "OK") {
-                    $log.info("ws send!!");
                     $log.info(payload);
                     $sessionStorage.username = $scope.username;
                     $sessionStorage.sessionId = $scope.sessionId;
