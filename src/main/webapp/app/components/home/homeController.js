@@ -1,6 +1,6 @@
-var homeControllers = angular.module('homeControllers', []);
+var homeController = angular.module('homeController', []);
 
-homeControllers.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'DATA', 'Services', 'homeFactory',
+homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'DATA', 'Services', 'homeFactory',
     function ($http, $log, $scope, $sessionStorage, $location, DATA, Services, homeFactory) {
         $scope.username = $sessionStorage.username;
         $scope.sessionId = $sessionStorage.sessionId;
@@ -73,7 +73,7 @@ homeControllers.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStor
         init();
     }]);
 
-homeControllers.resolve = {
+homeController.resolve = {
     ws: ['Services', '$q', function (Services, $q) {
         var delay = $q.defer();
         Services.connect();

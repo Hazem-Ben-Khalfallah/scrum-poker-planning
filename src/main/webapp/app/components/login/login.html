@@ -1,21 +1,50 @@
-<div id="login" ng-controller="loginCtrl as lc">
-    <div class="row">
-        <div class="col-sm-6 col-md-4 col-md-offset-4">
-            <div class="account-wall">
-                <img class="profile-img" src="app/components/login/img/pok.png"
-                    alt="">
-                <form class="form-signin">
-	                <input type="text" class="form-control" placeholder="user"  autofocus ng-model="username"/>
-	                <br>
-	                 <input type="text" class="form-control" placeholder="session" ng-model="sessionId"/>
-	                <br>
-	                <button type="submit" class="btn btn-lg btn-primary btn-block" ng-click="connect()">
-	                    Connect
-	                </button>
-	                <button class="btn btn-lg btn-success btn-block" ng-click="generateIdSession()">
-	                    Generate session
-	                </button>
-                </form>
+<div class="ui stacked segment center-vertically">
+    <div class="ui text container" ng-controller="loginCtrl as lc">
+        <div class="ui one column grid">
+            <div class="column">
+                <h2 class="ui teal image header">
+
+                    <div class="content">
+                        Join planning poker
+                    </div>
+                </h2>
+
+                <div class="ui two column middle aligned very relaxed stackable grid">
+                    <div class="column">
+                        <div class="ui form">
+                            <div class="field">
+                                <label>Username</label>
+
+                                <div class="ui left icon input">
+                                    <i class="user icon"></i>
+                                    <input type="text" name="user" placeholder="user" autofocus ng-model="username">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Session</label>
+
+                                <div class="ui left icon input">
+                                    <i class="home icon"></i>
+                                    <input type="text" name="sessionId" placeholder="session" ng-model="sessionId">
+                                </div>
+                            </div>
+                            <div class="ui teal submit button" ng-click="connect()">
+                                <i class="icon sign in"></i>
+                                Join
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui vertical divider">
+                        Or
+                    </div>
+                    <div class="center aligned column">
+                        <div class="ui big green labeled icon button" ng-click="newSession()">
+                            <i class="wizard icon"></i>
+                            Create session
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 </div>

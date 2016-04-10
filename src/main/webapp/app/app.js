@@ -1,10 +1,12 @@
 var myApp = angular.module('scrumPokApp', [
     'ngRoute',
-    'homeControllers',
+    'homeController',
     'homeFactory',
     'homeDirective',
-    'loginControllers',
+    'loginController',
     'loginFactory',
+    'dashboardController',
+    'dashboardFactory',
     'ui.bootstrap',
     'ngStomp',
     'ngStorage'
@@ -19,7 +21,11 @@ myApp.config(function ($routeProvider) {
         when('/login', {
             templateUrl: 'app/components/login/login.html',
             controller: 'loginCtrl',
-            resolve: loginControllers.resolve
+            resolve: loginController.resolve
+        }).
+        when('/dashboard', {
+            templateUrl: 'app/components/dashboard/dashboard.html',
+            controller: 'dashboardCtrl'
         }).
         otherwise({
             redirectTo: '/login'

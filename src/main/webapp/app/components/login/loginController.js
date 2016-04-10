@@ -1,6 +1,6 @@
-var loginControllers = angular.module('loginControllers', []);
+var loginController = angular.module('loginController', []);
 
-loginControllers.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'DATA', 'Services',
+loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'DATA', 'Services',
     function ($scope, $location, $sessionStorage, $log, DATA, Services) {
         function init() {
             $log.info("username:" + $sessionStorage.username);
@@ -31,21 +31,14 @@ loginControllers.controller('loginCtrl', ['$scope', '$location', '$sessionStorag
             });
         };
 
-        $scope.generateIdSession = function () {
-            var hash = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-            for (var i = 0; i < 10; i++) {
-                hash += possible.charAt(Math.floor(Math.random() * possible.length));
-            }
-
-            $scope.sessionId = hash;
+        $scope.newSession = function () {
+            $location.path('/dashboard');
         };
 
         init();
     }]);
 
-loginControllers.resolve = {
+loginController.resolve = {
     ws: ['Services', '$q', function (Services, $q) {
         var delay = $q.defer();
         Services.connect();

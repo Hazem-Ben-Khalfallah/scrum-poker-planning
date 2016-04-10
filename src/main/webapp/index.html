@@ -1,23 +1,33 @@
 <html ng-app="scrumPokApp">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Scrum Poker</title>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-route/angular-route.min.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/ng-stomp/dist/ng-stomp.standalone.min.js"></script>
-    <script src="bower_components/ngstorage/ngStorage.min.js"></script>
-    <script src="app/components/home/homeFactory.js"></script>
-    <script src="app/components/home/homeDirective.js"></script>
-    <script src="app/components/home/homeControllers.js"></script>
-    <script src="app/components/login/loginFactory.js"></script>
-    <script src="app/components/login/loginControllers.js"></script>
-    <script src="app/app.js"></script>
-  </head>
-  <body>
-    <div ng-view></div>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-     <link href="style/style.css" rel="stylesheet" type="text/css">     
-  </body>
+    <!-- Css -->
+    <link href="style/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css">
+    <link href="style/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="ui masthead vertical segment">
+    <div class="ui container" style="height: 100%" ng-view>
+    </div>
+</div>
+<!-- javascript VENDORS -->
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-route/angular-route.min.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/ng-stomp/dist/ng-stomp.standalone.min.js"></script>
+<script src="bower_components/ngstorage/ngStorage.min.js"></script>
+<script src="app/vendors/jquery/jquery-1.11.3.min.js"></script>
+<script src="app/vendors/semantic-ui/semantic.min.js"></script>
+<!-- javascript local -->
+<script src="app/components/home/homeFactory.js"></script>
+<script src="app/components/home/homeDirective.js"></script>
+<script src="app/components/home/homeController.js"></script>
+<script src="app/components/login/loginFactory.js"></script>
+<script src="app/components/login/loginController.js"></script>
+<script src="app/components/dashboard/dashboardFactory.js"></script>
+<script src="app/components/dashboard/dashboardController.js"></script>
+<script src="app/app.js"></script>
+</body>
 </html>
