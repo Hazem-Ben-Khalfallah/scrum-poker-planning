@@ -28,7 +28,7 @@
                 Votes
             </div>
             <div class="ui five cards">
-                <div class="ui vote" ng-repeat="user in users">
+                <div class="ui card" ng-repeat="user in users">
                     <div class="image">
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
@@ -42,7 +42,7 @@
                 Select a card
             </div>
             <div class="ui five link cards">
-                <div class="vote {{vote.color}}" ng-repeat="card in cards">
+                <div class="card {{card.color}}" ng-repeat="card in cards">
                     <div class="content">
                         <div class="header capitalize center-text">{{card.value}}</div>
                         <div class="meta capitalize center-text ">
