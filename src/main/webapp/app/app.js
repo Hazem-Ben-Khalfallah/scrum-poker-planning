@@ -1,10 +1,11 @@
 var myApp = angular.module('scrumPokApp', [
     'ngRoute',
+    '$httpWrapper',
     'homeController',
     'homeFactory',
     'loginController',
+    'sessionFactory',
     'dashboardController',
-    'dashboardFactory',
     'ui.bootstrap',
     'ngStomp',
     'ngStorage',

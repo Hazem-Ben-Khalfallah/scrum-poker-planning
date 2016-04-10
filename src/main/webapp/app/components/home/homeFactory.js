@@ -1,12 +1,10 @@
 angular.module('homeFactory', [])
-    .factory('homeFactory', ['$http', function ($http) {
+    .factory('homeFactory', ['$httpWrapper', function ($httpWrapper) {
         return {
-            get: function (sessionId, callback) {
-                $http({
-                    method: 'GET',
-                    url: '/session/' + sessionId,
-                    cache: true
-                }).success(callback);
+            get: function (sessionId, onSuccess) {
+                onSuccess = onSuccess || angular.noop;
+                var url = '/session/' + sessionId;
+                $httpWrapper.get(url, onSuccess, null);
             }
         };
     }]);

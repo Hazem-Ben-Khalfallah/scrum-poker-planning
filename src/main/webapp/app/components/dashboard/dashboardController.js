@@ -1,7 +1,8 @@
 var dashboardController = angular.module('dashboardController', []);
 
-dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'webSocketFactory',
-    function ($scope, $location, $sessionStorage, $log, webSocketFactory) {
+dashboardController.controller('dashboardCtrl',
+    ['$scope', '$location', '$sessionStorage', '$log', 'sessionFactory',
+    function ($scope, $location, $sessionStorage, $log, sessionFactory) {
         function init() {
             $scope.stories = [];
             $scope.cardSet = 'time';
@@ -15,7 +16,7 @@ dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessio
                     .replace("\r\n", "\n")
                     .split("\n");
                 angular.forEach(values, function (value) {
-                    var sanitizedValue = value.trim();
+                    sanitizedValue = value.trim();
                     if (sanitizedValue.length > 0) {
                         if ($scope.stories.indexOf(sanitizedValue) < 0) {
                             $scope.stories.push(sanitizedValue);
@@ -39,7 +40,15 @@ dashboardController.controller('dashboardCtrl', ['$scope', '$location', '$sessio
         $scope.save = function () {
             $sessionStorage.username = 'admin';
             $sessionStorage.sessionId = generateIdSession();
-            $location.path('/home/' + $sessionStorage.sessionId);
+            var data = {
+                sessionId: $sessionStorage.sessionId,
+                sprintName: $scope.sprintName,
+                cardSet: $scope.cardSet,
+                stories: $scope.stories
+            };
+            sessionFactory.create(data, function (response) {
+                $location.path('/home/' + $sessionStorage.sessionId);
+            });
         };
 
         function generateIdSession() {
