@@ -1,5 +1,12 @@
 angular.module('homeFactory', [])
-       .factory('home', function($http){
-  return {
-  };
-});
+    .factory('homeFactory', ['$http', function ($http) {
+        return {
+            get: function (sessionId, callback) {
+                $http({
+                    method: 'GET',
+                    url: '/session/' + sessionId,
+                    cache: true
+                }).success(callback);
+            }
+        };
+    }]);
