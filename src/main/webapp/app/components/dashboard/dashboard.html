@@ -82,10 +82,10 @@
                             cancel
                         </div>
                         <div class="or"></div>
-                        <a class="ui green submit button" ng-click="save()">
+                        <div class="ui green submit button" ng-click="openModal()">
                             <i class="icon play"></i>
                             save & start
-                        </a>
+                        </div>
                     </div>
 
                 </div>
@@ -93,4 +93,39 @@
 
         </div>
     </div>
+    <modal ng-model="show_modal">
+        <i class="close icon" ng-click="closeModal()"></i>
+
+        <div class="header">
+            New poker planning session
+        </div>
+        <div class="image content">
+            <div class="image">
+                <i class="wizard icon"></i>
+            </div>
+            <div class="description">
+                <p>Your username is need to start a new session</p>
+
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="user" placeholder="username" autofocus
+                               ng-model="username">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="two fluid ui inverted buttons">
+                <div class="ui red basic inverted button" ng-click="closeModal()">
+                    <i class="remove icon"></i>
+                    No
+                </div>
+                <div class="ui green basic inverted button" ng-click="save(username)">
+                    <i class="checkmark icon"></i>
+                    Yes
+                </div>
+            </div>
+        </div>
+    </modal>
 </div>

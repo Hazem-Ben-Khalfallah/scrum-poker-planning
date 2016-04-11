@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class SessionDto {
     private String sessionId;
+    private String username;
     private String sprintName;
     private String cardSet;
     private List<String> stories;
@@ -26,15 +27,39 @@ public class SessionDto {
         return cardSet;
     }
 
+    public void setCardSet(String cardSet) {
+        this.cardSet = cardSet;
+    }
+
     public String getSessionId() {
         return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public String getSprintName() {
         return sprintName;
     }
 
+    public void setSprintName(String sprintName) {
+        this.sprintName = sprintName;
+    }
+
     public List<String> getStories() {
         return stories;
+    }
+
+    public void setStories(List<String> stories) {
+        this.stories = stories;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

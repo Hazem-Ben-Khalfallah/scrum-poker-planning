@@ -1,6 +1,7 @@
 var myApp = angular.module('scrumPokApp', [
     'ngRoute',
     '$httpWrapper',
+    'angularify.semantic.modal',
     'homeController',
     'homeFactory',
     'loginController',

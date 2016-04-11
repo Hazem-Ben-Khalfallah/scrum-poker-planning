@@ -77,7 +77,6 @@ var cards = {
         },
         {
             value: 3,
-            unit: 'hours',
             color: 'blue'
         },
         {
@@ -90,7 +89,6 @@ var cards = {
         },
         {
             value: 13,
-            unit: 'days',
             color: 'green'
         },
         {
@@ -103,7 +101,6 @@ var cards = {
         },
         {
             value: 55,
-            unit: 'weeks',
             color: 'orange'
         },
         {
@@ -138,7 +135,6 @@ var cards = {
         },
         {
             value: 3,
-            unit: 'hours',
             color: 'blue'
         },
         {
@@ -151,7 +147,6 @@ var cards = {
         },
         {
             value: 13,
-            unit: 'days',
             color: 'green'
         },
         {
@@ -164,7 +159,6 @@ var cards = {
         },
         {
             value: 100,
-            unit: 'weeks',
             color: 'orange'
         },
         {
