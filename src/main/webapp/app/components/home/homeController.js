@@ -1,7 +1,7 @@
 var homeController = angular.module('homeController', []);
 
-homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'homeFactory',
-    function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, homeFactory) {
+homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'sessionFactory', 'userFactory',
+    function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, sessionFactory, userFactory) {
 
         function init() {
             if (!$sessionStorage.username || !$sessionStorage.sessionId) {
@@ -16,13 +16,12 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
 
             $scope.username = $sessionStorage.username;
             $scope.sessionId = $sessionStorage.sessionId;
-            $scope.users = [
-                {name: 'hazem'}, {name: 'khaireddine'}, {name: 'nico'}, {name: 'Seif'},
-                {name: 'Raed'}, {name: 'aymen'}, {name: 'ahmed'}
-            ];
 
-            homeFactory.get($sessionStorage.sessionId, function (data) {
-                $log.info(data);
+            userFactory.get($sessionStorage.sessionId, function (data) {
+                $scope.users = data;
+            });
+
+            sessionFactory.get($sessionStorage.sessionId, function (data) {
                 $scope.sprintName = data.sprintName;
                 $scope.stories = data.stories;
                 // set current story
@@ -56,11 +55,17 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
 
         $scope.selectCard = function (card) {
             if (!card.selected) {
+                if ($scope.selectedCard) {
+                    $scope.selectedCard.selected = false;
+                    $scope.selectedCard.animate = 'move-down';
+                }
+                $scope.selectedCard = card;
                 card.selected = true;
                 card.animate = 'move-up';
             } else {
                 card.selected = false;
                 card.animate = 'move-down';
+                $scope.selectedCard = angular.undefined;
             }
         };
 

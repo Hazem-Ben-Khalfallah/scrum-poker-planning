@@ -4,6 +4,7 @@ dashboardController.controller('dashboardCtrl',
     ['$scope', '$location', '$sessionStorage', '$log', 'sessionFactory',
         function ($scope, $location, $sessionStorage, $log, sessionFactory) {
             function init() {
+                $sessionStorage.$reset();
                 $scope.show_modal = false;
                 $scope.stories = [];
                 $scope.cardSet = 'time';

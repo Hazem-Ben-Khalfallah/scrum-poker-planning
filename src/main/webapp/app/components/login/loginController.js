@@ -4,12 +4,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
     function ($scope, $location, $sessionStorage, $log, webSocketFactory) {
 
         function init() {
-            $log.info("username:" + $sessionStorage.username);
-            $log.info("sessionId:" + $sessionStorage.sessionId);
-
-            if ($sessionStorage.username && $sessionStorage.sessionId) {
-                $location.path('/home/' + $sessionStorage.sessionId);
-            }
+            $sessionStorage.$reset();
         }
 
         $scope.connect = function () {
