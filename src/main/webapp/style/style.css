@@ -22,3 +22,31 @@
 .main.container {
     padding: 2em 3em 7em;
 }
+
+.move-up {
+    -webkit-transform-origin: 100% 50%;
+    -webkit-animation: up 200ms both ease-in;
+}
+
+.move-down {
+    -webkit-transform-origin: 100% 50%;
+    -webkit-animation: down 200ms both ease-in;
+}
+
+@-webkit-keyframes up {
+    0% {
+        -webkit-transform: translateY(0px);
+    }
+    100% {
+        -webkit-transform: translateY(-20px);
+    }
+}
+
+@-webkit-keyframes down {
+    0% {
+        -webkit-transform: translateY(-20px);
+    }
+    100% {
+        -webkit-transform: translateY(0px);
+    }
+}
