@@ -29,7 +29,7 @@
             </div>
             <div class="ui five cards">
                 <div class="ui card" ng-repeat="user in users">
-                    <div class="image">
+                    <div class="image" ng-class="{'vote-active': user.hasVoted}">
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
                     <div class="content">
@@ -63,7 +63,7 @@
                         Min
                     </div>
                     <div class="value">
-                        -
+                        {{min}}
                     </div>
                 </div>
 
@@ -72,7 +72,7 @@
                         Max
                     </div>
                     <div class="value">
-                        -
+                        {{max}}
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="story in stories" ng-click="selectStory(getIndex(story))">
+                    <tr ng-repeat="story in stories" ng-click="setCurrentStory(getIndex(story))">
                         <td>{{getIndex(story) + 1}}</td>
                         <td>{{story}}</td>
                         <td class="right aligned">

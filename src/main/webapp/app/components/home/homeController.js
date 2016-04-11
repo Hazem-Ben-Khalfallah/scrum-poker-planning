@@ -8,6 +8,9 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
                 $location.path('/login');
             }
 
+            $scope.min = 0;
+            $scope.max = 8;
+
             $scope.info = {
                 selected: 'users'
             };
@@ -25,7 +28,7 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
                 $scope.sprintName = data.sprintName;
                 $scope.stories = data.stories;
                 // set current story
-                $scope.selectStory(0);
+                $scope.setCurrentStory(0);
 
                 if (data.cardSet == 'time') {
                     $scope.cards = cards.time;
@@ -47,7 +50,7 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
             return $scope.stories.indexOf(story);
         };
 
-        $scope.selectStory = function (index) {
+        $scope.setCurrentStory = function (index) {
             $scope.currentStory.total = $scope.stories.length;
             $scope.currentStory.name = $scope.currentStory.total > 0 ? $scope.stories[index] : '-';
             $scope.currentStory.index = $scope.stories.indexOf($scope.currentStory.name) + 1;
@@ -67,7 +70,20 @@ homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStora
                 card.animate = 'move-down';
                 $scope.selectedCard = angular.undefined;
             }
+            highlightVote();
         };
+
+        function highlightVote() {
+            angular.forEach($scope.users, function (user) {
+                if (user.name == $scope.username) {
+                    if ($scope.selectedCard) {
+                        user.hasVoted = true;
+                    } else {
+                        user.hasVoted = false;
+                    }
+                }
+            });
+        }
 
         init();
     }]);
