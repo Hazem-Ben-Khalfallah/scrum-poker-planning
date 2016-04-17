@@ -4,13 +4,13 @@ package com.influans.sp.dto;
  * @author hazem
  */
 public class UserDto {
-    private String name;
+    private String username;
     private String sessionId;
     private boolean isAdmin;
 
-    public UserDto(String name, String sessionId, boolean isAdmin) {
+    public UserDto(String username, String sessionId, boolean isAdmin) {
         this.isAdmin = isAdmin;
-        this.name = name;
+        this.username = username;
         this.sessionId = sessionId;
     }
 
@@ -22,12 +22,12 @@ public class UserDto {
         this.isAdmin = isAdmin;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getSessionId() {

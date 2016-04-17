@@ -1,4 +1,4 @@
-package com.influans.sp.controller;
+package com.influans.sp.rest;
 
 import com.influans.sp.dto.UserDto;
 import com.influans.sp.service.UserService;

@@ -2,17 +2,20 @@ var myApp = angular.module('scrumPokApp', [
     'ngRoute',
     '$httpWrapper',
     'angularify.semantic.modal',
-    'homeController',
-    'sessionFactory',
-    'userFactory',
-    'loginController',
-    'sessionFactory',
-    'storyFactory',
-    'dashboardController',
     'ui.bootstrap',
     'ngStomp',
     'ngStorage',
-    'webSocketFactory'
+
+    'webSocketFactory',
+    'sessionFactory',
+    'voteFactory',
+    'userFactory',
+    'storyFactory',
+    'sessionFactory',
+
+    'loginController',
+    'dashboardController',
+    'homeController'
 ]);
 
 myApp.config(function ($routeProvider) {

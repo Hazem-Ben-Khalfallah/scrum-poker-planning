@@ -33,7 +33,7 @@
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
                     <div class="content">
-                        <a class="header capitalize center-text">{{user.name}}</a>
+                        <a class="header capitalize center-text">{{user.username}}</a>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
             </div>
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'users'}">
                 <div class="ui list">
-                    <div class="item capitalize" ng-repeat="user in users">{{user.name}}</div>
+                    <div class="item capitalize" ng-repeat="user in users">{{user.username}}</div>
                 </div>
             </div>
 

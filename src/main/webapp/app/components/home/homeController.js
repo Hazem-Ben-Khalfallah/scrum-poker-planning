@@ -1,8 +1,16 @@
 var homeController = angular.module('homeController', []);
 
+var Types = {
+    story: "story",
+    user: "user",
+    vote: "vote"
+};
+
 homeController.controller('homeCtrl',
-    ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'storyFactory', 'session', 'users', 'stories',
-        function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, session, users, stories) {
+    ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'storyFactory', 'voteFactory',
+        'session', 'users', 'stories',
+        function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, voteFactory,
+                  session, users, stories) {
 
             function init() {
                 if (!$sessionStorage.username || !$sessionStorage.sessionId) {
@@ -16,14 +24,24 @@ homeController.controller('homeCtrl',
                     selected: 'users'
                 };
 
+                $scope.votes = [];
+
                 $scope.currentStory = {};
                 $scope.newStory = {};
+
+                $scope.currentVote = {};
 
                 $scope.username = $sessionStorage.username;
                 $scope.sessionId = $sessionStorage.sessionId;
 
                 //get users
                 $scope.users = users;
+                //get current user
+                angular.forEach($scope.users, function (user) {
+                    if (user.username == $scope.username) {
+                        $scope.currentUser = user;
+                    }
+                });
 
                 //get session info
                 $scope.sprintName = session.sprintName;
@@ -39,6 +57,12 @@ homeController.controller('homeCtrl',
                 $scope.stories = stories;
                 // set current story
                 $scope.setCurrentStory(0);
+                //get saved votes
+                voteFactory.get($scope.currentStory.storyId, function (data) {
+                    $scope.votes = data;
+                    highlightCard();
+                    highlightVotes();
+                })
 
             }
 
@@ -48,8 +72,15 @@ homeController.controller('homeCtrl',
                 $location.path('/login');
             };
 
-            $scope.getIndex = function (story) {
-                return $scope.stories.indexOf(story);
+            $scope.getIndex = function (type, item) {
+                if (type === Types.story)
+                    return $scope.stories.indexOf(item);
+
+                if (type === Types.vote)
+                    return $scope.votes.indexOf(item);
+
+                if (type === Types.user)
+                    return $scope.users.indexOf(item);
             };
 
             $scope.setCurrentStory = function (index) {
@@ -59,7 +90,7 @@ homeController.controller('homeCtrl',
             $scope.removeStory = function (story) {
                 storyFactory.remove(story.storyId, function (data) {
                     if (data.status === 'OK') {
-                        $scope.stories.splice($scope.getIndex(story), 1);
+                        $scope.stories.splice($scope.getIndex(Types.story, story), 1);
                     }
                 });
             };
@@ -68,14 +99,62 @@ homeController.controller('homeCtrl',
                 $scope.newStory.sessionId = $scope.sessionId;
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
-                    $log.info(data);
                     $scope.stories.push(data);
                     $scope.newStory = {};
                 });
             };
 
+            $scope.createVote = function (card) {
+                var data = {
+                    sessionId: $scope.sessionId,
+                    storyId: $scope.currentStory.storyId,
+                    username: $scope.currentUser.username,
+                    value: card.value
+                };
+
+                voteFactory.create(data, function (response) {
+                    $scope.votes.push(response);
+                    $scope.currentVote = response;
+                    animateCard(card);
+                    highlightVotes();
+                })
+            };
+
+            $scope.removeVote = function (card) {
+                voteFactory.remove($scope.currentVote.voteId, function (data) {
+                    if (data.status === 'OK') {
+                        $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
+                        $scope.currentVote = {};
+                        animateCard(card);
+                        highlightVotes();
+                    }
+                })
+            };
+
 
             $scope.selectCard = function (card) {
+                if (!card.selected) {
+                    $scope.createVote(card);
+                } else {
+                    $scope.removeVote(card);
+                }
+
+                highlightVotes();
+            };
+
+            function getCard(value) {
+                var selectCard;
+                for (var i = 0, len = $scope.cards.length; i < len; i++) {
+                    if ($scope.cards[i].value == value) {
+                        selectCard = $scope.cards[i];
+                        break;
+                    }
+                }
+
+                return selectCard;
+            }
+
+            function animateCard(card) {
                 if (!card.selected) {
                     if ($scope.selectedCard) {
                         $scope.selectedCard.selected = false;
@@ -89,13 +168,25 @@ homeController.controller('homeCtrl',
                     card.animate = 'move-down';
                     $scope.selectedCard = angular.undefined;
                 }
-                highlightVote();
-            };
+            }
 
-            function highlightVote() {
+            function highlightVotes() {
                 angular.forEach($scope.users, function (user) {
-                    if (user.name == $scope.username) {
-                        user.hasVoted = !!$scope.selectedCard;
+                    user.hasVoted = false;
+                    angular.forEach($scope.votes, function (vote) {
+                        if (vote.username == user.username) {
+                            user.hasVoted = true;
+                        }
+                    });
+
+                });
+            }
+
+            function highlightCard() {
+                angular.forEach($scope.votes, function (vote) {
+                    if (vote.username == $scope.currentUser.username) {
+                        var card = getCard(vote.value);
+                        animateCard(card);
                     }
                 });
             }
