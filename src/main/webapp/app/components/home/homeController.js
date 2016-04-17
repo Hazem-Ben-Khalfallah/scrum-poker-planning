@@ -12,6 +12,24 @@ homeController.controller('homeCtrl',
         function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, voteFactory,
                   session, users, stories) {
 
+            function getVotes() {
+                //get saved votes
+                voteFactory.get($scope.currentStory.storyId, function (data) {
+                    $scope.votes = data;
+                    $scope.currentVote = angular.undefined;
+
+                    for (var i = 0, len = $scope.votes.length; i < len; i++) {
+                        if ($scope.votes[i].username == $scope.currentUser.username) {
+                            $scope.currentVote = $scope.votes[i];
+                            break;
+                        }
+                    }
+
+                    highlightCard();
+                    highlightVotes();
+                })
+            }
+
             function init() {
                 if (!$sessionStorage.username || !$sessionStorage.sessionId) {
                     $location.path('/login');
@@ -56,14 +74,7 @@ homeController.controller('homeCtrl',
                 //get stories
                 $scope.stories = stories;
                 // set current story
-                $scope.setCurrentStory(0);
-                //get saved votes
-                voteFactory.get($scope.currentStory.storyId, function (data) {
-                    $scope.votes = data;
-                    highlightCard();
-                    highlightVotes();
-                })
-
+                $scope.setCurrentStory($scope.stories[0]);
             }
 
             $scope.logout = function () {
@@ -83,8 +94,12 @@ homeController.controller('homeCtrl',
                     return $scope.users.indexOf(item);
             };
 
-            $scope.setCurrentStory = function (index) {
-                $scope.currentStory = $scope.stories.length > 0 ? $scope.stories[index] : {storyName: '-', order: 0};
+            $scope.setCurrentStory = function (story) {
+                $scope.currentStory = story;
+                //reset votes
+                animateCard($scope.selectedCard);
+                //get votes from backend
+                getVotes();
             };
 
             $scope.removeStory = function (story) {
@@ -109,8 +124,11 @@ homeController.controller('homeCtrl',
                     sessionId: $scope.sessionId,
                     storyId: $scope.currentStory.storyId,
                     username: $scope.currentUser.username,
-                    value: card.value
+                    value: card.id
                 };
+                if ($scope.currentVote) {
+                    data.voteId = $scope.currentVote.voteId;
+                }
 
                 voteFactory.create(data, function (response) {
                     $scope.votes.push(response);
@@ -142,10 +160,10 @@ homeController.controller('homeCtrl',
                 highlightVotes();
             };
 
-            function getCard(value) {
+            function getCard(id) {
                 var selectCard;
                 for (var i = 0, len = $scope.cards.length; i < len; i++) {
-                    if ($scope.cards[i].value == value) {
+                    if ($scope.cards[i].id == id) {
                         selectCard = $scope.cards[i];
                         break;
                     }
@@ -155,6 +173,8 @@ homeController.controller('homeCtrl',
             }
 
             function animateCard(card) {
+                if (!card)
+                    return;
                 if (!card.selected) {
                     if ($scope.selectedCard) {
                         $scope.selectedCard.selected = false;
@@ -183,12 +203,13 @@ homeController.controller('homeCtrl',
             }
 
             function highlightCard() {
-                angular.forEach($scope.votes, function (vote) {
-                    if (vote.username == $scope.currentUser.username) {
-                        var card = getCard(vote.value);
+                for (var i = 0, len = $scope.votes.length; i < len; i++) {
+                    if ($scope.votes[i].username == $scope.currentUser.username) {
+                        var card = getCard($scope.votes[i].value);
                         animateCard(card);
+                        break;
                     }
-                });
+                }
             }
 
             init();

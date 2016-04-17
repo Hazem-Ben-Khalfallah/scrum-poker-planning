@@ -45,7 +45,7 @@ public class VoteService {
         return DefaultResponse.ok();
     }
 
-    public VoteDto createVote(VoteDto voteDto) {
+    public VoteDto saveVote(VoteDto voteDto) {
         if (StringUtils.isEmpty(voteDto.getStoryId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
@@ -55,6 +55,7 @@ public class VoteService {
 
         final VoteEntity voteEntity = new VoteEntity(voteDto.getSessionId(), voteDto.getStoryId(), //
                 voteDto.getUsername(), voteDto.getValue());
+
         voteRepository.save(voteEntity);
         voteDto.setVoteId(voteEntity.getVoteId());
         return voteDto;

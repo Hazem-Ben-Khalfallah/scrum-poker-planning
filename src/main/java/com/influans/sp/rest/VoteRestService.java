@@ -30,7 +30,7 @@ public class VoteRestService {
 
     @RequestMapping(value = "/votes", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<VoteDto> createVote(@RequestBody VoteDto voteDto) {
-        return new ResponseEntity<>(voteService.createVote(voteDto), HttpStatus.OK);
+    public ResponseEntity<VoteDto> saveVote(@RequestBody VoteDto voteDto) {
+        return new ResponseEntity<>(voteService.saveVote(voteDto), HttpStatus.OK);
     }
 }
