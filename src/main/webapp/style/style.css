@@ -11,6 +11,10 @@
     top: 20%;
 }
 
+.block {
+    margin: 2px !important;
+}
+
 .capitalize {
     text-transform: capitalize;
 }
@@ -54,4 +58,13 @@
 .vote-active {
     background-color: #656565 !important;
     border: 2px solid #515151 !important;
+}
+
+.add-story-button {
+    width: 205px;
+    background-color: white;
+}
+
+.add-story-input {
+    width: 200px;
 }

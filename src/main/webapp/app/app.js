@@ -7,6 +7,7 @@ var myApp = angular.module('scrumPokApp', [
     'userFactory',
     'loginController',
     'sessionFactory',
+    'storyFactory',
     'dashboardController',
     'ui.bootstrap',
     'ngStomp',
@@ -18,7 +19,8 @@ myApp.config(function ($routeProvider) {
     $routeProvider.
         when('/home/:sessionId', {
             templateUrl: 'app/components/home/home.html',
-            controller: 'homeCtrl'
+            controller: 'homeCtrl',
+            resolve: homeController.resolve
         }).
         when('/login', {
             templateUrl: 'app/components/login/login.html',

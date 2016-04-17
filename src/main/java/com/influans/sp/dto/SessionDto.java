@@ -1,7 +1,10 @@
 package com.influans.sp.dto;
 
 import com.influans.sp.entity.SessionEntity;
+import com.influans.sp.entity.StoryEntity;
+import com.influans.sp.enums.CardSetEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,15 +15,33 @@ public class SessionDto {
     private String username;
     private String sprintName;
     private String cardSet;
-    private List<String> stories;
+    private List<String> stories = new ArrayList<>();
+
+    public SessionDto() {
+    }
+
+    public SessionDto(SessionEntity sessionEntity) {
+        this.sessionId = sessionEntity.getSessionId();
+        this.sprintName = sessionEntity.getSprintName();
+        this.cardSet = sessionEntity.getCardSet().getValue();
+    }
 
     public SessionEntity toEntity() {
         final SessionEntity sessionEntity = new SessionEntity();
         sessionEntity.setSessionId(sessionId);
         sessionEntity.setSprintName(sprintName);
-        sessionEntity.setCardSet(cardSet);
-        sessionEntity.setStories(stories);
+        sessionEntity.setCardSet(CardSetEnum.toEnum(cardSet));
         return sessionEntity;
+    }
+
+    public List<StoryEntity> toStories(String sessionId) {
+        final List<StoryEntity> storyEntities = new ArrayList<>();
+        int order = 1;
+        for (String story : stories) {
+            storyEntities.add(new StoryEntity(sessionId, story, order));
+            order++;
+        }
+        return storyEntities;
     }
 
     public String getCardSet() {

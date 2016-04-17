@@ -3,7 +3,7 @@ angular.module('userFactory', [])
         return {
             get: function (sessionId, onSuccess) {
                 onSuccess = onSuccess || angular.noop;
-                var url = '/user?sessionId=' + sessionId;
+                var url = '/users?sessionId=' + sessionId;
                 $httpWrapper.get(url, onSuccess, null);
             }
         };

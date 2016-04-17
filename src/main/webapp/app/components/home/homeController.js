@@ -1,94 +1,130 @@
 var homeController = angular.module('homeController', []);
 
-homeController.controller('homeCtrl', ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'sessionFactory', 'userFactory',
-    function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, sessionFactory, userFactory) {
+homeController.controller('homeCtrl',
+    ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'storyFactory', 'session', 'users', 'stories',
+        function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, session, users, stories) {
 
-        function init() {
-            if (!$sessionStorage.username || !$sessionStorage.sessionId) {
-                $location.path('/login');
-            }
+            function init() {
+                if (!$sessionStorage.username || !$sessionStorage.sessionId) {
+                    $location.path('/login');
+                }
 
-            $scope.min = 0;
-            $scope.max = 8;
+                $scope.min = 0;
+                $scope.max = 8;
 
-            $scope.info = {
-                selected: 'users'
-            };
+                $scope.info = {
+                    selected: 'users'
+                };
 
-            $scope.currentStory = {};
+                $scope.currentStory = {};
+                $scope.newStory = {};
 
-            $scope.username = $sessionStorage.username;
-            $scope.sessionId = $sessionStorage.sessionId;
+                $scope.username = $sessionStorage.username;
+                $scope.sessionId = $sessionStorage.sessionId;
 
-            userFactory.get($sessionStorage.sessionId, function (data) {
-                $scope.users = data;
-            });
+                //get users
+                $scope.users = users;
 
-            sessionFactory.get($sessionStorage.sessionId, function (data) {
-                $scope.sprintName = data.sprintName;
-                $scope.stories = data.stories;
-                // set current story
-                $scope.setCurrentStory(0);
-
-                if (data.cardSet == 'time') {
+                //get session info
+                $scope.sprintName = session.sprintName;
+                if (session.cardSet == 'time') {
                     $scope.cards = cards.time;
-                } else if (data.cardSet == 'fibonacci') {
+                } else if (session.cardSet == 'fibonacci') {
                     $scope.cards = cards.fibonacci;
                 } else {
                     $scope.cards = cards.modifiedFibonacci;
                 }
-            });
-        }
 
-        $scope.logout = function () {
-            $sessionStorage.$reset();
-            webSocketFactory.disconnect();
-            $location.path('/login');
-        };
+                //get stories
+                $scope.stories = stories;
+                // set current story
+                $scope.setCurrentStory(0);
 
-        $scope.getIndex = function (story) {
-            return $scope.stories.indexOf(story);
-        };
-
-        $scope.setCurrentStory = function (index) {
-            $scope.currentStory.total = $scope.stories.length;
-            $scope.currentStory.name = $scope.currentStory.total > 0 ? $scope.stories[index] : '-';
-            $scope.currentStory.index = $scope.stories.indexOf($scope.currentStory.name) + 1;
-        };
-
-        $scope.selectCard = function (card) {
-            if (!card.selected) {
-                if ($scope.selectedCard) {
-                    $scope.selectedCard.selected = false;
-                    $scope.selectedCard.animate = 'move-down';
-                }
-                $scope.selectedCard = card;
-                card.selected = true;
-                card.animate = 'move-up';
-            } else {
-                card.selected = false;
-                card.animate = 'move-down';
-                $scope.selectedCard = angular.undefined;
             }
-            highlightVote();
-        };
 
-        function highlightVote() {
-            angular.forEach($scope.users, function (user) {
-                if (user.name == $scope.username) {
-                    if ($scope.selectedCard) {
-                        user.hasVoted = true;
-                    } else {
-                        user.hasVoted = false;
+            $scope.logout = function () {
+                $sessionStorage.$reset();
+                webSocketFactory.disconnect();
+                $location.path('/login');
+            };
+
+            $scope.getIndex = function (story) {
+                return $scope.stories.indexOf(story);
+            };
+
+            $scope.setCurrentStory = function (index) {
+                $scope.currentStory = $scope.stories.length > 0 ? $scope.stories[index] : {storyName: '-', order: 0};
+            };
+
+            $scope.removeStory = function (story) {
+                storyFactory.remove(story.storyId, function (data) {
+                    if (data.status === 'OK') {
+                        $scope.stories.splice($scope.getIndex(story), 1);
                     }
-                }
-            });
-        }
+                });
+            };
 
-        init();
-    }]);
+            $scope.addStory = function () {
+                $scope.newStory.sessionId = $scope.sessionId;
+                $scope.newStory.order = $scope.stories.length + 1;
+                storyFactory.create($scope.newStory, function (data) {
+                    $log.info(data);
+                    $scope.stories.push(data);
+                    $scope.newStory = {};
+                });
+            };
+
+
+            $scope.selectCard = function (card) {
+                if (!card.selected) {
+                    if ($scope.selectedCard) {
+                        $scope.selectedCard.selected = false;
+                        $scope.selectedCard.animate = 'move-down';
+                    }
+                    $scope.selectedCard = card;
+                    card.selected = true;
+                    card.animate = 'move-up';
+                } else {
+                    card.selected = false;
+                    card.animate = 'move-down';
+                    $scope.selectedCard = angular.undefined;
+                }
+                highlightVote();
+            };
+
+            function highlightVote() {
+                angular.forEach($scope.users, function (user) {
+                    if (user.name == $scope.username) {
+                        user.hasVoted = !!$scope.selectedCard;
+                    }
+                });
+            }
+
+            init();
+        }]);
 
 homeController.resolve = {
+    session: ['sessionFactory', '$sessionStorage', '$q', function (sessionFactory, $sessionStorage, $q) {
+        var delay = $q.defer();
+        sessionFactory.get($sessionStorage.sessionId, function (data) {
+            delay.resolve(data);
+        });
+        return delay.promise;
+    }],
+    users: ['userFactory', '$sessionStorage', '$q', function (userFactory, $sessionStorage, $q) {
+        var delay = $q.defer();
+        userFactory.get($sessionStorage.sessionId, function (data) {
+            delay.resolve(data);
+        });
+        return delay.promise;
+    }],
+    stories: ['storyFactory', '$sessionStorage', '$q', function (storyFactory, $sessionStorage, $q) {
+        var delay = $q.defer();
+        storyFactory.get($sessionStorage.sessionId, function (data) {
+            delay.resolve(data);
+        });
+        return delay.promise;
+    }],
     ws: ['webSocketFactory', '$q', function (webSocketFactory, $q) {
         var delay = $q.defer();
         webSocketFactory.connect();

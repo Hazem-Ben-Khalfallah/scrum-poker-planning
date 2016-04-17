@@ -15,9 +15,9 @@
     <h2 class="ui header">
         <img src="/app/components/home/img/jira.png">
 
-        <div class="content" ng-show="currentStory.total > 0">
-            {{currentStory.name}}
-            <div class="sub header">Story # {{currentStory.index}}/{{currentStory.total}}</div>
+        <div class="content" ng-show="stories.length > 0">
+            {{currentStory.storyName}}
+            <div class="sub header">Story # {{currentStory.order}}/{{stories.length}}</div>
         </div>
     </h2>
 
@@ -94,23 +94,52 @@
             </div>
 
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'stories'}">
+
+                <div class="ui move right reveal" ng-class="{active: showAddStory}">
+                    <div class="visible content">
+                        <div class="add-story-button">
+                            <button class="ui circular icon button block" ng-click="addStory()">
+                                <i class="add icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hidden content">
+                        <div class="ui left icon input">
+                            <input type="text" placeholder="Story name" class="add-story-input" ng-model="newStory.storyName">
+                            <i class="wizard icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+
                 <table class="ui selectable table">
                     <thead>
                     <tr>
+                        <th class="left aligned">Status</th>
                         <th>#</th>
                         <th>Name</th>
-                        <th class="right aligned">Status</th>
+                        <th class="right aligned">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="story in stories" ng-click="setCurrentStory(getIndex(story))">
-                        <td>{{getIndex(story) + 1}}</td>
-                        <td>{{story}}</td>
+                        <td class="left aligned">
+                            <button class="circular ui icon button">
+                                <i class="icon flag"
+                                   ng-class="{outline : story.storyId !== currentStory.storyId,
+                                   grey : story.storyId !== currentStory.storyId,
+                                   green : story.storyId == currentStory.storyId}">
+                                </i>
+                            </button>
+                        </td>
+                        <td>{{story.order}}</td>
+                        <td>{{story.storyName}}</td>
                         <td class="right aligned">
-                            <i class="icon flag"
-                               ng-class="{outline : story !== currentStory.name, grey : story !== currentStory.name,
-                               green : story == currentStory.name}">
-                            </i>
+
+                            <div class="ui small basic icon buttons">
+                                <button class="ui button" ng-click="removeStory(story)"><i class="remove icon"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     </tbody>

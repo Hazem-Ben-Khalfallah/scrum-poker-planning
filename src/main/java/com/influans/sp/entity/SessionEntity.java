@@ -1,6 +1,7 @@
 package com.influans.sp.entity;
 
 import com.influans.sp.entity.def.SessionEntityDef;
+import com.influans.sp.enums.CardSetEnum;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,9 +15,7 @@ public class SessionEntity {
     @Field(SessionEntityDef.SPRINT_NAME)
     private String sprintName;
     @Field(SessionEntityDef.CARD_SET)
-    private String cardSet;
-    @Field(SessionEntityDef.STORIES)
-    private List<String> stories;
+    private CardSetEnum cardSet;
 
     public SessionEntity() {
     }
@@ -33,19 +32,11 @@ public class SessionEntity {
         this.sessionId = sessionId;
     }
 
-    public List<String> getStories() {
-        return stories;
-    }
-
-    public void setStories(List<String> stories) {
-        this.stories = stories;
-    }
-
-    public String getCardSet() {
+    public CardSetEnum getCardSet() {
         return cardSet;
     }
 
-    public void setCardSet(String cardSet) {
+    public void setCardSet(CardSetEnum cardSet) {
         this.cardSet = cardSet;
     }
 
