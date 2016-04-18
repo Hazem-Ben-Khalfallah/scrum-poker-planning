@@ -1,5 +1,7 @@
 package com.influans.sp.dto;
 
+import com.influans.sp.entity.StoryEntity;
+
 /**
  * @author hazem
  */
@@ -8,14 +10,24 @@ public class StoryDto {
     private String sessionId;
     private String storyName;
     private int order;
+    private boolean ended;
 
     public StoryDto() {
     }
 
-    public StoryDto(String storyId, String storyName, int order) {
-        this.storyId = storyId;
-        this.storyName = storyName;
-        this.order = order;
+    public StoryDto(StoryEntity storyEntity) {
+        this.storyId = storyEntity.getStoryId();
+        this.storyName = storyEntity.getStoryName();
+        this.order = storyEntity.getOrder();
+        this.ended = storyEntity.isEnded();
+    }
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public void setEnded(boolean ended) {
+        this.ended = ended;
     }
 
     public String getSessionId() {

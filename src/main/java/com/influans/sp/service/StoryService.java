@@ -1,10 +1,13 @@
 package com.influans.sp.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.StoryDto;
 import com.influans.sp.entity.StoryEntity;
+import com.influans.sp.entity.def.StoryEntityDef;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
+import com.influans.sp.repository.DAOResponse;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.utils.StringUtils;
@@ -28,9 +31,7 @@ public class StoryService {
     public List<StoryDto> listStories(String sessionId) {
         final List<StoryDto> stories = new ArrayList<>();
         storyRepository.findBySessionId(sessionId).forEach(storyEntity -> //
-                stories.add(new StoryDto(storyEntity.getStoryId(), //
-                        storyEntity.getStoryName(), //
-                        storyEntity.getOrder())));
+                stories.add(new StoryDto(storyEntity)));
         return stories;
     }
 
@@ -55,5 +56,15 @@ public class StoryService {
         storyRepository.save(storyEntity);
         storyDto.setStoryId(storyEntity.getStoryId());
         return storyDto;
+    }
+
+    public DefaultResponse endStory(String storyId) {
+        final DAOResponse daoResponse = storyRepository.update(storyId, ImmutableMap.<String, Object>builder()
+                .put(StoryEntityDef.ENDED, true)
+                .build());
+        if (daoResponse.getnAffected() > 0) {
+            return DefaultResponse.ok();
+        }
+        return DefaultResponse.ko();
     }
 }

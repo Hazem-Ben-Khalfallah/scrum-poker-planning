@@ -28,9 +28,17 @@ public class StoryRestService {
         return new ResponseEntity<>(storyService.delete(storyId), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/stories/{storyId}", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity endStory(@PathVariable("storyId") String storyId) {
+        return new ResponseEntity<>(storyService.endStory(storyId), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/stories", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<StoryDto> createStory(@RequestBody StoryDto storyDto) {
         return new ResponseEntity<>(storyService.createStory(storyDto), HttpStatus.OK);
     }
+
+
 }

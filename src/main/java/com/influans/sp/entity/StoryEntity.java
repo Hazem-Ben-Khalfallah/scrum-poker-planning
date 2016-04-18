@@ -15,6 +15,8 @@ public class StoryEntity {
     private String sessionId;
     @Field(StoryEntityDef.ORDER)
     private int order;
+    @Field(StoryEntityDef.ENDED)
+    private boolean ended;
 
     public StoryEntity() {
     }
@@ -23,6 +25,14 @@ public class StoryEntity {
         this.sessionId = sessionId;
         this.storyName = storyName;
         this.order = order;
+    }
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public void setEnded(boolean ended) {
+        this.ended = ended;
     }
 
     public int getOrder() {

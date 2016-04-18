@@ -19,6 +19,13 @@
             {{currentStory.storyName}}
             <div class="sub header">Story # {{currentStory.order}}/{{stories.length}}</div>
         </div>
+        <div>
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="vote" ng-disabled="currentStory.ended" ng-model="currentStory.ended"
+                       ng-click="endVote()">
+                <label>End vote</label>
+            </div>
+        </div>
     </h2>
 
     <div class="ui grid">
@@ -28,12 +35,20 @@
                 Votes
             </div>
             <div class="ui five cards">
-                <div class="ui card" ng-repeat="user in users">
-                    <div class="image" ng-class="{'vote-active': user.hasVoted}">
+                <div class="ui card"
+                     ng-class="getColor(user.vote)"
+                     ng-repeat="user in users">
+                    <div class="image" ng-class="{'vote-active': user.hasVoted}" ng-hide="currentStory.ended">
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
                     <div class="content">
-                        <a class="header capitalize center-text">{{user.username}}</a>
+                        <div class="header capitalize center-text">
+                            <p>{{user.username}}</p>
+                            <p ng-show="currentStory.ended">{{getCard(user.vote).value}}</p>
+                        </div>
+                        <div class="meta capitalize center-text" ng-show="currentStory.ended">
+                            {{getCard(user.vote).unit}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -94,8 +109,7 @@
             </div>
 
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'stories'}">
-
-                <div class="ui move right reveal" ng-class="{active: showAddStory}">
+                <div class="ui move right reveal" ng-class="{active: showAddStory}" ng-show="currentUser.admin">
                     <div class="visible content">
                         <div class="add-story-button">
                             <button class="ui circular icon button block" ng-click="addStory()">
@@ -105,7 +119,8 @@
                     </div>
                     <div class="hidden content">
                         <div class="ui left icon input">
-                            <input type="text" placeholder="Story name" class="add-story-input" ng-model="newStory.storyName">
+                            <input type="text" placeholder="Story name" class="add-story-input"
+                                   ng-model="newStory.storyName">
                             <i class="wizard icon"></i>
                         </div>
                     </div>
@@ -118,7 +133,7 @@
                         <th class="left aligned">Status</th>
                         <th>#</th>
                         <th>Name</th>
-                        <th class="right aligned">Actions</th>
+                        <th class="right aligned" ng-show="currentUser.admin">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -134,8 +149,7 @@
                         </td>
                         <td>{{story.order}}</td>
                         <td>{{story.storyName}}</td>
-                        <td class="right aligned">
-
+                        <td class="right aligned" ng-show="currentUser.admin">
                             <div class="ui small basic icon buttons">
                                 <button class="ui button" ng-click="removeStory(story)"><i class="remove icon"></i>
                                 </button>

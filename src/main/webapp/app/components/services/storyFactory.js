@@ -11,6 +11,11 @@ angular.module('storyFactory', [])
                 var url = '/stories/' + storyId;
                 $httpWrapper.delete(url, onSuccess, null);
             },
+            endStory: function (storyId, onSuccess) {
+                onSuccess = onSuccess || angular.noop;
+                var url = '/stories/' + storyId;
+                $httpWrapper.post(url, null, onSuccess, null);
+            },
             create: function (data, onSuccess) {
                 onSuccess = onSuccess || angular.noop;
                 var url = '/stories';

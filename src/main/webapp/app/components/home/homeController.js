@@ -87,8 +87,14 @@ homeController.controller('homeCtrl',
                 if (type === Types.story)
                     return $scope.stories.indexOf(item);
 
-                if (type === Types.vote)
-                    return $scope.votes.indexOf(item);
+                if (type === Types.vote) {
+                    for (var i = 0, len = $scope.votes.length; i < len; i++) {
+                        if ($scope.votes[i].voteId === item.voteId) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
 
                 if (type === Types.user)
                     return $scope.users.indexOf(item);
@@ -131,7 +137,13 @@ homeController.controller('homeCtrl',
                 }
 
                 voteFactory.create(data, function (response) {
-                    $scope.votes.push(response);
+                    var index = $scope.getIndex(Types.vote, response);
+                    if (index < 0) {
+                        $scope.votes.push(response);
+                    } else {
+                        $scope.votes[index] = response;
+                    }
+
                     $scope.currentVote = response;
                     animateCard(card);
                     highlightVotes();
@@ -139,8 +151,8 @@ homeController.controller('homeCtrl',
             };
 
             $scope.removeVote = function (card) {
-                voteFactory.remove($scope.currentVote.voteId, function (data) {
-                    if (data.status === 'OK') {
+                voteFactory.remove($scope.currentVote.voteId, function (response) {
+                    if (response.status === 'OK') {
                         $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                         $scope.currentVote = {};
                         animateCard(card);
@@ -151,6 +163,8 @@ homeController.controller('homeCtrl',
 
 
             $scope.selectCard = function (card) {
+                if ($scope.currentStory.ended)
+                    return;
                 if (!card.selected) {
                     $scope.createVote(card);
                 } else {
@@ -160,7 +174,17 @@ homeController.controller('homeCtrl',
                 highlightVotes();
             };
 
-            function getCard(id) {
+            $scope.endVote = function () {
+                if (!$scope.currentStory.ended)
+                    return;
+                storyFactory.endStory($scope.currentStory.storyId, function (response) {
+                    if (response.status !== 'OK') {
+                        $scope.currentStory.ended = false;
+                    }
+                });
+            };
+
+            $scope.getCard = function (id) {
                 var selectCard;
                 for (var i = 0, len = $scope.cards.length; i < len; i++) {
                     if ($scope.cards[i].id == id) {
@@ -170,7 +194,17 @@ homeController.controller('homeCtrl',
                 }
 
                 return selectCard;
-            }
+            };
+
+            $scope.getColor = function (vote) {
+                if(!vote){
+                    return {};
+                }
+                var field = $scope.getCard(vote).color,
+                    color = {};
+                color[field] = $scope.currentStory.ended;
+                return color;
+            };
 
             function animateCard(card) {
                 if (!card)
@@ -191,13 +225,18 @@ homeController.controller('homeCtrl',
             }
 
             function highlightVotes() {
+                var vote;
                 angular.forEach($scope.users, function (user) {
                     user.hasVoted = false;
-                    angular.forEach($scope.votes, function (vote) {
+                    user.vote = angular.undefined;
+                    for (var i = 0, len = $scope.votes.length; i < len; i++) {
+                        vote = $scope.votes[i];
                         if (vote.username == user.username) {
                             user.hasVoted = true;
+                            user.vote = vote.value;
+                            break;
                         }
-                    });
+                    }
 
                 });
             }
@@ -205,7 +244,7 @@ homeController.controller('homeCtrl',
             function highlightCard() {
                 for (var i = 0, len = $scope.votes.length; i < len; i++) {
                     if ($scope.votes[i].username == $scope.currentUser.username) {
-                        var card = getCard($scope.votes[i].value);
+                        var card = $scope.getCard($scope.votes[i].value);
                         animateCard(card);
                         break;
                     }
