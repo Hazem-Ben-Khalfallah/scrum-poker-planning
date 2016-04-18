@@ -1,8 +1,9 @@
 package com.influans.sp.repository.impl;
 
+import com.influans.sp.repository.DAOResponse;
 import com.mongodb.WriteResult;
 
-public class MongoDAOResponse {
+public class MongoDAOResponse implements DAOResponse {
     private Integer nAffected;
 
     public MongoDAOResponse() {

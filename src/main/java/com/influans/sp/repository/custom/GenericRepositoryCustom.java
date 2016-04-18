@@ -24,15 +24,5 @@ public interface GenericRepositoryCustom<T, ID extends Serializable> {
 
     DAOResponse increment(ID id, String field, Number inc);
 
-    DAOResponse arrayPush(ID id, String field, Object obj);
-
-    DAOResponse arrayPush(String idField, ID id, String field, Object obj);
-
-    DAOResponse arraynPush(ID id, String field, List<?> obj);
-
-    DAOResponse addToSet(ID id, String field, Object obj);
-
-    DAOResponse arrayPull(ID id, String field, Object obj);
-
     GenericRepositoryImpl<T, ID>.BulkBuilder bulk();
 }

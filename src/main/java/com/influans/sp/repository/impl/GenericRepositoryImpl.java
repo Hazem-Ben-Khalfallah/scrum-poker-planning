@@ -1,5 +1,7 @@
 package com.influans.sp.repository.impl;
 
+import com.influans.sp.repository.GenericRepository;
+import com.influans.sp.repository.custom.GenericRepositoryCustom;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
@@ -17,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
+public abstract class GenericRepositoryImpl<T, ID extends Serializable> implements GenericRepositoryCustom<T, ID> {
 
     protected static final String MONGO_ID = "_id";
     @Autowired
@@ -48,13 +50,14 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
     }
 
 
+    @Override
     public T findOne(ID id, List<String> fields) {
         Query q = idQuery(id);
         addProjection(fields, q);
         return this.mongoTemplate.findOne(q, this.getTClass());
     }
 
-
+    @Override
     public List<T> search(List<String> fields) {
         Query q = new Query();
         addProjection(fields, q);
@@ -69,7 +72,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
         }
     }
 
-
+    @Override
     public MongoDAOResponse update(ID id, Map<String, Object> values) {
         Query q = idQuery(id);
 
@@ -83,7 +86,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
         return new MongoDAOResponse(result);
     }
 
-
+    @Override
     public MongoDAOResponse increment(ID id, String field, Number inc) {
         Query q = idQuery(id);
         Update up = new Update();
@@ -93,74 +96,20 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
 
     }
 
-
-    public MongoDAOResponse arrayPush(ID id, String field, Object obj) {
-        return arrayPush(idQuery(id), field, obj);
-    }
-
-
-    public MongoDAOResponse arrayPush(String idField, ID id, String field, Object obj) {
-        Query q = new Query();
-        q.addCriteria(Criteria.where(idField).is(id));
-        return arrayPush(q, field, obj);
-    }
-
-    private MongoDAOResponse arrayPush(Query q, String field, Object obj) {
-        Update up = new Update();
-        if (obj != null) {
-            up.push(field, obj);
-        }
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
-        return new MongoDAOResponse(result);
-    }
-
-
-    public MongoDAOResponse arraynPush(ID id, String field, List<?> obj) {
-        Query q = idQuery(id);
-        Update up = new Update();
-        if (obj != null) {
-            up.pushAll(field, obj.toArray());
-        }
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
-        return new MongoDAOResponse(result);
-    }
-
-
-    public MongoDAOResponse addToSet(ID id, String field, Object obj) {
-        Query q = idQuery(id);
-        Update up = new Update();
-        if (obj != null) {
-            up.addToSet(field, obj);
-        }
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
-        return new MongoDAOResponse(result);
-    }
-
-
-    public MongoDAOResponse arrayPull(ID id, String field, Object obj) {
-        Query q = idQuery(id);
-        Update up = new Update();
-        if (obj != null) {
-            up.pull(field, obj);
-        }
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
-        return new MongoDAOResponse(result);
-    }
-
-
+    @Override
     public T create(T t) {
         this.mongoTemplate.insert(t);
         return t;
     }
 
-
+    @Override
     public MongoDAOResponse update(ID id, String field, Object value) {
         HashMap<String, Object> values = new HashMap<>();
         values.put(field, value);
         return this.update(id, values);
     }
 
-
+    @Override
     public void upsert(T t) {
         this.mongoTemplate.save(t);
     }
@@ -171,7 +120,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> {
         return q;
     }
 
-
+    @Override
     public BulkBuilder bulk() {
         return new BulkBuilder();
     }

@@ -1,5 +1,6 @@
 package com.influans.sp.entity;
 
+import com.influans.sp.dto.VoteDto;
 import com.influans.sp.entity.def.VoteEntityDef;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,11 +22,12 @@ public class VoteEntity {
     public VoteEntity() {
     }
 
-    public VoteEntity(String sessionId, String storyId, String username, String value) {
-        this.sessionId = sessionId;
-        this.storyId = storyId;
-        this.username = username;
-        this.value = value;
+    public VoteEntity(VoteDto voteDto) {
+        this.voteId = voteDto.getVoteId();
+        this.sessionId = voteDto.getSessionId();
+        this.storyId = voteDto.getStoryId();
+        this.username = voteDto.getUsername();
+        this.value = voteDto.getValue();
     }
 
     public String getUsername() {

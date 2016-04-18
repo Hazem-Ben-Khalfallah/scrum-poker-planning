@@ -53,9 +53,7 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
         }
 
-        final VoteEntity voteEntity = new VoteEntity(voteDto.getSessionId(), voteDto.getStoryId(), //
-                voteDto.getUsername(), voteDto.getValue());
-
+        final VoteEntity voteEntity = new VoteEntity(voteDto);
         voteRepository.save(voteEntity);
         voteDto.setVoteId(voteEntity.getVoteId());
         return voteDto;
