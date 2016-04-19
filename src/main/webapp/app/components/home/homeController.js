@@ -124,20 +124,17 @@ homeController.controller('homeCtrl',
                     if (index >= 0) {
                         $scope.votes[index] = response;
                     }
-
                     $scope.currentVote = response;
-                })
+                });
             };
 
             $scope.removeVote = function (card) {
-                $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                 voteFactory.remove($scope.currentVote.voteId, function (response) {
                     if (response.status === 'OK') {
+                        $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                         $scope.currentVote = {};
                         animateCard(card);
                         highlightVotes();
-                    } else {
-                        $scope.votes.push($scope.currentVote)
                     }
                 })
             };
