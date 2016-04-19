@@ -247,10 +247,13 @@ homeController.controller('homeCtrl',
                 } else if (item.type === Events.vote_removed) {
                     index = $scope.getIndex(Types.vote, {voteId: item.data});
                     if (index >= 0) {
-                        var userIndex = $scope.getIndex(Types.user, {username: $scope.votes[index].username});
-                        $scope.users[userIndex].vote = {};
-                        $scope.users[userIndex].hasVoted = false;
-                        $scope.votes.splice(index, 1);
+                        var username = $scope.votes[index].username;
+                        if (username !== currentUser.username) {
+                            var userIndex = $scope.getIndex(Types.user, {username: username});
+                            $scope.users[userIndex].vote = {};
+                            $scope.users[userIndex].hasVoted = false;
+                            $scope.votes.splice(index, 1);
+                        }
                     }
 
                 } else if (item.type === Events.user_connected) {
