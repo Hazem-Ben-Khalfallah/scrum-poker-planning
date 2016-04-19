@@ -80,9 +80,10 @@ homeController.controller('homeCtrl',
             };
 
             $scope.removeStory = function (story) {
+                $scope.stories.splice($scope.getIndex(Types.story, story), 1);
                 storyFactory.remove(story.storyId, function (data) {
-                    if (data.status === 'OK') {
-                        $scope.stories.splice($scope.getIndex(Types.story, story), 1);
+                    if (data.status === 'KO') {
+                        $scope.stories.push(story);
                     }
                 });
             };
@@ -91,7 +92,6 @@ homeController.controller('homeCtrl',
                 $scope.newStory.sessionId = $scope.sessionId;
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
-                    $scope.stories.push(data);
                     $scope.newStory = {};
                 });
             };
@@ -103,31 +103,41 @@ homeController.controller('homeCtrl',
                     username: $scope.currentUser.username,
                     value: card.id
                 };
+
                 if ($scope.currentVote) {
                     data.voteId = $scope.currentVote.voteId;
                 }
 
+                var index = $scope.getIndex(Types.vote, data);
+                if (index < 0) {
+                    $scope.votes.push(data);
+                } else {
+                    $scope.votes[index] = data;
+                }
+
+                $scope.currentVote = data;
+                animateCard(card);
+                highlightVotes();
+
                 voteFactory.create(data, function (response) {
                     var index = $scope.getIndex(Types.vote, response);
-                    if (index < 0) {
-                        $scope.votes.push(response);
-                    } else {
+                    if (index >= 0) {
                         $scope.votes[index] = response;
                     }
 
                     $scope.currentVote = response;
-                    animateCard(card);
-                    highlightVotes();
                 })
             };
 
             $scope.removeVote = function (card) {
+                $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                 voteFactory.remove($scope.currentVote.voteId, function (response) {
                     if (response.status === 'OK') {
-                        $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                         $scope.currentVote = {};
                         animateCard(card);
                         highlightVotes();
+                    } else {
+                        $scope.votes.push($scope.currentVote)
                     }
                 })
             };
@@ -222,6 +232,7 @@ homeController.controller('homeCtrl',
                     index = $scope.getIndex(Types.story, {storyId: item.data});
                     if (index >= 0) {
                         $scope.stories[index].ended = true;
+                        $scope.getStats();
                     }
 
                 } else if (item.type === Events.vote_added) {
