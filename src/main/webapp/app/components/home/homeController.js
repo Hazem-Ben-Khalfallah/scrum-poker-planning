@@ -248,7 +248,7 @@ homeController.controller('homeCtrl',
                     index = $scope.getIndex(Types.vote, {voteId: item.data});
                     if (index >= 0) {
                         var username = $scope.votes[index].username;
-                        if (username !== currentUser.username) {
+                        if (username !== $scope.currentUser.username) {
                             var userIndex = $scope.getIndex(Types.user, {username: username});
                             $scope.users[userIndex].vote = {};
                             $scope.users[userIndex].hasVoted = false;
