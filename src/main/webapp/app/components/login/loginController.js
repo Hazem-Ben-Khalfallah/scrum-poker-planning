@@ -14,7 +14,6 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
                     $sessionStorage.username = $scope.username;
                     $sessionStorage.sessionId = $scope.sessionId;
                     $sessionStorage.isAdmin = payload.body.isAdmin;
-                    $sessionStorage.color = payload.body.color;
                     $location.path('/home/' + $sessionStorage.sessionId);
                     $scope.$apply();
                 } else {

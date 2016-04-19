@@ -13,8 +13,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import java.util.List;
-
 @Controller
 public class HomeController {
 
@@ -32,26 +30,18 @@ public class HomeController {
         final String username = (String) obj.get("username");
         final String sessionId = (String) obj.get("sessionId");
         final SessionEntity sessionEntity = sessionRepository.findSessionBySessionId(sessionId);
-        UserEntity newUserEntity = null;
-        Boolean userExist = false;
+        UserEntity user = null;
 
         if (sessionEntity != null) {
-            final List<UserEntity> users = userRepository.findUsersBySessionId(sessionId);
-            for (UserEntity user : users) {
-                if (user.getUserId().getEntityId().equals(username)) {
-                    userExist = true;
-                    break;
-                }
-            }
-
+            user = userRepository.findUser(sessionId, username);
         }
 
-        if (!userExist) {
-            newUserEntity = new UserEntity(username, sessionId, false);
-            userRepository.save(newUserEntity);
+        if (user == null) {
+            user = new UserEntity(username, sessionId, false);
+            userRepository.save(user);
         }
 
-        return new ResponseEntity<>(newUserEntity, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @MessageMapping("/load_data")

@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface UserRepositoryCustom {
     List<UserEntity> findUsersBySessionId(String sessionId);
+
+    UserEntity findUser(String sessionId, String username);
 }
