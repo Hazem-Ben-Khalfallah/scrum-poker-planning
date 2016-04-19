@@ -3,7 +3,8 @@ var homeController = angular.module('homeController', []);
 var Types = {
     story: "story",
     user: "user",
-    vote: "vote"
+    vote: "vote",
+    card: "card"
 };
 
 homeController.controller('homeCtrl',
@@ -25,8 +26,12 @@ homeController.controller('homeCtrl',
                         }
                     }
 
+                    // show current users selected card
                     highlightCard();
+                    // show users votes
                     highlightVotes();
+                    // get stats
+                    $scope.getStats();
                 })
             }
 
@@ -34,9 +39,6 @@ homeController.controller('homeCtrl',
                 if (!$sessionStorage.username || !$sessionStorage.sessionId) {
                     $location.path('/login');
                 }
-
-                $scope.min = 0;
-                $scope.max = 8;
 
                 $scope.info = {
                     selected: 'users'
@@ -98,6 +100,15 @@ homeController.controller('homeCtrl',
 
                 if (type === Types.user)
                     return $scope.users.indexOf(item);
+
+                if (type === Types.card) {
+                    for (var i = 0, len = $scope.cards.length; i < len; i++) {
+                        if ($scope.cards[i].id === item.id) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
             };
 
             $scope.setCurrentStory = function (story) {
@@ -178,8 +189,11 @@ homeController.controller('homeCtrl',
                 if (!$scope.currentStory.ended)
                     return;
                 storyFactory.endStory($scope.currentStory.storyId, function (response) {
-                    if (response.status !== 'OK') {
+                    if (response.status === 'OK') {
+                        $scope.getStats();
+                    } else {
                         $scope.currentStory.ended = false;
+
                     }
                 });
             };
@@ -197,13 +211,36 @@ homeController.controller('homeCtrl',
             };
 
             $scope.getColor = function (vote) {
-                if(!vote){
+                if (!vote) {
                     return {};
                 }
                 var field = $scope.getCard(vote).color,
                     color = {};
                 color[field] = $scope.currentStory.ended;
                 return color;
+            };
+
+            $scope.getStats = function () {
+                $scope.min = '-';
+                $scope.max = '-';
+                if ($scope.currentStory.ended) {
+                    var min = 100, max = -1, current;
+                    angular.forEach($scope.votes, function (vote) {
+                        current = $scope.getIndex(Types.card, {id: vote.value});
+                        if (current > max) {
+                            max = current;
+                        }
+                        if (current < min) {
+                            min = current
+                        }
+                    });
+
+                    if (min >= 0)
+                        $scope.min = $scope.cards[min].value + " " + $scope.cards[min].unit;
+
+                    if (max >= 0)
+                        $scope.max = $scope.cards[max].value + " " + $scope.cards[max].unit;
+                }
             };
 
             function animateCard(card) {

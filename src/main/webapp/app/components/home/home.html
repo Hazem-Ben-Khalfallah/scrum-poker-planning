@@ -77,21 +77,33 @@
         </div>
         <div class="ui six wide column">
             <!-- results -->
-            <div class="ui statistics">
+            <div class="ui mini statistics">
+                <div class="ui green statistic">
+                    <div class="label">
+                        <i class="archive icon"></i>
+                        Votes
+                    </div>
+                    <div class="text value">
+                        {{votes.length}}
+                    </div>
+                </div>
+
                 <div class="ui yellow statistic">
                     <div class="label">
+                        <i class="arrow down icon"></i>
                         Min
                     </div>
-                    <div class="value">
+                    <div class="text value">
                         {{min}}
                     </div>
                 </div>
 
                 <div class="ui orange statistic">
                     <div class="label">
+                        <i class="arrow up icon"></i>
                         Max
                     </div>
-                    <div class="value">
+                    <div class="text value">
                         {{max}}
                     </div>
                 </div>
