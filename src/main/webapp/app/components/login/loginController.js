@@ -1,28 +1,23 @@
 var loginController = angular.module('loginController', []);
 
-loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'webSocketFactory',
-    function ($scope, $location, $sessionStorage, $log, webSocketFactory) {
+loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'userFactory', 'webSocketFactory',
+    function ($scope, $location, $sessionStorage, $log, userFactory, webSocketFactory) {
 
         function init() {
             $sessionStorage.$reset();
         }
 
         $scope.connect = function () {
-            webSocketFactory.send("connect", function (payload, headers, res) {
-                if (payload.statusCode == "OK") {
-                    $log.info(payload);
-                    $sessionStorage.username = $scope.username;
-                    $sessionStorage.sessionId = $scope.sessionId;
-                    $sessionStorage.isAdmin = payload.body.isAdmin;
-                    $location.path('/home/' + $sessionStorage.sessionId);
-                    $scope.$apply();
-                } else {
-                    $log.info("problem in connection");
-                }
-            }, {
+            var data = {
                 username: $scope.username,
                 sessionId: $scope.sessionId
+            };
+            userFactory.connect(data, function(){
+                $sessionStorage.username = $scope.username;
+                $sessionStorage.sessionId = $scope.sessionId;
+                $location.path('/home/' + $sessionStorage.sessionId);
             });
+
         };
 
         $scope.newSession = function () {

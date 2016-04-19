@@ -9,9 +9,9 @@ var Types = {
 
 homeController.controller('homeCtrl',
     ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'storyFactory', 'voteFactory',
-        'session', 'users', 'stories',
+        'userFactory', 'session', 'users', 'stories',
         function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, voteFactory,
-                  session, users, stories) {
+                  userFactory, session, users, stories) {
 
             function getVotes() {
                 //get saved votes
@@ -54,6 +54,12 @@ homeController.controller('homeCtrl',
                 $scope.username = $sessionStorage.username;
                 $scope.sessionId = $sessionStorage.sessionId;
 
+                //subscribe
+                webSocketFactory.subscribe($scope.sessionId, function (data) {
+                    $log.info("----------------");
+                    $log.info(data);
+                });
+
                 //get users
                 $scope.users = users;
                 //get current user
@@ -81,8 +87,12 @@ homeController.controller('homeCtrl',
 
             $scope.logout = function () {
                 $sessionStorage.$reset();
-                webSocketFactory.disconnect();
-                $location.path('/login');
+                userFactory.disconnect($scope.currentUser, function (response) {
+                    if (response.status === 'OK') {
+                        webSocketFactory.disconnect();
+                        $location.path('/login');
+                    }
+                });
             };
 
             $scope.getIndex = function (type, item) {
@@ -224,21 +234,21 @@ homeController.controller('homeCtrl',
                 $scope.min = '-';
                 $scope.max = '-';
                 if ($scope.currentStory.ended) {
-                    var min = 100, max = -1, current;
+                    var min = angular.undefined, max = angular.undefined, current;
                     angular.forEach($scope.votes, function (vote) {
                         current = $scope.getIndex(Types.card, {id: vote.value});
-                        if (current > max) {
+                        if (!max || current > max) {
                             max = current;
                         }
-                        if (current < min) {
+                        if (!min || current < min) {
                             min = current
                         }
                     });
 
-                    if (min >= 0)
+                    if (min)
                         $scope.min = $scope.cards[min].value + " " + $scope.cards[min].unit;
 
-                    if (max >= 0)
+                    if (max)
                         $scope.max = $scope.cards[max].value + " " + $scope.cards[max].unit;
                 }
             };
@@ -311,12 +321,6 @@ homeController.resolve = {
         storyFactory.get($sessionStorage.sessionId, function (data) {
             delay.resolve(data);
         });
-        return delay.promise;
-    }],
-    ws: ['webSocketFactory', '$q', function (webSocketFactory, $q) {
-        var delay = $q.defer();
-        webSocketFactory.connect();
-        delay.resolve();
         return delay.promise;
     }]
 };

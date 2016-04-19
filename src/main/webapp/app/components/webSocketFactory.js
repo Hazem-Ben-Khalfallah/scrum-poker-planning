@@ -6,8 +6,12 @@ angular.module('webSocketFactory', [])
                 topicPrefix = '/topic',
                 destinationPrefix = '/app';
 
+            var isConnected = function () {
+                return $stomp.stomp != null && $stomp.stomp.connected;
+            };
+
             var send = function (topic, callback, data) {
-                if ($stomp.stomp != null) {
+                if (isConnected()) {
                     $stomp.subscribe(topicPrefix + '/' + topic, callback);
                     $stomp.send(destinationPrefix + '/' + topic, data);
                 } else {
@@ -19,8 +23,9 @@ angular.module('webSocketFactory', [])
                     });
                 }
             };
+
             var sub = function (topic, callback) {
-                if ($stomp.stomp != null) {
+                if (isConnected()) {
                     $stomp.subscribe(topicPrefix + '/' + topic, callback);
                 } else {
                     connect(function (frame) {
@@ -44,7 +49,7 @@ angular.module('webSocketFactory', [])
             };
 
             var disconnect = function () {
-                if ($stomp.stomp != null) {
+                if (isConnected()) {
                     $stomp.disconnect();
                 }
             };

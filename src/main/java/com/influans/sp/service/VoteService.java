@@ -3,11 +3,13 @@ package com.influans.sp.service;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.VoteDto;
 import com.influans.sp.entity.VoteEntity;
+import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.VoteRepository;
 import com.influans.sp.utils.StringUtils;
+import com.influans.sp.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ public class VoteService {
     private VoteRepository voteRepository;
     @Autowired
     private StoryRepository storyRepository;
+    @Autowired
+    private WebSocketSender webSocketSender;
 
     public List<VoteDto> listVotes(String storyId) {
         final List<VoteDto> votes = new ArrayList<>();
@@ -37,11 +41,13 @@ public class VoteService {
     }
 
     public DefaultResponse delete(String voteId) {
-        if (StringUtils.isEmpty(voteId) || !voteRepository.exists(voteId)) {
+        final VoteEntity voteEntity = voteRepository.findOne(voteId);
+        if (StringUtils.isEmpty(voteId) || voteEntity == null) {
             return DefaultResponse.ko();
         }
 
         voteRepository.delete(voteId);
+        webSocketSender.sendNotification(voteEntity.getSessionId(), WsTypes.VOTE_REMOVED, voteId);
         return DefaultResponse.ok();
     }
 
@@ -56,6 +62,8 @@ public class VoteService {
         final VoteEntity voteEntity = new VoteEntity(voteDto);
         voteRepository.save(voteEntity);
         voteDto.setVoteId(voteEntity.getVoteId());
+
+        webSocketSender.sendNotification(voteDto.getSessionId(), WsTypes.VOTE_ADDED, voteDto);
         return voteDto;
     }
 }

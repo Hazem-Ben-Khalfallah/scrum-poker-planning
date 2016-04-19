@@ -43,14 +43,4 @@ public class HomeController {
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
-    @MessageMapping("/load_data")
-    @SendTo("/topic/load_data")
-    public ResponseEntity<SessionEntity> loadData(String data) throws Exception {
-        final JSONObject obj = new JSONObject(data);
-        final String sessionId = (String) obj.get("sessionId");
-        final SessionEntity sessionEntity = sessionRepository.findSessionBySessionId(sessionId);
-        return new ResponseEntity<SessionEntity>(sessionEntity, HttpStatus.OK);
-    }
-
 }

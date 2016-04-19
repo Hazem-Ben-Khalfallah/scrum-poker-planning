@@ -8,6 +8,9 @@ public class UserDto {
     private String sessionId;
     private boolean isAdmin;
 
+    public UserDto() {
+    }
+
     public UserDto(String username, String sessionId, boolean isAdmin) {
         this.isAdmin = isAdmin;
         this.username = username;
