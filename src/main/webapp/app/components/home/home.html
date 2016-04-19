@@ -13,6 +13,9 @@
 
 <div class="ui segment">
     <h2 class="ui header">
+        <a class="ui green ribbon label" ng-hide="currentStory.ended">Vote in progress</a>
+        <a class="ui red ribbon label" ng-show="currentStory.ended">Vote has ended</a>
+
         <img src="/app/components/home/img/jira.png">
 
         <div class="content" ng-show="stories.length > 0">
@@ -20,11 +23,12 @@
             <div class="sub header">Story # {{currentStory.order}}/{{stories.length}}</div>
         </div>
         <div>
-            <div class="ui toggle checkbox">
+            <div class="ui toggle checkbox" ng-show="currentUser.admin">
                 <input type="checkbox" name="vote" ng-disabled="currentStory.ended" ng-model="currentStory.ended"
                        ng-click="endVote()">
                 <label>End vote</label>
             </div>
+
         </div>
     </h2>
 
@@ -44,6 +48,7 @@
                     <div class="content">
                         <div class="header capitalize center-text">
                             <p>{{user.username}}</p>
+
                             <p ng-show="currentStory.ended">{{getCard(user.vote).value}}</p>
                         </div>
                         <div class="meta capitalize center-text" ng-show="currentStory.ended">
