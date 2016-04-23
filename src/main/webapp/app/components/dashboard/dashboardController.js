@@ -48,6 +48,9 @@ dashboardController.controller('dashboardCtrl',
             };
 
             $scope.save = function (username) {
+                if(!username){
+                    return;
+                }
                 $sessionStorage.sessionId = generateIdSession();
                 $sessionStorage.username = username;
                 var data = {

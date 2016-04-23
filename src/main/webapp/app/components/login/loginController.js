@@ -8,11 +8,15 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
         }
 
         $scope.connect = function () {
+            if (!$scope.username || !$scope.sessionId) {
+                return;
+            }
+
             var data = {
                 username: $scope.username,
                 sessionId: $scope.sessionId
             };
-            userFactory.connect(data, function(){
+            userFactory.connect(data, function () {
                 $sessionStorage.username = $scope.username;
                 $sessionStorage.sessionId = $scope.sessionId;
                 $location.path('/home/' + $sessionStorage.sessionId);

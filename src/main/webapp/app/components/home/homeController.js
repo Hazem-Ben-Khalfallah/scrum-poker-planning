@@ -89,6 +89,9 @@ homeController.controller('homeCtrl',
             };
 
             $scope.addStory = function () {
+                if (!$scope.newStory.storyName) {
+                    return;
+                }
                 $scope.newStory.sessionId = $scope.sessionId;
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
@@ -202,11 +205,23 @@ homeController.controller('homeCtrl',
                         }
                     });
 
-                    if (min)
-                        $scope.min = $scope.cards[min].value + " " + $scope.cards[min].unit;
+                    var unit;
+                    if (min) {
+                        unit = $scope.cards[min].unit;
+                        $scope.min = $scope.cards[min].value;
+                        if (unit) {
+                            $scope.min += " " + unit;
+                        }
+                    }
 
-                    if (max)
-                        $scope.max = $scope.cards[max].value + " " + $scope.cards[max].unit;
+
+                    if (max) {
+                        unit = $scope.cards[max].unit;
+                        $scope.max = $scope.cards[max].value;
+                        if (unit) {
+                            $scope.max += " " + unit;
+                        }
+                    }
                 }
             };
 
