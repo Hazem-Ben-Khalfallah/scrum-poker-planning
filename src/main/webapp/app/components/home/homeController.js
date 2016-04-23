@@ -287,6 +287,9 @@ homeController.controller('homeCtrl',
             };
 
             function getVotes() {
+                if (!$scope.currentStory)
+                    return;
+
                 //get saved votes
                 voteFactory.get($scope.currentStory.storyId, function (data) {
                     $scope.votes = data;

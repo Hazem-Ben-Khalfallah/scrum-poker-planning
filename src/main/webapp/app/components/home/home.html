@@ -167,8 +167,8 @@
                         </td>
                         <td>{{story.order}}</td>
                         <td>{{story.storyName}}</td>
-                        <td class="right aligned" ng-show="currentUser.admin && story.storyId !== currentStory.storyId">
-                            <div class="ui small basic icon buttons">
+                        <td class="right aligned">
+                            <div class="ui small basic icon buttons" ng-show="currentUser.admin && story.storyId !== currentStory.storyId">
                                 <button class="ui button" ng-click="removeStory(story)"><i class="remove icon"></i>
                                 </button>
                             </div>
