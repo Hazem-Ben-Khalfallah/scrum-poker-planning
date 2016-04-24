@@ -100,6 +100,7 @@ homeController.controller('homeCtrl',
             };
 
             $scope.createVote = function (card) {
+                $scope.loading = true;
                 var data = {
                     sessionId: $scope.sessionId,
                     storyId: $scope.currentStory.storyId,
@@ -121,6 +122,7 @@ homeController.controller('homeCtrl',
                 highlightVotes();
 
                 voteFactory.create(data, function (response) {
+                    $scope.loading = false;
                     var index = $scope.getIndex(Types.vote, response);
                     if (index < 0) {
                         $scope.votes[index] = response;
@@ -130,19 +132,21 @@ homeController.controller('homeCtrl',
             };
 
             $scope.removeVote = function (card) {
+                $scope.loading = true;
                 voteFactory.remove($scope.currentVote.voteId, function (response) {
+                    $scope.loading = false;
                     if (response.status === 'OK') {
                         $scope.votes.splice($scope.getIndex(Types.vote, $scope.currentVote), 1);
                         $scope.currentVote = {};
                         animateCard(card);
                         highlightVotes();
                     }
-                })
+                });
             };
 
 
             $scope.selectCard = function (card) {
-                if ($scope.currentStory.ended)
+                if ($scope.currentStory.ended || $scope.loading)
                     return;
                 if (!card.selected) {
                     $scope.createVote(card);
