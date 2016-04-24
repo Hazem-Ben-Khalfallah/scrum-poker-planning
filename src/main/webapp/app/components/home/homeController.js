@@ -112,9 +112,7 @@ homeController.controller('homeCtrl',
                 }
 
                 var index = $scope.getIndex(Types.vote, data);
-                if (index < 0) {
-                    $scope.votes.push(data);
-                } else {
+                if (index >= 0) {
                     $scope.votes[index] = data;
                 }
 
@@ -124,7 +122,7 @@ homeController.controller('homeCtrl',
 
                 voteFactory.create(data, function (response) {
                     var index = $scope.getIndex(Types.vote, response);
-                    if (index >= 0) {
+                    if (index < 0) {
                         $scope.votes[index] = response;
                     }
                     $scope.currentVote = response;
@@ -151,8 +149,6 @@ homeController.controller('homeCtrl',
                 } else {
                     $scope.removeVote(card);
                 }
-
-                highlightVotes();
             };
 
             $scope.endVote = function () {
