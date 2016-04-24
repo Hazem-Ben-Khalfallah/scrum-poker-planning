@@ -8,7 +8,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
         }
 
         $scope.connect = function () {
-            if (!$scope.username || !$scope.sessionId) {
+            if (!$scope.username || !$scope.sessionId || $scope.loading) {
                 return;
             }
             $scope.loading = true;
