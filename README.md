@@ -10,5 +10,5 @@ add the following statement into your Tomcat VM options:
 -Dspring.config.location=[Project-location]/scrum-pocker/src/main/resources/local.properties
 
 #Credits
-Khaireddine Rezgui
-Hazem Ben Khalfallah
+- Khaireddine Rezgui
+- Hazem Ben Khalfallah
