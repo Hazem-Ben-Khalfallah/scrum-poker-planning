@@ -11,15 +11,19 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
             if (!$scope.username || !$scope.sessionId) {
                 return;
             }
+            $scope.loading = true;
 
             var data = {
                 username: $scope.username,
                 sessionId: $scope.sessionId
             };
             userFactory.connect(data, function () {
+                $scope.loading = false;
                 $sessionStorage.username = $scope.username;
                 $sessionStorage.sessionId = $scope.sessionId;
                 $location.path('/home/' + $sessionStorage.sessionId);
+            }, function () {
+                $scope.loading = false;
             });
 
         };

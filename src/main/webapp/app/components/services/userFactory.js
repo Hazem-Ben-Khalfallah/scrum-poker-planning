@@ -6,10 +6,11 @@ angular.module('userFactory', [])
                 var url = '/users?sessionId=' + sessionId;
                 $httpWrapper.get(url, onSuccess, null);
             },
-            connect: function (data, onSuccess) {
+            connect: function (data, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
                 var url = '/users/connect';
-                $httpWrapper.post(url, data, onSuccess, null);
+                $httpWrapper.post(url, data, onSuccess, onError);
             },
             disconnect: function (data, onSuccess) {
                 onSuccess = onSuccess || angular.noop;
