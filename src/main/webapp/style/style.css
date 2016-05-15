@@ -68,3 +68,7 @@
 .add-story-input {
     width: 200px;
 }
+
+.hide-ended-stories {
+    padding-top: 10px;
+}

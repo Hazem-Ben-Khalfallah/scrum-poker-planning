@@ -316,8 +316,10 @@ homeController.controller('homeCtrl',
                     $location.path('/login');
                 }
 
+                $scope.showEndedStories = false;
+
                 $scope.info = {
-                    selected: 'users'
+                    selected: 'stories'
                 };
 
                 $scope.votes = [];
