@@ -1,55 +1,54 @@
-<div class="ui container" style="height: 100%">
-    <div class="ui stacked segment center-vertically">
-        <div class="ui text container" ng-controller="loginCtrl as lc">
-            <div class="ui one column grid">
-                <div class="column">
-                    <h2 class="ui teal image header">
+<div class="ui text container" data-ng-controller="loginCtrl">
+    <div class="ui one column grid">
+        <div class="column">
+            <h2 class="ui teal image header">
 
-                        <div class="content">
-                            Join planning poker
-                        </div>
-                    </h2>
+                <div class="content">
+                    Planning poker
+                </div>
+            </h2>
 
-                    <div class="ui two column middle aligned very relaxed stackable grid">
+            <form class="ui large form">
+                <div class="ui stacked segment">
+
+                    <div class="ui two column centered grid">
                         <div class="column">
-                            <div class="ui form">
-                                <div class="field">
-                                    <label>Username</label>
-
-                                    <div class="ui left icon input">
-                                        <i class="user icon"></i>
-                                        <input type="text" name="username" placeholder="username" autofocus
-                                               ng-model="username">
+                            <div class="ui center aligned basic segment">
+                                <div class="ui form">
+                                    <h4 class="ui dividing header">Join a session</h4>
+                                    <div class="field">
+                                        <div class="ui left icon input">
+                                            <i class="user icon"></i>
+                                            <input type="text" name="username" placeholder="username" autofocus
+                                                   data-ng-blur="connect()"
+                                                   data-ng-enter="connect()"
+                                                   data-ng-model="username">
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui left icon input">
+                                            <i class="home icon"></i>
+                                            <input type="text" name="sessionId" placeholder="session"
+                                                   data-ng-blur="connect()"
+                                                   data-ng-enter="connect()"
+                                                   data-ng-model="sessionId">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="field">
-                                    <label>Session</label>
-
-                                    <div class="ui left icon input">
-                                        <i class="home icon"></i>
-                                        <input type="text" name="sessionId" placeholder="session"
-                                               ng-enter="connect()"
-                                               ng-model="sessionId">
-                                    </div>
+                                <div class="ui horizontal divider">
+                                    Or
                                 </div>
-                                <div class="ui teal submit button" ng-click="connect()" ng-class="{loading : loading}">
-                                    <i class="icon sign in"></i>
-                                    Join
+                                <h4 class="ui dividing header">Create session</h4>
+                                <div class="ui big green labeled icon button" data-ng-click="newSession()">
+                                    <i class="wizard icon"></i>
+                                    Let's go
                                 </div>
-                            </div>
-                        </div>
-                        <div class="ui vertical divider">
-                            Or
-                        </div>
-                        <div class="center aligned column">
-                            <div class="ui big green labeled icon button" ng-click="newSession()">
-                                <i class="wizard icon"></i>
-                                Create session
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
+
         </div>
     </div>
 </div>
