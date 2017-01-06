@@ -4,13 +4,17 @@ import java.util.Random;
 
 public class ColorUtils {
 
+    /**
+     * @should return a color code
+     * @should return different color code when called twice
+     * @return random hex color code
+     */
     public static String getRandomColor() {
-        Random ra = new Random();
+        final Random ra = new Random();
         int r, g, b;
         r = ra.nextInt(255);
         g = ra.nextInt(255);
         b = ra.nextInt(255);
-        String hex = String.format("#%02x%02x%02x", r, g, b);
-        return hex;
+        return String.format("#%02x%02x%02x", r, g, b);
     }
 }

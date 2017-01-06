@@ -29,6 +29,12 @@ public class SessionService {
     @Autowired
     private StoryRepository storyRepository;
 
+    /**
+     * @should throw an error if session does not exist
+     * @should return valid session if it exists
+     * @param sessionId session id
+     * @return sessionDto
+     */
     public SessionDto getSession(String sessionId) {
         if (StringUtils.isEmpty(sessionId)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "SessionId should not be empty");
@@ -41,6 +47,15 @@ public class SessionService {
         return new SessionDto(sessionEntity);
     }
 
+    /**
+     * @should throw an error if sessionDto is null
+     * @should throw an error if username is null
+     * @should throw an error if cardSet is null
+     * @should create session and an admin user
+     * @should create stories if stories list is not empty
+     * @param sessionDto created session data
+     * @return sessionDto with new sessionId
+     */
     public SessionDto createSession(SessionDto sessionDto) {
         if (sessionDto == null) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "Session should not be null");

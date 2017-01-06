@@ -29,6 +29,13 @@ public class VoteService {
     @Autowired
     private WebSocketSender webSocketSender;
 
+    /**
+     * @should throw an exception if storyId is null or empty
+     * @should throw an exception if story does not exist with given id
+     * @should return list of votes related to the given story
+     * @param storyId storyId
+     * @return list of votes
+     */
     public List<VoteDto> listVotes(String storyId) {
         final List<VoteDto> votes = new ArrayList<>();
         voteRepository.findByStoryId(storyId).forEach(voteEntity -> //
@@ -40,6 +47,13 @@ public class VoteService {
         return votes;
     }
 
+    /**
+     * @should throw an exception if voteId is null
+     * @should throw an exception if vote does not exist with given id
+     * @should delete vote with the given id
+     * @param voteId voteId
+     * @return empty response
+     */
     public DefaultResponse delete(String voteId) {
         final VoteEntity voteEntity = voteRepository.findOne(voteId);
         if (StringUtils.isEmpty(voteId) || voteEntity == null) {
@@ -51,6 +65,18 @@ public class VoteService {
         return DefaultResponse.ok();
     }
 
+    /**
+     * @should throw an exception if storyId is null or empty
+     * @should throw an exception if sessionId is null or empty
+     * @should throw an exception if username is null or empty
+     * @should throw an exception if story does not exist with given Id
+     * @should throw an exception if user does not exist with given username
+     * @should throw an exception if session does not exist with given sessionId
+     * @should throw an exception if the user has already voted on the given story
+     * @should create a vote for the given user on the selected story
+     * @param voteDto voteDto
+     * @return voteDto with new id
+     */
     public VoteDto saveVote(VoteDto voteDto) {
         if (StringUtils.isEmpty(voteDto.getStoryId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");

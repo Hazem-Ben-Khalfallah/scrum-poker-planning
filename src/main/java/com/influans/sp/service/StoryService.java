@@ -32,6 +32,13 @@ public class StoryService {
     @Autowired
     private WebSocketSender webSocketSender;
 
+    /**
+     * @should return stories related to the given session
+     * @should throw an exception if session id is null or empty
+     * @should throw an exception if session id is not valid
+     * @param sessionId session id
+     * @return list of stories
+     */
     public List<StoryDto> listStories(String sessionId) {
         final List<StoryDto> stories = new ArrayList<>();
         storyRepository.findBySessionId(sessionId).forEach(storyEntity -> //
@@ -39,6 +46,12 @@ public class StoryService {
         return stories;
     }
 
+    /**
+     * @should delete a story
+     * @should throw an exception if storyId is null or empty
+     * @param storyId story id
+     * @return empty response
+     */
     public DefaultResponse delete(String storyId) {
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (StringUtils.isEmpty(storyId) || storyEntity == null) {
@@ -50,6 +63,13 @@ public class StoryService {
         return DefaultResponse.ok();
     }
 
+    /**
+     * @should throw an exception if sessionId is empty or null
+     * @should throw an exception if session does not exist
+     * @should create a story related to the given sessionId
+     * @param storyDto storyDto
+     * @return StoryDto with new id
+     */
     public StoryDto createStory(StoryDto storyDto) {
         if (StringUtils.isEmpty(storyDto.getSessionId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
@@ -65,6 +85,13 @@ public class StoryService {
         return storyDto;
     }
 
+    /**
+     * @should throw an exception if storyId is empty or null
+     * @should throw an exception if story does not exist
+     * @should set story as ended
+     * @param storyId storyId
+     * @return empty response
+     */
     public DefaultResponse endStory(String storyId) {
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (StringUtils.isEmpty(storyId) || storyEntity == null) {

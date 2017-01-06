@@ -1,16 +1,15 @@
 package com.influans.sp.utils;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StringUtils extends org.springframework.util.StringUtils {
-    protected static Logger LOGGER = LoggerFactory.getLogger(StringUtils.class);
-
-    public static boolean isEmpty(String value) {
-        return value == null || value.length() == 0;
-    }
-
+    /**
+     * @should return true if value is null or empty
+     * @should return true if value contains spaces and trim is true
+     * @should return false if value contains spaces and trim is false
+     * @param value String value
+     * @param trim if extra spaces should be removed before verification
+     * @return true is empty or null.
+     */
     public static boolean isEmpty(String value, boolean trim) {
         return value == null || (trim ? value.trim().length() == 0 : value.length() == 0);
     }
