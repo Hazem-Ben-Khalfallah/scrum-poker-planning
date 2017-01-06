@@ -1,11 +1,13 @@
 package com.influans.sp.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
+@Ignore
 public class UserServiceTest {
     /**
      * @verifies return empty list if no user is connected on this session

@@ -1,11 +1,13 @@
 package com.influans.sp.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
+@Ignore
 public class VoteServiceTest {
     /**
      * @verifies throw an exception if storyId is null or empty

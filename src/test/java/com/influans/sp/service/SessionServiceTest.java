@@ -1,11 +1,13 @@
 package com.influans.sp.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
+@Ignore
 public class SessionServiceTest {
     /**
      * @verifies throw an error if session does not exist

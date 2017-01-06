@@ -1,11 +1,13 @@
 package com.influans.sp.utils;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
+@Ignore
 public class StringUtilsTest {
     /**
      * @verifies return true if value is null or empty
