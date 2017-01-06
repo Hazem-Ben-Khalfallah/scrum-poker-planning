@@ -122,6 +122,10 @@
                     <i class="icon users"></i>
                     Users
                 </div>
+                <div class="item" ng-class="{active: info.selected == 'setting'}" ng-click="info.selected = 'setting'">
+                    <i class="icon setting"></i>
+                    Setting
+                </div>
             </div>
             <!-- Stories -->
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'stories'}">
@@ -198,6 +202,19 @@
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'users'}">
                 <div class="ui list">
                     <div class="item capitalize" ng-repeat="user in users">{{user.username}}</div>
+                </div>
+            </div>
+            <!-- setting -->
+            <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'setting'}">
+                <!-- session copier -->
+                <div class="ui mini action labeled input" >
+                    <div class="ui label" style="padding-top:11px">
+                        Session
+                    </div>
+                    <input id="sessionId" value="{{sessionId}}" type="text" readonly>
+                    <button data-clipboard-target="#sessionId" class="ui right icon button clipboard">
+                        <i class="copy icon"></i>
+                    </button>
                 </div>
             </div>
         </div>

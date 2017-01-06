@@ -315,6 +315,8 @@ homeController.controller('homeCtrl',
                 if (!$sessionStorage.username || !$sessionStorage.sessionId) {
                     $location.path('/login');
                 }
+                //initialize clipboard (copy to keyboard feature)
+                new Clipboard('.clipboard');
 
                 $scope.showEndedStories = false;
 
