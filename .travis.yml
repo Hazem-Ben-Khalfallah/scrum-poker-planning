@@ -6,6 +6,6 @@ services:
 sudo: false
 install: true
 script:
-  - mvn clean verify
+  - mvn clean verify cobertura:cobertura
 after_success:
   - bash <(curl -s https://codecov.io/bash)
