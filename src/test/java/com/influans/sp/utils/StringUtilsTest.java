@@ -1,13 +1,11 @@
 package com.influans.sp.utils;
 
-import org.junit.Assert;
-import org.junit.Ignore;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
-@Ignore
 public class StringUtilsTest {
     /**
      * @verifies return true if value is null or empty
@@ -15,8 +13,8 @@ public class StringUtilsTest {
      */
     @Test
     public void isEmpty_shouldReturnTrueIfValueIsNullOrEmpty() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        Assertions.assertThat(StringUtils.isEmpty(null, false)).isTrue();
+        Assertions.assertThat(StringUtils.isEmpty("", false)).isTrue();
     }
 
     /**
@@ -25,8 +23,7 @@ public class StringUtilsTest {
      */
     @Test
     public void isEmpty_shouldReturnTrueIfValueContainsSpacesAndTrimIsTrue() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        Assertions.assertThat(StringUtils.isEmpty("    ", true)).isTrue();
     }
 
     /**
@@ -35,7 +32,6 @@ public class StringUtilsTest {
      */
     @Test
     public void isEmpty_shouldReturnFalseIfValueContainsSpacesAndTrimIsFalse() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        Assertions.assertThat(StringUtils.isEmpty("    ", false)).isFalse();
     }
 }

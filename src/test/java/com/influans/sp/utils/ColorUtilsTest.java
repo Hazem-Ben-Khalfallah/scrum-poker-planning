@@ -1,13 +1,12 @@
 package com.influans.sp.utils;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author hazem
  */
-@Ignore
 public class ColorUtilsTest {
     /**
      * @verifies return a color code
@@ -15,8 +14,10 @@ public class ColorUtilsTest {
      */
     @Test
     public void getRandomColor_shouldReturnAColorCode() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        final String color = ColorUtils.getRandomColor();
+        Assertions.assertThat(color).isNotNull();
+        Assertions.assertThat(color.length()).isEqualTo(7);
+        Assertions.assertThat(color).startsWith("#");
     }
 
     /**
@@ -25,7 +26,10 @@ public class ColorUtilsTest {
      */
     @Test
     public void getRandomColor_shouldReturnDifferentColorCodeWhenCalledTwice() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        final String color1 = ColorUtils.getRandomColor();
+        final String color2 = ColorUtils.getRandomColor();
+        Assertions.assertThat(color1).isNotNull();
+        Assertions.assertThat(color2).isNotNull();
+        Assertions.assertThat(color1).isNotEqualTo(color2);
     }
 }
