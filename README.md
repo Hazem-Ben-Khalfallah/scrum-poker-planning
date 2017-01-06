@@ -9,6 +9,10 @@ This app can be used in scrum poker planning sessions anywhere. It includes the 
 add the following statement into your Tomcat VM options:
 -Dspring.config.location=[Project-location]/scrum-pocker/src/main/resources/local.properties
 
+#Demo
+You are welcome to use this free app on: 
+http://influans-scrum-poker.herokuapp.com/
+
 #Credits
 - Khaireddine Rezgui
 - Hazem Ben Khalfallah
