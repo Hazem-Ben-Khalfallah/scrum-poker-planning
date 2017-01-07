@@ -1,6 +1,5 @@
 package com.influans.sp.service;
 
-import com.github.fakemongo.junit.FongoRule;
 import com.influans.sp.ApplicationTest;
 import com.influans.sp.builders.SessionDtoBuilder;
 import com.influans.sp.builders.SessionEntityBuilder;
@@ -16,7 +15,6 @@ import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,8 +24,6 @@ import java.util.List;
  * @author hazem
  */
 public class SessionServiceTest extends ApplicationTest {
-    @Rule
-    public FongoRule fongoRule = new FongoRule();
 
     @Autowired
     private SessionService sessionService;
