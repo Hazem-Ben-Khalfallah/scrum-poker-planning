@@ -31,15 +31,13 @@ public class UserService {
     private WebSocketSender webSocketSender;
 
 
-
-
     /**
+     * @param sessionId session id
+     * @return return list of connected user on this session
      * @should return users list if session exists
      * @should throw an error if session does not exist
      * @should return empty list if no user is connected on this session
      * @should not return disconnected users
-     * @param sessionId session id
-     * @return return list of connected user on this session
      */
     public List<UserDto> listUsers(String sessionId) {
         final List<UserEntity> users = userRepository.findUsersBySessionId(sessionId);
@@ -50,6 +48,8 @@ public class UserService {
     }
 
     /**
+     * @param userDto connected user data
+     * @return UserDto with isAdmin attribute set
      * @should create new user if sessionId and username are valid
      * @should not create an new user if username already exists for the given sessionId
      * @should reconnect user if it was previously disconnected
@@ -57,8 +57,6 @@ public class UserService {
      * @should throw and error if sessionId is empty
      * @should throw and error if username is empty
      * @should throw and error if sessionId is not valid
-     * @param userDto connected user data
-     * @return UserDto with isAdmin attribute set
      */
     public UserDto connectUser(UserDto userDto) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {
@@ -79,11 +77,11 @@ public class UserService {
     }
 
     /**
+     * @param userDto connected use
+     * @return empty response
      * @should set user as disconnected
      * @should throw an error if user was not found
      * @should throw an error if sessions is not found
-     * @param userDto connected use
-     * @return empty response
      */
     public DefaultResponse disconnectUser(UserDto userDto) {
         final UserEntity userEntity = userRepository.findOne(new EntityId(userDto.getUsername(), userDto.getSessionId()));

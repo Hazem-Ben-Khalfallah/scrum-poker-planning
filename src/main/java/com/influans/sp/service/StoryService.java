@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author hazem
@@ -33,13 +34,20 @@ public class StoryService {
     private WebSocketSender webSocketSender;
 
     /**
+     * @param sessionId session id
+     * @return list of stories
      * @should return stories related to the given session
      * @should throw an exception if session id is null or empty
      * @should throw an exception if session id is not valid
-     * @param sessionId session id
-     * @return list of stories
      */
     public List<StoryDto> listStories(String sessionId) {
+        if (StringUtils.isEmpty(sessionId)) {
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "sessionId should not be null or empty");
+        }
+        if (!sessionRepository.exists(sessionId)) {
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + sessionId);
+        }
+
         final List<StoryDto> stories = new ArrayList<>();
         storyRepository.findBySessionId(sessionId).forEach(storyEntity -> //
                 stories.add(new StoryDto(storyEntity)));
@@ -47,15 +55,20 @@ public class StoryService {
     }
 
     /**
-     * @should delete a story
-     * @should throw an exception if storyId is null or empty
      * @param storyId story id
      * @return empty response
+     * @should delete a story
+     * @should throw an exception if storyId is null or empty
+     * @should throw an exception if story does not exist
      */
     public DefaultResponse delete(String storyId) {
+        if (StringUtils.isEmpty(storyId)) {
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
+        }
+
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
-        if (StringUtils.isEmpty(storyId) || storyEntity == null) {
-            return DefaultResponse.ko();
+        if (Objects.isNull(storyEntity)) {
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
         }
 
         storyRepository.delete(storyId);
@@ -64,16 +77,23 @@ public class StoryService {
     }
 
     /**
-     * @should throw an exception if sessionId is empty or null
-     * @should throw an exception if session does not exist
-     * @should create a story related to the given sessionId
      * @param storyDto storyDto
      * @return StoryDto with new id
+     * @should throw an exception if sessionId is empty or null
+     * @should throw an exception if storyName is empty or null
+     * @should throw an exception if storyName contains only spaces
+     * @should throw an exception if session does not exist
+     * @should create a story related to the given sessionId
      */
     public StoryDto createStory(StoryDto storyDto) {
         if (StringUtils.isEmpty(storyDto.getSessionId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
         }
+
+        if (StringUtils.isEmpty(storyDto.getStoryName(), true)) {
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "story name should not be null or empty");
+        }
+
         if (!sessionRepository.exists(storyDto.getSessionId())) {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
         }
@@ -86,16 +106,20 @@ public class StoryService {
     }
 
     /**
+     * @param storyId storyId
+     * @return empty response
      * @should throw an exception if storyId is empty or null
      * @should throw an exception if story does not exist
      * @should set story as ended
-     * @param storyId storyId
-     * @return empty response
      */
     public DefaultResponse endStory(String storyId) {
+        if (StringUtils.isEmpty(storyId)) {
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
+        }
+
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
-        if (StringUtils.isEmpty(storyId) || storyEntity == null) {
-            return DefaultResponse.ko();
+        if (Objects.isNull(storyEntity)) {
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
         }
         final DAOResponse daoResponse = storyRepository.update(storyId, ImmutableMap.<String, Object>builder()
                 .put(StoryEntityDef.ENDED, true)
