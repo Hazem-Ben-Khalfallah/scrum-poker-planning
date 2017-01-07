@@ -97,7 +97,7 @@ public class VoteService {
      * @should throw an exception if story does not exist with given Id
      * @should throw an exception if user does not exist with given username
      * @should throw an exception if session does not exist with given sessionId
-     * @should throw an exception if the user has already voted on the given story
+     * @should Update existing vote if the user has already voted on the given story
      * @should create a vote for the given user on the selected story
      */
     public VoteDto saveVote(VoteDto voteDto) {
@@ -129,11 +129,13 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "user not found with username = " + voteDto.getUsername());
         }
 
-        if (voteRepository.hasVoted(voteDto.getUsername(), voteDto.getStoryId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, String.format("user %s has already voted on story %s ", voteDto.getUsername(), voteDto.getStoryId()));
+        VoteEntity voteEntity = voteRepository.getVoteByUserOnStory(voteDto.getUsername(), voteDto.getStoryId());
+        if (Objects.isNull(voteEntity)) {
+            voteEntity = new VoteEntity(voteDto);
+        } else {
+            voteEntity.setValue(voteDto.getValue());
         }
 
-        final VoteEntity voteEntity = new VoteEntity(voteDto);
         voteRepository.save(voteEntity);
         voteDto.setVoteId(voteEntity.getVoteId());
 

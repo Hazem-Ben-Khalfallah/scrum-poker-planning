@@ -11,6 +11,7 @@ public class VoteEntityBuilder {
     private String storyId;
     private String username;
     private String sessionId;
+    private String value;
 
     public static VoteEntityBuilder builder() {
         return new VoteEntityBuilder();
@@ -37,12 +38,18 @@ public class VoteEntityBuilder {
         return this;
     }
 
+    public VoteEntityBuilder withValue(String value) {
+        this.value = value;
+        return this;
+    }
+
     public VoteEntity build() {
         final VoteEntity voteEntity = new VoteEntity();
         voteEntity.setVoteId(voteId);
         voteEntity.setStoryId(storyId);
         voteEntity.setUsername(username);
         voteEntity.setSessionId(sessionId);
+        voteEntity.setValue(value);
         return voteEntity;
     }
 }

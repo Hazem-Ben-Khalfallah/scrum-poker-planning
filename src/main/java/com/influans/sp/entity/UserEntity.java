@@ -22,7 +22,7 @@ public class UserEntity {
     public UserEntity(String username, String sessionId, Boolean admin) {
         this.userId = new EntityId(username, sessionId);
         this.admin = admin;
-
+        this.connected = true;
     }
 
 

@@ -303,11 +303,12 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies throw an exception if the user has already voted on the given story
+     * @verifies Update existing vote if the user has already voted on the given story
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
-    public void saveVote_shouldThrowAnExceptionIfTheUserHasAlreadyVotedOnTheGivenStory() throws Exception {
+    public void saveVote_shouldUpdateExistingVoteIfTheUserHasAlreadyVotedOnTheGivenStory() throws Exception {
+        // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -328,10 +329,11 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(userEntity);
 
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+        VoteEntity voteEntity = VoteEntityBuilder.builder()
                 .withVoteId("voteId")
                 .withStoryId(storyId)
                 .withUsername(username)
+                .withValue("1d")
                 .build();
         voteRepository.save(voteEntity);
 
@@ -339,16 +341,16 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withStoryId(storyId)
                 .withUsername(username)
-                .withValue("value")
+                .withValue("4h")
                 .build();
 
-        try {
-            voteService.saveVote(voteDto);
-            Assert.fail("shouldThrowAnExceptionIfTheUserHasAlreadyVotedOnTheGivenStory");
-        } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
-            Assertions.assertThat(e.getMessage()).startsWith(String.format("user %s has already voted", username));
-        }
+        // when
+        voteService.saveVote(voteDto);
+
+        //then
+        voteEntity = voteRepository.findOne(voteEntity.getVoteId());
+        Assertions.assertThat(voteEntity).isNotNull();
+        Assertions.assertThat(voteEntity.getValue()).isEqualTo(voteDto.getValue());
     }
 
     /**

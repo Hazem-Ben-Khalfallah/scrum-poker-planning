@@ -21,10 +21,10 @@ public class VoteRepositoryImpl extends GenericRepositoryImpl<VoteEntity, String
     }
 
     @Override
-    public boolean hasVoted(String username, String storyId) {
+    public VoteEntity getVoteByUserOnStory(String username, String storyId) {
         final Query q = new Query();
         q.addCriteria(Criteria.where(VoteEntityDef.STORY_ID).is(storyId)
                 .andOperator(Criteria.where(VoteEntityDef.USERNAME).is(username)));
-        return mongoTemplate.exists(q, getTClass());
+        return mongoTemplate.findOne(q, getTClass());
     }
 }

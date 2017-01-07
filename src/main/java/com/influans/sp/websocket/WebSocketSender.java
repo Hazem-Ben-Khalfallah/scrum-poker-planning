@@ -4,6 +4,7 @@ import com.influans.sp.config.WebSocketConfig;
 import com.influans.sp.dto.WsRequest;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.utils.JsonSerializer;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!test")
 public class WebSocketSender {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(WebSocketSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketSender.class);
 
     @Autowired
     private WebSocketConfig config;
@@ -41,7 +42,7 @@ public class WebSocketSender {
     public boolean sendNotification(String topic, WsTypes type, Object data) {
         try {
             if (topic != null && data != null) {
-                final String topicName = config.getTopicPrefix() + topic;
+                final String topicName = config.getTopicPrefix() + "/" + topic;
                 final WsRequest request = new WsRequest(type, data);
                 messagingTemplate.convertAndSend(topicName, request);
                 LOGGER.info("[WS] [topic: {}] sent data: {}", topicName, JsonSerializer.serialize(request));
