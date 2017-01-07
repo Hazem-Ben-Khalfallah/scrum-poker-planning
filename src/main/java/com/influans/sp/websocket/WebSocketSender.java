@@ -1,5 +1,6 @@
 package com.influans.sp.websocket;
 
+import com.influans.sp.config.WebSocketConfig;
 import com.influans.sp.dto.WsRequest;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.utils.JsonSerializer;
@@ -31,7 +32,7 @@ public class WebSocketSender {
      *
      * @param topic : websocket topic@Autowired
      *              private WebSocketSender webSocketSender;
-     * @param type request type
+     * @param type  request type
      * @param data  : message data
      * @return true if something has been sent through SimpMessagingTemplate ;
      * false otherwise
@@ -40,7 +41,7 @@ public class WebSocketSender {
     public boolean sendNotification(String topic, WsTypes type, Object data) {
         try {
             if (topic != null && data != null) {
-                final String topicName = "/topic/" + topic;
+                final String topicName = config.getTopicPrefix() + topic;
                 final WsRequest request = new WsRequest(type, data);
                 messagingTemplate.convertAndSend(topicName, request);
                 LOGGER.info("[WS] [topic: {}] sent data: {}", topicName, JsonSerializer.serialize(request));

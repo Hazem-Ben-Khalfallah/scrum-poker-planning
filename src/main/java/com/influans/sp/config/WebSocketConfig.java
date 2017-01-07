@@ -1,4 +1,4 @@
-package com.influans.sp.websocket;
+package com.influans.sp.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -31,4 +31,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes(destinationPrefix);
     }
 
+    public String getTopicPrefix() {
+        return topicPrefix;
+    }
 }

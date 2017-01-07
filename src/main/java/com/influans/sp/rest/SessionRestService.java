@@ -13,8 +13,6 @@ public class SessionRestService {
     @Autowired
     private SessionService sessionService;
 
-
-
     /**
      * @param sessionId sessionId
      * @return SessionDto

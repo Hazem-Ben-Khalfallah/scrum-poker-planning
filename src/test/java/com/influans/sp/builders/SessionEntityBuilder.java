@@ -19,7 +19,7 @@ public class SessionEntityBuilder {
         return this;
     }
 
-    public SessionEntityBuilder cardSet(CardSetEnum cardSet) {
+    public SessionEntityBuilder withCardSet(CardSetEnum cardSet) {
         this.cardSet = cardSet;
         return this;
     }
