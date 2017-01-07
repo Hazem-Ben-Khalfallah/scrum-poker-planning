@@ -5,6 +5,7 @@ import com.influans.sp.enums.WsTypes;
 import com.influans.sp.utils.JsonSerializer;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  * given brand
  */
 @Component
+@Profile("!test")
 public class WebSocketSender {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(WebSocketSender.class);
 

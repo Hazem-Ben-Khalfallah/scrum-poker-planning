@@ -60,7 +60,7 @@ public class StoryServiceTest {
     }
 
     /**
-     * @verifies throw an exception if sessionId is empty or null
+     * @verifies throw an exception if withSessionId is empty or null
      * @see StoryService#createStory(com.influans.sp.dto.StoryDto)
      */
     @Test
@@ -80,7 +80,7 @@ public class StoryServiceTest {
     }
 
     /**
-     * @verifies create a story related to the given sessionId
+     * @verifies create a story related to the given withSessionId
      * @see StoryService#createStory(com.influans.sp.dto.StoryDto)
      */
     @Test

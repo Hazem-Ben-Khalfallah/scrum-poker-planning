@@ -13,6 +13,7 @@ import com.influans.sp.repository.UserRepository;
 import com.influans.sp.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -30,10 +31,11 @@ public class SessionService {
     private StoryRepository storyRepository;
 
     /**
-     * @should throw an error if session does not exist
-     * @should return valid session if it exists
      * @param sessionId session id
      * @return sessionDto
+     * @should throw an error if sessionId is null or empty
+     * @should throw an error if session does not exist
+     * @should return valid session if it exists
      */
     public SessionDto getSession(String sessionId) {
         if (StringUtils.isEmpty(sessionId)) {
@@ -48,13 +50,13 @@ public class SessionService {
     }
 
     /**
+     * @param sessionDto created session data
+     * @return sessionDto with new sessionId
      * @should throw an error if sessionDto is null
      * @should throw an error if username is null
      * @should throw an error if cardSet is null
      * @should create session and an admin user
      * @should create stories if stories list is not empty
-     * @param sessionDto created session data
-     * @return sessionDto with new sessionId
      */
     public SessionDto createSession(SessionDto sessionDto) {
         if (sessionDto == null) {
@@ -73,12 +75,12 @@ public class SessionService {
         final SessionEntity sessionEntity = sessionDto.toEntity();
         sessionRepository.save(sessionEntity);
         //save stories
-        if (!sessionDto.getStories().isEmpty()) {
+        if (!CollectionUtils.isEmpty(sessionDto.getStories())) {
             final List<StoryEntity> storyEntities = sessionDto.toStories(sessionEntity.getSessionId());
             storyRepository.save(storyEntities);
         }
         //save user
-        final UserEntity userEntity = new UserEntity(sessionDto.getUsername(), sessionDto.getSessionId(), true);
+        final UserEntity userEntity = new UserEntity(sessionDto.getUsername(), sessionEntity.getSessionId(), true);
         userRepository.save(userEntity);
 
         sessionDto.setSessionId(sessionEntity.getSessionId());

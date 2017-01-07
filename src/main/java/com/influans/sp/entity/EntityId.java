@@ -8,6 +8,7 @@ public class EntityId implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     @Field(EntityIdDef.ENTITY_ID)
     private String entityId;
+
     @Field(EntityIdDef.SESSION_ID)
     @Indexed
     private String sessionId;

@@ -50,7 +50,7 @@ public class UserServiceTest {
     }
 
     /**
-     * @verifies create new user if sessionId and username are valid
+     * @verifies create new user if withSessionId and withUsername are valid
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test
@@ -60,7 +60,7 @@ public class UserServiceTest {
     }
 
     /**
-     * @verifies not create an new user if username already exists for the given sessionId
+     * @verifies not create an new user if withUsername already exists for the given withSessionId
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test
@@ -80,7 +80,7 @@ public class UserServiceTest {
     }
 
     /**
-     * @verifies throw and error if sessionId is empty
+     * @verifies throw and error if withSessionId is empty
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test
@@ -90,7 +90,7 @@ public class UserServiceTest {
     }
 
     /**
-     * @verifies throw and error if username is empty
+     * @verifies throw and error if withUsername is empty
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test
@@ -100,7 +100,7 @@ public class UserServiceTest {
     }
 
     /**
-     * @verifies throw and error if sessionId is not valid
+     * @verifies throw and error if withSessionId is not valid
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test

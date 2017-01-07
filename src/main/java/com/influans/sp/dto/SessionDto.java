@@ -23,7 +23,7 @@ public class SessionDto {
     public SessionDto(SessionEntity sessionEntity) {
         this.sessionId = sessionEntity.getSessionId();
         this.sprintName = sessionEntity.getSprintName();
-        this.cardSet = sessionEntity.getCardSet().getValue();
+        this.cardSet = sessionEntity.getCardSet() != null ? sessionEntity.getCardSet().getValue() : null;
     }
 
     public SessionEntity toEntity() {

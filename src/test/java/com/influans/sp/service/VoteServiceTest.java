@@ -80,7 +80,7 @@ public class VoteServiceTest {
     }
 
     /**
-     * @verifies throw an exception if sessionId is null or empty
+     * @verifies throw an exception if withSessionId is null or empty
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
@@ -90,7 +90,7 @@ public class VoteServiceTest {
     }
 
     /**
-     * @verifies throw an exception if username is null or empty
+     * @verifies throw an exception if withUsername is null or empty
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
@@ -110,7 +110,7 @@ public class VoteServiceTest {
     }
 
     /**
-     * @verifies throw an exception if user does not exist with given username
+     * @verifies throw an exception if user does not exist with given withUsername
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
@@ -120,7 +120,7 @@ public class VoteServiceTest {
     }
 
     /**
-     * @verifies throw an exception if session does not exist with given sessionId
+     * @verifies throw an exception if session does not exist with given withSessionId
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
