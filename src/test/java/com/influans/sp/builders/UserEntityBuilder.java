@@ -10,6 +10,7 @@ public class UserEntityBuilder {
 
     private String username;
     private String sessionId;
+    private boolean connected = true;
 
     public static UserEntityBuilder builder() {
         return new UserEntityBuilder();
@@ -26,9 +27,15 @@ public class UserEntityBuilder {
     }
 
 
+    public UserEntityBuilder withConnected(boolean connected) {
+        this.connected = connected;
+        return this;
+    }
+
     public UserEntity build() {
         final UserEntity userEntity = new UserEntity();
         userEntity.setUserId(new EntityId(username, sessionId));
+        userEntity.setConnected(connected);
         return userEntity;
     }
 }

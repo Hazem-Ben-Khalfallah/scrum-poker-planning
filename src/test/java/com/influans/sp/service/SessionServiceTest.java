@@ -159,7 +159,7 @@ public class SessionServiceTest extends ApplicationTest {
         final UserEntity userEntity = userRepository.findUser(createdSession.getSessionId(), createdSession.getUsername());
         Assertions.assertThat(userEntity).isNotNull();
         Assertions.assertThat(userEntity.getUserId().getEntityId()).isEqualTo(createdSession.getUsername());
-        Assertions.assertThat(userEntity.getIsAdmin()).isTrue();
+        Assertions.assertThat(userEntity.isAdmin()).isTrue();
     }
 
     /**

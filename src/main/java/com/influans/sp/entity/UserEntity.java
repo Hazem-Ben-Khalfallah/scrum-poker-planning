@@ -5,19 +5,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Optional;
+
 @Document(collection = "user")
 public class UserEntity {
     @Id
     private EntityId userId;
     @Field(UserEntityDef.ADMIN)
-    private Boolean isAdmin;
+    private Boolean admin;
+    @Field(UserEntityDef.CONNECTED)
+    private Boolean connected;
 
     public UserEntity() {
     }
 
-    public UserEntity(String username, String sessionId, Boolean isAdmin) {
+    public UserEntity(String username, String sessionId, Boolean admin) {
         this.userId = new EntityId(username, sessionId);
-        this.isAdmin = isAdmin;
+        this.admin = admin;
 
     }
 
@@ -30,12 +34,19 @@ public class UserEntity {
         this.userId = userId;
     }
 
-    public Boolean getIsAdmin() {
-        return isAdmin;
+    public Boolean isAdmin() {
+        return Optional.ofNullable(admin).orElse(false);
     }
 
-    public void setIsAdmin(Boolean isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 
+    public Boolean isConnected() {
+        return Optional.ofNullable(connected).orElse(false);
+    }
+
+    public void setConnected(Boolean connected) {
+        this.connected = connected;
+    }
 }
