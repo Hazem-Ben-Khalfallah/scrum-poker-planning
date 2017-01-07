@@ -121,14 +121,12 @@ public class StoryService {
         if (Objects.isNull(storyEntity)) {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
         }
-        final DAOResponse daoResponse = storyRepository.update(storyId, ImmutableMap.<String, Object>builder()
+
+        storyRepository.update(storyId, ImmutableMap.<String, Object>builder()
                 .put(StoryEntityDef.ENDED, true)
                 .build());
 
-        if (daoResponse.getnAffected() > 0) {
-            webSocketSender.sendNotification(storyEntity.getSessionId(), WsTypes.STORY_ENDED, storyId);
-            return DefaultResponse.ok();
-        }
-        return DefaultResponse.ko();
+        webSocketSender.sendNotification(storyEntity.getSessionId(), WsTypes.STORY_ENDED, storyId);
+        return DefaultResponse.ok();
     }
 }

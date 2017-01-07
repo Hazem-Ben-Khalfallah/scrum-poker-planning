@@ -16,24 +16,48 @@ public class StoryRestService {
     @Autowired
     private StoryService storyService;
 
+    /**
+     * @param sessionId sessionId
+     * @return List of StoryDto
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
     @RequestMapping(value = "/stories", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<StoryDto>> listStories(@QueryParam("sessionId") String sessionId) {
         return new ResponseEntity<>(storyService.listStories(sessionId), HttpStatus.OK);
     }
 
+    /**
+     * @param storyId story id
+     * @return empty response
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
     @RequestMapping(value = "/stories/{storyId}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity delete(@PathVariable("storyId") String storyId) {
         return new ResponseEntity<>(storyService.delete(storyId), HttpStatus.OK);
     }
 
+    /**
+     * @param storyId story id
+     * @return empty response
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
     @RequestMapping(value = "/stories/{storyId}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity endStory(@PathVariable("storyId") String storyId) {
         return new ResponseEntity<>(storyService.endStory(storyId), HttpStatus.OK);
     }
 
+    /**
+     * @param storyDto story that will be created
+     * @return StoryDto
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
     @RequestMapping(value = "/stories", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<StoryDto> createStory(@RequestBody StoryDto storyDto) {
