@@ -12,7 +12,7 @@ import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @RestController()
-public class VoteRestService {
+public class VoteRestController {
 
     @Autowired
     private VoteService voteService;

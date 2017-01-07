@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class SessionRestService {
+public class SessionRestController {
 
     @Autowired
     private SessionService sessionService;

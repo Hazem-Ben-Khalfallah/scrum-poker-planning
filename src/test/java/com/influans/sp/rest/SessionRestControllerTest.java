@@ -22,14 +22,14 @@ import static com.influans.sp.exception.CustomErrorCode.OBJECT_NOT_FOUND;
 /**
  * @author hazem
  */
-public class SessionRestServiceTest extends AppIntegrationTest {
+public class SessionRestControllerTest extends AppIntegrationTest {
 
     @Autowired
     private SessionRepository sessionRepository;
 
     /**
      * @verifies return 200 status
-     * @see SessionRestService#getSession(String)
+     * @see SessionRestController#getSession(String)
      */
     @Test
     public void getSession_shouldReturn200Status() throws Exception {
@@ -57,7 +57,7 @@ public class SessionRestServiceTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see SessionRestService#getSession(String)
+     * @see SessionRestController#getSession(String)
      */
     @Test
     public void getSession_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
@@ -76,7 +76,7 @@ public class SessionRestServiceTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see SessionRestService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionRestController#createSession(com.influans.sp.dto.SessionDto)
      */
     @Test
     public void createSession_shouldReturn200Status() throws Exception {
@@ -102,7 +102,7 @@ public class SessionRestServiceTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see SessionRestService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionRestController#createSession(com.influans.sp.dto.SessionDto)
      */
     @Test
     public void createSession_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {

@@ -11,7 +11,7 @@ import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @RestController()
-public class StoryRestService {
+public class StoryRestController {
 
     @Autowired
     private StoryService storyService;

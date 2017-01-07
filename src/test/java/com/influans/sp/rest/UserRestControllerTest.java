@@ -8,63 +8,63 @@ import org.junit.Test;
  * @author hazem
  */
 @Ignore
-public class VoteRestServiceTest {
+public class UserRestControllerTest {
     /**
      * @verifies return 200 status
-     * @see VoteRestService#listVote(String)
+     * @see UserRestController#listUsers(String)
      */
     @Test
-    public void listVote_shouldReturn200Status() throws Exception {
+    public void listUsers_shouldReturn200Status() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see VoteRestService#listVote(String)
+     * @see UserRestController#listUsers(String)
      */
     @Test
-    public void listVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+    public void listUsers_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }
 
     /**
      * @verifies return 200 status
-     * @see VoteRestService#delete(String)
+     * @see UserRestController#connect(com.influans.sp.dto.UserDto)
      */
     @Test
-    public void delete_shouldReturn200Status() throws Exception {
+    public void connect_shouldReturn200Status() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see VoteRestService#delete(String)
+     * @see UserRestController#connect(com.influans.sp.dto.UserDto)
      */
     @Test
-    public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+    public void connect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }
 
     /**
      * @verifies return 200 status
-     * @see VoteRestService#saveVote(com.influans.sp.dto.VoteDto)
+     * @see UserRestController#disconnect(com.influans.sp.dto.UserDto)
      */
     @Test
-    public void saveVote_shouldReturn200Status() throws Exception {
+    public void disconnect_shouldReturn200Status() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see VoteRestService#saveVote(com.influans.sp.dto.VoteDto)
+     * @see UserRestController#disconnect(com.influans.sp.dto.UserDto)
      */
     @Test
-    public void saveVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+    public void disconnect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //TODO auto-generated
         Assert.fail("Not yet implemented");
     }

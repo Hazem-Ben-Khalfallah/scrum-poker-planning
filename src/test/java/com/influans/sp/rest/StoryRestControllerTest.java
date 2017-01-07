@@ -8,10 +8,10 @@ import org.junit.Test;
  * @author hazem
  */
 @Ignore
-public class StoryRestServiceTest {
+public class StoryRestControllerTest {
     /**
      * @verifies return 200 status
-     * @see StoryRestService#listStories(String)
+     * @see StoryRestController#listStories(String)
      */
     @Test
     public void listStories_shouldReturn200Status() throws Exception {
@@ -21,7 +21,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestService#listStories(String)
+     * @see StoryRestController#listStories(String)
      */
     @Test
     public void listStories_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
@@ -31,7 +31,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return 200 status
-     * @see StoryRestService#delete(String)
+     * @see StoryRestController#delete(String)
      */
     @Test
     public void delete_shouldReturn200Status() throws Exception {
@@ -41,7 +41,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestService#delete(String)
+     * @see StoryRestController#delete(String)
      */
     @Test
     public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
@@ -51,7 +51,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return 200 status
-     * @see StoryRestService#endStory(String)
+     * @see StoryRestController#endStory(String)
      */
     @Test
     public void endStory_shouldReturn200Status() throws Exception {
@@ -61,7 +61,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestService#endStory(String)
+     * @see StoryRestController#endStory(String)
      */
     @Test
     public void endStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
@@ -71,7 +71,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return 200 status
-     * @see StoryRestService#createStory(com.influans.sp.dto.StoryDto)
+     * @see StoryRestController#createStory(com.influans.sp.dto.StoryDto)
      */
     @Test
     public void createStory_shouldReturn200Status() throws Exception {
@@ -81,7 +81,7 @@ public class StoryRestServiceTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestService#createStory(com.influans.sp.dto.StoryDto)
+     * @see StoryRestController#createStory(com.influans.sp.dto.StoryDto)
      */
     @Test
     public void createStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
