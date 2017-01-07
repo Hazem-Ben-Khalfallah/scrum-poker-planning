@@ -1,5 +1,6 @@
 package com.influans.sp.service;
 
+import com.influans.sp.ApplicationTest;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import org.junit.Test;
  * @author hazem
  */
 @Ignore
-public class StoryServiceTest {
+public class StoryServiceTest extends ApplicationTest {
     /**
      * @verifies return stories related to the given session
      * @see StoryService#listStories(String)

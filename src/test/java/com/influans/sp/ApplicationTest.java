@@ -26,8 +26,8 @@ public abstract class ApplicationTest extends SpringTest {
 
     @Before
     public void setUp() throws Exception {
-        //clearMongo();
-        //initMocks(this);
+        clearMongo();
+        initMocks(this);
     }
 
     /**

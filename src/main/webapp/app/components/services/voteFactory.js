@@ -1,20 +1,23 @@
 angular.module('voteFactory', [])
     .factory('voteFactory', ['$httpWrapper', function ($httpWrapper) {
         return {
-            get: function (storyId, onSuccess) {
+            get: function (storyId, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
                 var url = '/votes?storyId=' + storyId;
-                $httpWrapper.get(url, onSuccess, null);
+                $httpWrapper.get(url, onSuccess, onError);
             },
-            remove: function (voteId, onSuccess) {
+            remove: function (voteId, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
                 var url = '/votes/' + voteId;
-                $httpWrapper.delete(url, onSuccess, null);
+                $httpWrapper.delete(url, onSuccess, onError);
             },
-            create: function (data, onSuccess) {
+            create: function (data, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
                 var url = '/votes';
-                $httpWrapper.post(url, data, onSuccess, null);
+                $httpWrapper.post(url, data, onSuccess, onError);
             }
         };
     }]);

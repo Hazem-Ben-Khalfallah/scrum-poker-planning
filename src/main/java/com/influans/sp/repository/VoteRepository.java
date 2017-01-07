@@ -11,6 +11,6 @@ public interface VoteRepository extends GenericRepository<VoteEntity, String>, V
     @Query(value = "{ " + VoteEntityDef.SESSION_ID + " : ?0 }")
     List<VoteEntity> findBySessionId(String sessionId);
 
-    @Query(value = "{ " + VoteEntityDef.STORY_Id + " : ?0 }")
+    @Query(value = "{ " + VoteEntityDef.STORY_ID + " : ?0 }")
     List<VoteEntity> findByStoryId(String storyId);
 }

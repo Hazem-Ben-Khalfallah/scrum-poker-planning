@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class VoteEntity {
     @Id
     private String voteId;
-    @Field(VoteEntityDef.STORY_Id)
+    @Field(VoteEntityDef.STORY_ID)
     private String storyId;
     @Field(VoteEntityDef.SESSION_ID)
     private String sessionId;
