@@ -20,7 +20,7 @@ http://influans-scrum-poker.herokuapp.com/
 ![Voting on a Story](./snapshots/voting.jpg)
 
 - Results after ending Votes
-![Display results](./snapshots/voting.jpg)
+![Display results](./snapshots/vote-end.jpg)
 
 #Credits
 - Khaireddine Rezgui
