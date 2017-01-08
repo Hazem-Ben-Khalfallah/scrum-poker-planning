@@ -359,6 +359,7 @@ public class VoteServiceTest extends ApplicationTest {
      */
     @Test
     public void saveVote_shouldCreateAVoteForTheGivenUserOnTheSelectedStory() throws Exception {
+        // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -386,7 +387,10 @@ public class VoteServiceTest extends ApplicationTest {
                 .withValue("value")
                 .build();
 
+        // when
         final VoteDto createdVote = voteService.saveVote(voteDto);
+
+        // then
         Assertions.assertThat(createdVote.getVoteId()).isNotNull();
         final VoteEntity voteEntity = voteRepository.findOne(createdVote.getVoteId());
         Assertions.assertThat(voteEntity).isNotNull();

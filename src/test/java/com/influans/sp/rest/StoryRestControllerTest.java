@@ -14,7 +14,6 @@ import com.influans.sp.enums.ResponseStatus;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
