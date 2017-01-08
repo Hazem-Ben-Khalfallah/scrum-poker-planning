@@ -1,9 +1,7 @@
 package com.influans.sp.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.base.Optional;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -15,6 +13,11 @@ public class JsonSerializer {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JsonSerializer.class);
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * @param object object to serialize to json
+     * @return json string
+     * @should generate Json String from object
+     */
     public static String serialize(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
@@ -24,6 +27,13 @@ public class JsonSerializer {
         return "";
     }
 
+    /**
+     * @param jsonText json to deserialize
+     * @param clazz    created object class
+     * @param <T>      object type
+     * @return object of type T
+     * @should create object for json text
+     */
     public static <T> T toObject(String jsonText, Class<T> clazz) {
         try {
             return objectMapper.readValue(jsonText, clazz);
@@ -33,6 +43,13 @@ public class JsonSerializer {
         }
     }
 
+    /**
+     * @param jsonText json list to deserialize
+     * @param clazz    created objects class
+     * @param <T>      object type
+     * @return List of T objects
+     * @should create List of objects for json text
+     */
     public static <T> List<T> toListObject(String jsonText, Class<T> clazz) {
         try {
 
@@ -43,12 +60,4 @@ public class JsonSerializer {
         }
     }
 
-    public static Optional<JsonNode> parse(String jsonText) {
-        try {
-            return Optional.of(objectMapper.readTree(jsonText));
-        } catch (IOException ex) {
-            LOGGER.error("Exception on converting value=" + jsonText, ex);
-            return Optional.absent();
-        }
-    }
 }
