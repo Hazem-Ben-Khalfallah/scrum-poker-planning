@@ -1,5 +1,6 @@
 package com.influans.sp.rest;
 
+import com.influans.sp.AppIntegrationTest;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import org.junit.Test;
  * @author hazem
  */
 @Ignore
-public class VoteRestControllerTest {
+public class VoteRestControllerTest extends AppIntegrationTest {
     /**
      * @verifies return 200 status
      * @see VoteRestController#listVote(String)

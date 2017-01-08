@@ -1,8 +1,11 @@
 package com.influans.sp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author hazem
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
     private String username;
     private String sessionId;
