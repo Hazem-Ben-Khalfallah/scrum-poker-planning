@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning/branch/master/graph/badge.svg)](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning) [![Build Status](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning.svg?branch=master)](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning)
+[![codecov](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning/branch/master/graph/badge.svg)](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning) [![Build Status](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning.svg?branch=master)](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning````````)
 
 # Scrum Poker application
 Vote your stories instantly & get the result in a blink!
@@ -14,6 +14,13 @@ add the following statement into your Tomcat VM options:
 #Demo
 You are welcome to use this free app on: 
 http://influans-scrum-poker.herokuapp.com/
+
+#Snapshots
+- Voting session
+![Voting on a Story](./snapshots/voting.jpg)
+
+- Results after ending Votes
+![Display results](./snapshots/voting.jpg)
 
 #Credits
 - Khaireddine Rezgui
