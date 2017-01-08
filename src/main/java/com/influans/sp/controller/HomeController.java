@@ -4,7 +4,6 @@ import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.UserEntity;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
-import com.influans.sp.websocket.WebSocketSender;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,6 @@ public class HomeController {
     private UserRepository userRepository;
     @Autowired
     private SessionRepository sessionRepository;
-    @Autowired
-    private WebSocketSender webSocketSender;
 
     @MessageMapping("/connect")
     @SendTo("/topic/connect")
