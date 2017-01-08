@@ -17,12 +17,15 @@ http://influans-scrum-poker.herokuapp.com/
 
 #Snapshots
 - Configure Poker Planning stories
+
 ![Configuration dashboard](./snapshots/planning-poker-configuration.jpg)
 
 - Voting session
+
 ![Voting on a Story](./snapshots/voting.jpg)
 
 - Results after ending Votes
+
 ![Display results](./snapshots/vote-end.jpg)
 
 #Credits
