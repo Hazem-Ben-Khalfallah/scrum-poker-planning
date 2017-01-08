@@ -122,9 +122,9 @@
                     <i class="icon users"></i>
                     Users
                 </div>
-                <div class="item" ng-class="{active: info.selected == 'setting'}" ng-click="info.selected = 'setting'">
-                    <i class="icon setting"></i>
-                    Setting
+                <div class="item" ng-class="{active: info.selected == 'share'}" ng-click="info.selected = 'share'">
+                    <i class="icon share alternate"></i>
+                    Share
                 </div>
             </div>
             <!-- Stories -->
@@ -204,12 +204,13 @@
                     <div class="item capitalize" ng-repeat="user in users">{{user.username}}</div>
                 </div>
             </div>
-            <!-- setting -->
-            <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'setting'}">
+            <!-- share -->
+            <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'share'}">
+
                 <!-- session copier -->
-                <div class="ui mini action labeled input" >
+                <div class="ui small action labeled input">
                     <div class="ui label" style="padding-top:11px">
-                        Session
+                        Share room
                     </div>
                     <input id="sessionId" value="{{sessionId}}" type="text" readonly>
                     <button data-clipboard-target="#sessionId" class="ui right icon button clipboard">
