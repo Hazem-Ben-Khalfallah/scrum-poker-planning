@@ -1,6 +1,5 @@
 package com.influans.sp.repository.impl;
 
-import com.influans.sp.repository.GenericRepository;
 import com.influans.sp.repository.custom.GenericRepositoryCustom;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
