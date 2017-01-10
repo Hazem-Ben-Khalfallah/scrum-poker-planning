@@ -86,6 +86,13 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
     }
 
     @Override
+    public MongoDAOResponse update(ID id, String field, Object value) {
+        HashMap<String, Object> values = new HashMap<>();
+        values.put(field, value);
+        return this.update(id, values);
+    }
+
+    @Override
     public MongoDAOResponse increment(ID id, String field, Number inc) {
         Query q = idQuery(id);
         Update up = new Update();
@@ -95,6 +102,12 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
 
     }
 
+    private Query idQuery(ID id) {
+        Query q = new Query();
+        q.addCriteria(Criteria.where(MONGO_ID).is(id));
+        return q;
+    }
+
     @Override
     public T create(T t) {
         this.mongoTemplate.insert(t);
@@ -102,21 +115,8 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
     }
 
     @Override
-    public MongoDAOResponse update(ID id, String field, Object value) {
-        HashMap<String, Object> values = new HashMap<>();
-        values.put(field, value);
-        return this.update(id, values);
-    }
-
-    @Override
     public void upsert(T t) {
         this.mongoTemplate.save(t);
-    }
-
-    private Query idQuery(ID id) {
-        Query q = new Query();
-        q.addCriteria(Criteria.where(MONGO_ID).is(id));
-        return q;
     }
 
     @Override
@@ -131,6 +131,11 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
             bulk = getCollection().initializeOrderedBulkOperation();
         }
 
+        /**
+         * builder method to insert a list of entities
+         * @param entities entities to insert
+         * @return BulkBuilder
+         */
         public BulkBuilder insert(List<T> entities) {
             bulkAll(entities, (T t) -> {
                 bulk.insert(toDbObject(t));
@@ -138,6 +143,11 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
             return this;
         }
 
+        /**
+         * builder method to update a list of entities
+         * @param entities entities to updated
+         * @return BulkBuilder
+         */
         public BulkBuilder update(List<T> entities) {
             bulkAll(entities, (T t) -> {
                 DBObject dbO = toDbObject(t);
@@ -146,6 +156,11 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
             return this;
         }
 
+        /**
+         * builder method to insert/update a list of entities
+         * @param entities entities to updated
+         * @return BulkBuilder
+         */
         public BulkBuilder upsert(List<T> entities) {
             bulkAll(entities, (T t) -> {
                 DBObject dbO = toDbObject(t);
@@ -163,6 +178,10 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
             });
         }
 
+        /**
+         * execute bulk action
+         * @return BulkWriteResult
+         */
         public BulkWriteResult execute() {
             return bulk.execute();
         }

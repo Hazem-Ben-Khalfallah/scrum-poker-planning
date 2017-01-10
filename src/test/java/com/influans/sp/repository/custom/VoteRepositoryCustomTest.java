@@ -21,7 +21,13 @@ public class VoteRepositoryCustomTest extends ApplicationTest {
 
     @Before
     public void setUp() throws Exception {
-        existingVote = createVote();
+        final String username = "Leo";
+        final String storyId = "storyId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withUsername(username)
+                .build();
+        existingVote = voteRepository.save(voteEntity);
     }
 
     /**
@@ -59,14 +65,4 @@ public class VoteRepositoryCustomTest extends ApplicationTest {
         Assertions.assertThat(voteByUserOnStory).isNull();
     }
 
-    private VoteEntity createVote() {
-        final String username = "Leo";
-        final String storyId = "storyId";
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
-                .withStoryId(storyId)
-                .withStoryId(username)
-                .build();
-        voteRepository.save(voteEntity);
-        return voteEntity;
-    }
 }
