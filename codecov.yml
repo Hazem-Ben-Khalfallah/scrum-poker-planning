@@ -1,6 +1,5 @@
 coverage:
   ignore:
-  - src/com/influans/sp/entity/.*
-  - src/com/influans/sp/dto/.*
-
+   - src/com/influans/sp/entity/*
+   - src/com/influans/sp/dto/*
 comment: false
