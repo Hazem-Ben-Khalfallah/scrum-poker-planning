@@ -38,10 +38,14 @@ public class WebSocketSender {
      * @return true if something has been sent through SimpMessagingTemplate ;
      * false otherwise
      * @throws MessagingException if a problem occurs during sending message
+     * @should return true after sending a notification
+     * @should return false if topic is  null
+     * @should return false if type is  null
+     * @should return false if data is  null
      */
     public boolean sendNotification(String topic, WsTypes type, Object data) {
         try {
-            if (topic != null && data != null) {
+            if (topic != null && type != null && data != null) {
                 final String topicName = config.getTopicPrefix() + "/" + topic;
                 final WsRequest request = new WsRequest(type, data);
                 messagingTemplate.convertAndSend(topicName, request);
