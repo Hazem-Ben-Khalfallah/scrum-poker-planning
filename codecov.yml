@@ -1,0 +1,3 @@
+ignore:
+  - "com.influans.sp.entity"
+  - "com.influans.sp.dto"
