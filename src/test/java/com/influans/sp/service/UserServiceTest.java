@@ -8,16 +8,20 @@ import com.influans.sp.builders.UserEntityBuilder;
 import com.influans.sp.dto.UserDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.UserEntity;
+import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * @author hazem
@@ -30,6 +34,8 @@ public class UserServiceTest extends ApplicationTest {
     private SessionRepository sessionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private WebSocketSender webSocketSender;
 
     /**
      * @verifies throw an error if session is null or empty
@@ -278,11 +284,11 @@ public class UserServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies reconnect user if it was previously disconnected
+     * @verifies reconnect user if he was previously disconnected
      * @see UserService#connectUser(com.influans.sp.dto.UserDto)
      */
     @Test
-    public void connectUser_shouldReconnectUserIfItWasPreviouslyDisconnected() throws Exception {
+    public void connectUser_shouldReconnectUserIfHeWasPreviouslyDisconnected() throws Exception {
         // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
@@ -310,6 +316,31 @@ public class UserServiceTest extends ApplicationTest {
         final List<UserEntity> users = userRepository.findUsersBySessionId(userDto.getSessionId());
         Assertions.assertThat(users).hasSize(1);
         Assertions.assertThat(users.get(0).isConnected()).isTrue();
+    }
+
+    /**
+     * @verifies send a websocket notification
+     * @see UserService#connectUser(UserDto)
+     */
+    @Test
+    public void connectUser_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final UserDto userDto = UserDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withUsername("Leo")
+                .build();
+
+        // when
+        userService.connectUser(userDto);
+
+        // then
+        verify(webSocketSender).sendNotification(userDto.getSessionId(), WsTypes.USER_CONNECTED, userDto);
     }
 
     /**
@@ -421,4 +452,35 @@ public class UserServiceTest extends ApplicationTest {
         Assertions.assertThat(userEntity.isConnected()).isFalse();
     }
 
+    /**
+     * @verifies send a websocket notification
+     * @see UserService#disconnectUser(UserDto)
+     */
+    @Test
+    public void disconnectUser_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final UserDto userDto = UserDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withUsername(username)
+                .build();
+        // when
+        userService.disconnectUser(userDto);
+
+        // then
+        verify(webSocketSender).sendNotification(userDto.getSessionId(), WsTypes.USER_DISCONNECTED, userDto.getUsername());
+    }
 }

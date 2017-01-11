@@ -60,6 +60,7 @@ public class StoryService {
      * @should delete a story
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if story does not exist
+     * @should send a websocket notification
      */
     public DefaultResponse delete(String storyId) {
         if (StringUtils.isEmpty(storyId)) {
@@ -84,6 +85,7 @@ public class StoryService {
      * @should throw an exception if storyName contains only spaces
      * @should throw an exception if session does not exist
      * @should create a story related to the given sessionId
+     * @should send a websocket notification
      */
     public StoryDto createStory(StoryDto storyDto) {
         if (StringUtils.isEmpty(storyDto.getSessionId())) {
@@ -111,6 +113,7 @@ public class StoryService {
      * @should throw an exception if storyId is empty or null
      * @should throw an exception if story does not exist
      * @should set story as ended
+     * @should send a websocket notification
      */
     public DefaultResponse endStory(String storyId) {
         if (StringUtils.isEmpty(storyId)) {

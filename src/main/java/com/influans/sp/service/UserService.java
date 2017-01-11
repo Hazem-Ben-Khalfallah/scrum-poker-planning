@@ -63,7 +63,8 @@ public class UserService {
      * @should throw and error if sessionId is not valid
      * @should throw an exception if username already used in  the given sessionId with connected status
      * @should create new user if sessionId and username are valid
-     * @should reconnect user if it was previously disconnected
+     * @should reconnect user if he was previously disconnected
+     * @should send a websocket notification
      */
     public UserDto connectUser(UserDto userDto) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {
@@ -103,6 +104,7 @@ public class UserService {
      * @should throw an error if user was not found
      * @should throw an error if sessions is not found
      * @should set user as disconnected
+     * @should send a websocket notification
      */
     public DefaultResponse disconnectUser(UserDto userDto) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {

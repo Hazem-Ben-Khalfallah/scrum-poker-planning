@@ -8,18 +8,22 @@ import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.StoryEntity;
 import com.influans.sp.entity.UserEntity;
 import com.influans.sp.entity.VoteEntity;
+import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.UserRepository;
 import com.influans.sp.repository.VoteRepository;
+import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * @author hazem
@@ -36,6 +40,8 @@ public class VoteServiceTest extends ApplicationTest {
     private SessionRepository sessionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private WebSocketSender webSocketSender;
 
     /**
      * @verifies throw an exception if storyId is null or empty
@@ -142,6 +148,27 @@ public class VoteServiceTest extends ApplicationTest {
 
         // then
         Assertions.assertThat(voteRepository.exists(voteId)).isFalse();
+    }
+
+    /**
+     * @verifies send a websocket notification
+     * @see VoteService#delete(String)
+     */
+    @Test
+    public void delete_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withSessionId("sessionId")
+                .withVoteId(voteId)
+                .build();
+        voteRepository.save(voteEntity);
+
+        // when
+        voteService.delete(voteId);
+
+        // then
+        verify(webSocketSender).sendNotification(voteEntity.getSessionId(), WsTypes.VOTE_REMOVED, voteId);
     }
 
     /**
@@ -398,5 +425,46 @@ public class VoteServiceTest extends ApplicationTest {
         Assertions.assertThat(voteEntity.getStoryId()).isEqualTo(createdVote.getStoryId());
         Assertions.assertThat(voteEntity.getUsername()).isEqualTo(createdVote.getUsername());
         Assertions.assertThat(voteEntity.getValue()).isEqualTo(createdVote.getValue());
+    }
+
+    /**
+     * @verifies send a websocket notification
+     * @see VoteService#saveVote(VoteDto)
+     */
+    @Test
+    public void saveVote_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
+        final String username = "username";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final VoteDto voteDto = VoteDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withStoryId(storyId)
+                .withUsername(username)
+                .withValue("value")
+                .build();
+
+        // when
+        final VoteDto createdVote = voteService.saveVote(voteDto);
+
+        // then
+        verify(webSocketSender).sendNotification(voteDto.getSessionId(), WsTypes.VOTE_ADDED, createdVote);
     }
 }

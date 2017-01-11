@@ -70,6 +70,7 @@ public class VoteService {
      * @should throw an exception if voteId is null
      * @should throw an exception if vote does not exist with given id
      * @should delete vote with the given id
+     * @should send a websocket notification
      */
     public DefaultResponse delete(String voteId) {
         if (StringUtils.isEmpty(voteId)) {
@@ -99,6 +100,7 @@ public class VoteService {
      * @should throw an exception if session does not exist with given sessionId
      * @should Update existing vote if the user has already voted on the given story
      * @should create a vote for the given user on the selected story
+     * @should send a websocket notification
      */
     public VoteDto saveVote(VoteDto voteDto) {
         if (StringUtils.isEmpty(voteDto.getSessionId())) {

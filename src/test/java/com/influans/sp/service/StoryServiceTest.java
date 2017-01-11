@@ -8,16 +8,20 @@ import com.influans.sp.builders.StoryEntityBuilder;
 import com.influans.sp.dto.StoryDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.StoryEntity;
+import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
+import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * @author hazem
@@ -30,6 +34,8 @@ public class StoryServiceTest extends ApplicationTest {
     private StoryRepository storyRepository;
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private WebSocketSender webSocketSender;
 
     /**
      * @verifies throw an exception if session id is null or empty
@@ -139,6 +145,26 @@ public class StoryServiceTest extends ApplicationTest {
     }
 
     /**
+     * @verifies send a websocket notification
+     * @see StoryService#delete(String)
+     */
+    @Test
+    public void delete_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withSessionId("sessionId")
+                .withStoryId("story-1")
+                .build();
+        storyRepository.save(storyEntity);
+
+        // when
+        storyService.delete(storyEntity.getStoryId());
+
+        //then
+        verify(webSocketSender).sendNotification(storyEntity.getSessionId(), WsTypes.STORY_REMOVED, storyEntity.getStoryId());
+    }
+
+    /**
      * @verifies throw an exception if withSessionId is empty or null
      * @see StoryService#createStory(com.influans.sp.dto.StoryDto)
      */
@@ -240,6 +266,33 @@ public class StoryServiceTest extends ApplicationTest {
     }
 
     /**
+     * @verifies send a websocket notification
+     * @see StoryService#createStory(StoryDto)
+     */
+    @Test
+    public void createStory_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final StoryDto storyDto = StoryDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withStoryName("story-name")
+                .withOrder(2)
+                .build();
+
+        // when
+        final StoryDto createdStory = storyService.createStory(storyDto);
+
+        // then
+        storyDto.setStoryId(createdStory.getStoryId());
+        verify(webSocketSender).sendNotification(sessionId, WsTypes.STORY_ADDED, storyDto);
+    }
+
+    /**
      * @verifies throw an exception if storyId is empty or null
      * @see StoryService#endStory(String)
      */
@@ -286,5 +339,26 @@ public class StoryServiceTest extends ApplicationTest {
         // then
         final StoryEntity foundStory = storyRepository.findOne(storyId);
         Assertions.assertThat(foundStory.isEnded()).isTrue();
+    }
+
+    /**
+     * @verifies send a websocket notification
+     * @see StoryService#endStory(String)
+     */
+    @Test
+    public void endStory_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withSessionId("sessionId")
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
+        // when
+        storyService.endStory(storyId);
+
+        // then
+        verify(webSocketSender).sendNotification(storyEntity.getSessionId(), WsTypes.STORY_ENDED, storyId);
     }
 }
