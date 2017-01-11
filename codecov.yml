@@ -1,3 +1,6 @@
-ignore:
-  - "com.influans.sp.entity"
-  - "com.influans.sp.dto"
+coverage:
+  ignore:
+  - src/com/influans/sp/entity/.*
+  - src/com/influans/sp/dto/.*
+
+comment: false
