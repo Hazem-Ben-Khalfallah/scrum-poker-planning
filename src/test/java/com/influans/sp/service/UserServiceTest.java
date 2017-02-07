@@ -16,7 +16,9 @@ import com.influans.sp.repository.UserRepository;
 import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -36,6 +38,12 @@ public class UserServiceTest extends ApplicationTest {
     private UserRepository userRepository;
     @Autowired
     private WebSocketSender webSocketSender;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(webSocketSender);
+    }
 
     /**
      * @verifies throw an error if session is null or empty

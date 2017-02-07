@@ -16,12 +16,15 @@ import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @author hazem
@@ -36,6 +39,12 @@ public class StoryServiceTest extends ApplicationTest {
     private SessionRepository sessionRepository;
     @Autowired
     private WebSocketSender webSocketSender;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(webSocketSender);
+    }
 
     /**
      * @verifies throw an exception if session id is null or empty
