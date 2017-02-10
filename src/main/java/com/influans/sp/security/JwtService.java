@@ -52,7 +52,7 @@ public class JwtService {
     }
 
 
-    public Authentication authenticate(String token) {
+    public ScrumPokerAuthenticationToken authenticate(String token) {
         try {
             final Claims body = Jwts.parser().setSigningKey(secretKey).requireIssuer(ISSUER).parseClaimsJws(token).getBody();
             if (StringUtils.isEmpty(body.getSubject()) || !body.containsKey(SESSION_CLAIM) || !body.containsKey(ROLE_CLAIM)) {

@@ -17,7 +17,7 @@ public class ScrumPokerAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     @Override
-    public Object getPrincipal() {
+    public Principal getPrincipal() {
         return principal;
     }
 

@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,14 +20,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccessTokenAuthenticationFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtAccessTokenAuthenticationFilter.class);
     private static final Pattern JWT_AUTH_HEADER = Pattern.compile("Bearer (.*)", Pattern.CASE_INSENSITIVE);
 
     private final Set<Pair<String, String>> PERMITTED_URL = ImmutableSet.<Pair<String, String>>builder()
             .add(ImmutablePair.of("POST", "/users/connect"))
-            .add(ImmutablePair.of("POST", "/users/disconnect"))
             .build();
 
     @Autowired
@@ -36,14 +34,13 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    // fixme don't use SecurityContextHolder statically.
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
 
-        if (isPermitted(request) || authorizationHeader == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (isPermitted(request) || authorizationHeader == null) {
             filterChain.doFilter(request, response);
         } else {
-            Authentication authentication = decode(authorizationHeader);
+            final ScrumPokerAuthenticationToken authentication = decode(authorizationHeader);
             if (authentication == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             } else {
@@ -60,7 +57,6 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPermitted(HttpServletRequest request) {
         final String apiURI = getApiURI(request);
         final String method = getMethod(request);
-        LOGGER.info("Endpoint: {} {}", method, apiURI);
         return PERMITTED_URL.contains(ImmutablePair.of(method, apiURI));
     }
 
@@ -79,7 +75,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    private Authentication decode(String authorizationHeader) {
+    private ScrumPokerAuthenticationToken decode(String authorizationHeader) {
         String token = obtainJwtToken(authorizationHeader);
         if (token == null) {
             LOGGER.warn("Access refused: invalid Authorization header" + authorizationHeader);

@@ -20,7 +20,6 @@ public class UserRestController {
     @Autowired
     private JwtService jwtService;
 
-
     /**
      * @param sessionId session id
      * @return list of UserDto

@@ -8,8 +8,12 @@ import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.Principal;
+import com.influans.sp.security.SecurityContext;
 import com.influans.sp.utils.StringUtils;
 import com.influans.sp.websocket.WebSocketSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -28,6 +33,8 @@ public class UserService {
     private SessionRepository sessionRepository;
     @Autowired
     private WebSocketSender webSocketSender;
+    @Autowired
+    private SecurityContext securityContext;
 
 
     /**
@@ -126,6 +133,12 @@ public class UserService {
 
         userEntity.setConnected(false);
         userRepository.save(userEntity);
+
+
+        final Principal user = securityContext.getAuthenticationContext();
+        LOGGER.info("[SECURITY] Principal.username: {} , userDto.username: {}, equal: {}", user.getUsername(), userDto.getUsername(), user.getUsername().equals(userDto.getUsername()));
+        securityContext.removeAuthenticationContext();
+
         webSocketSender.sendNotification(userDto.getSessionId(), WsTypes.USER_DISCONNECTED, userDto.getUsername());
         return DefaultResponse.ok();
     }
