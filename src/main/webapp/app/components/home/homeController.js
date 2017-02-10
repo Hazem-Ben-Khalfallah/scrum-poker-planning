@@ -409,11 +409,14 @@ homeController.controller('homeCtrl',
                 }
             }
 
+            $scope.$on('$destroy', function () {
+
+            });
+
             init();
         }
 
-    ])
-;
+    ]);
 
 homeController.resolve = {
     session: ['sessionFactory', '$sessionStorage', '$q', function (sessionFactory, $sessionStorage, $q) {
