@@ -2,6 +2,7 @@ package com.influans.sp.rest;
 
 import com.google.common.collect.ImmutableList;
 import com.influans.sp.AppIntegrationTest;
+import com.influans.sp.builders.PrincipalBuilder;
 import com.influans.sp.builders.SessionEntityBuilder;
 import com.influans.sp.builders.UserDtoBuilder;
 import com.influans.sp.builders.UserEntityBuilder;
@@ -11,12 +12,20 @@ import com.influans.sp.dto.UserDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.UserEntity;
 import com.influans.sp.enums.ResponseStatus;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.Principal;
+import com.influans.sp.security.SecurityContext;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNull;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -34,6 +43,14 @@ public class UserRestControllerTest extends AppIntegrationTest {
     private SessionRepository sessionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SecurityContext securityContext;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(securityContext);
+    }
 
     /**
      * @verifies return 200 status
@@ -94,11 +111,11 @@ public class UserRestControllerTest extends AppIntegrationTest {
     }
 
     /**
-     * @verifies return 200 status
-     * @see UserRestController#connect(com.influans.sp.dto.UserDto)
+     * @verifies return 200 status and a not null token
+     * @see UserRestController#connect(com.influans.sp.dto.UserDto, HttpServletResponse)
      */
     @Test
-    public void connect_shouldReturn200Status() throws Exception {
+    public void connect_shouldReturn200StatusAndANotNullToken() throws Exception {
         // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
@@ -117,6 +134,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .post("/users/connect")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
+                .header(SecurityContext.Headers.JWT_TOKEN, IsNull.notNullValue())
                 .extract()
                 .as(UserDto.class);
 
@@ -126,7 +144,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see UserRestController#connect(com.influans.sp.dto.UserDto)
+     * @see UserRestController#connect(com.influans.sp.dto.UserDto, HttpServletResponse)
      */
     @Test
     public void connect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
@@ -151,7 +169,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see UserRestController#disconnect(com.influans.sp.dto.UserDto)
+     * @see UserRestController#disconnect()
      */
     @Test
     public void disconnect_shouldReturn200Status() throws Exception {
@@ -169,14 +187,15 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .build();
         userRepository.save(userEntity);
 
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withSessionId(sessionId)
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
 
         // when
         final DefaultResponse response = givenJsonClient()
-                .body(userDto)
                 .post("/users/disconnect")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
@@ -190,18 +209,19 @@ public class UserRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see UserRestController#disconnect(com.influans.sp.dto.UserDto)
+     * @see UserRestController#disconnect()
      */
     @Test
     public void disconnect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final UserDto userDto = UserDtoBuilder.builder()
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername("Leo")
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .body(userDto)
                 .post("/users/disconnect")
                 .then()
                 .statusCode(BAD_ARGS.getStatusCode())

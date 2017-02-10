@@ -3,11 +3,13 @@ package com.influans.sp.service;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.UserDto;
 import com.influans.sp.entity.UserEntity;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.JwtService;
 import com.influans.sp.security.Principal;
 import com.influans.sp.security.SecurityContext;
 import com.influans.sp.utils.StringUtils;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +38,8 @@ public class UserService {
     private WebSocketSender webSocketSender;
     @Autowired
     private SecurityContext securityContext;
+    @Autowired
+    private JwtService jwtService;
 
 
     /**
@@ -73,7 +78,7 @@ public class UserService {
      * @should reconnect user if he was previously disconnected
      * @should send a websocket notification
      */
-    public UserDto connectUser(UserDto userDto) {
+    public DefaultResponse connectUser(UserDto userDto, Consumer<String> connectionConsumer) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
         }
@@ -100,11 +105,13 @@ public class UserService {
 
         }
         webSocketSender.sendNotification(userDto.getSessionId(), WsTypes.USER_CONNECTED, userDto);
-        return userDto;
+        // generate JWT token
+        final String token = jwtService.generate(userDto.getSessionId(), userDto.getUsername(), UserRole.VOTER);
+        connectionConsumer.accept(token);
+        return DefaultResponse.ok();
     }
 
     /**
-     * @param userDto connected use
      * @return empty response
      * @should throw and error if sessionId is null or empty
      * @should throw and error if username is null or empty
@@ -113,33 +120,30 @@ public class UserService {
      * @should set user as disconnected
      * @should send a websocket notification
      */
-    public DefaultResponse disconnectUser(UserDto userDto) {
-        if (StringUtils.isEmpty(userDto.getSessionId())) {
+    public DefaultResponse disconnectUser() {
+        final Principal user = securityContext.getAuthenticationContext();
+
+        if (StringUtils.isEmpty(user.getSessionId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
         }
 
-        if (StringUtils.isEmpty(userDto.getUsername(), true)) {
+        if (StringUtils.isEmpty(user.getUsername(), true)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "username should not be null or empty");
         }
-        if (!sessionRepository.exists(userDto.getSessionId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + userDto.getSessionId());
+        if (!sessionRepository.exists(user.getSessionId())) {
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + user.getSessionId());
         }
 
-        final UserEntity userEntity = userRepository.findUser(userDto.getSessionId(), userDto.getUsername());
+        final UserEntity userEntity = userRepository.findUser(user.getSessionId(), user.getUsername());
 
         if (userEntity == null) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "user not found with username = " + userDto.getUsername());
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "user not found with username = " + user.getUsername());
         }
 
         userEntity.setConnected(false);
         userRepository.save(userEntity);
-
-
-        final Principal user = securityContext.getAuthenticationContext();
-        LOGGER.info("[SECURITY] Principal.username: {} , userDto.username: {}, equal: {}", user.getUsername(), userDto.getUsername(), user.getUsername().equals(userDto.getUsername()));
-        securityContext.removeAuthenticationContext();
-
-        webSocketSender.sendNotification(userDto.getSessionId(), WsTypes.USER_DISCONNECTED, userDto.getUsername());
+        webSocketSender.sendNotification(user.getSessionId(), WsTypes.USER_DISCONNECTED, user.getUsername());
+        LOGGER.info("[SECURITY] Principal.username: {} , user.username: {}, equal: {}", user.getUsername(), user.getUsername(), user.getUsername().equals(user.getUsername()));
         return DefaultResponse.ok();
     }
 }

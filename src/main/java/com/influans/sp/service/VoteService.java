@@ -67,6 +67,7 @@ public class VoteService {
     /**
      * @param voteId voteId
      * @return empty response
+     * @should throw an exception if user is not connected to the related session
      * @should throw an exception if voteId is null
      * @should throw an exception if vote does not exist with given id
      * @should delete vote with the given id
@@ -95,6 +96,7 @@ public class VoteService {
      * @should throw an exception if sessionId is null or empty
      * @should throw an exception if username is null or empty
      * @should throw an exception if value is null or empty
+     * @should throw an exception if user is not connected to the related session
      * @should throw an exception if story does not exist with given Id
      * @should throw an exception if user does not exist with given username
      * @should throw an exception if session does not exist with given sessionId

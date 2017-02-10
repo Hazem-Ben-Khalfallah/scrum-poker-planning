@@ -55,6 +55,7 @@ public class SessionService {
      * @should throw an error if sessionDto is null
      * @should throw an error if username is null
      * @should throw an error if cardSet is null
+     * @should throw an exception if user has not session admin role
      * @should create session and an admin user
      * @should create stories if stories list is not empty
      */

@@ -2,17 +2,21 @@ package com.influans.sp.service;
 
 import com.google.common.collect.ImmutableList;
 import com.influans.sp.ApplicationTest;
+import com.influans.sp.builders.PrincipalBuilder;
 import com.influans.sp.builders.SessionEntityBuilder;
 import com.influans.sp.builders.UserDtoBuilder;
 import com.influans.sp.builders.UserEntityBuilder;
 import com.influans.sp.dto.UserDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.UserEntity;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.Principal;
+import com.influans.sp.security.SecurityContext;
 import com.influans.sp.websocket.WebSocketSender;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -22,6 +26,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.mockito.Mockito.verify;
 
@@ -38,11 +43,14 @@ public class UserServiceTest extends ApplicationTest {
     private UserRepository userRepository;
     @Autowired
     private WebSocketSender webSocketSender;
+    @Autowired
+    private SecurityContext securityContext;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         Mockito.reset(webSocketSender);
+        Mockito.reset(securityContext);
     }
 
     /**
@@ -162,7 +170,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw and error if sessionId is null or empty
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldThrowAndErrorIfSessionIdIsNullOrEmpty() throws Exception {
@@ -170,7 +178,8 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername("Leo")
                 .build();
         try {
-            userService.connectUser(userDto);
+            userService.connectUser(userDto, (t) -> {
+            });
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNullOrEmpty");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -179,7 +188,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw and error if username is null or empty
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldThrowAndErrorIfUsernameIsNullOrEmpty() throws Exception {
@@ -187,7 +196,8 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId("sessionId")
                 .build();
         try {
-            userService.connectUser(userDto);
+            userService.connectUser(userDto, (t) -> {
+            });
             Assert.fail("shouldThrowAndErrorIfUsernameIsNullOrEmpty");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -196,7 +206,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw and error if username contains only spaces
-     * @see UserService#connectUser(UserDto)
+     * @see UserService#connectUser(UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldThrowAndErrorIfUsernameContainsOnlySpaces() throws Exception {
@@ -205,7 +215,8 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername("   ")
                 .build();
         try {
-            userService.connectUser(userDto);
+            userService.connectUser(userDto, (t) -> {
+            });
             Assert.fail("shouldThrowAndErrorIfUsernameContainsOnlySpaces");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -214,7 +225,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw and error if withSessionId is not valid
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldThrowAndErrorIfSessionIdIsNotValid() throws Exception {
@@ -223,7 +234,8 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername("Leo")
                 .build();
         try {
-            userService.connectUser(userDto);
+            userService.connectUser(userDto, (t) -> {
+            });
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNotValid");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
@@ -232,7 +244,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies create new user if withSessionId and withUsername are valid
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldCreateNewUserIfSessionIdAndUsernameAreValid() throws Exception {
@@ -249,7 +261,8 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
 
         // when
-        userService.connectUser(userDto);
+        userService.connectUser(userDto, (t) -> {
+        });
 
         // then
         final UserEntity userEntity = userRepository.findUser(userDto.getSessionId(), userDto.getUsername());
@@ -259,7 +272,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw an exception if username already used in  the given sessionId with connected status
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldThrowAnExceptionIfUsernameAlreadyUsedInTheGivenSessionIdWithConnectedStatus() throws Exception {
@@ -284,7 +297,8 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
 
         try {
-            userService.connectUser(userDto);
+            userService.connectUser(userDto, (t) -> {
+            });
             Assert.fail("shouldThrowAnExceptionIfUsernameAlreadyUsedInTheGivenSessionIdWithConnectedStatus");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.DUPLICATE_IDENTIFIER);
@@ -293,7 +307,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies reconnect user if he was previously disconnected
-     * @see UserService#connectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#connectUser(com.influans.sp.dto.UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldReconnectUserIfHeWasPreviouslyDisconnected() throws Exception {
@@ -318,7 +332,8 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
 
         // when
-        userService.connectUser(userDto);
+        userService.connectUser(userDto, (t) -> {
+        });
 
         // then
         final List<UserEntity> users = userRepository.findUsersBySessionId(userDto.getSessionId());
@@ -328,7 +343,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies send a websocket notification
-     * @see UserService#connectUser(UserDto)
+     * @see UserService#connectUser(UserDto, Consumer)
      */
     @Test
     public void connectUser_shouldSendAWebsocketNotification() throws Exception {
@@ -345,7 +360,8 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
 
         // when
-        userService.connectUser(userDto);
+        userService.connectUser(userDto, (t) -> {
+        });
 
         // then
         verify(webSocketSender).sendNotification(userDto.getSessionId(), WsTypes.USER_CONNECTED, userDto);
@@ -353,83 +369,104 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw and error if sessionId is null or empty
-     * @see UserService#disconnectUser(UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldThrowAndErrorIfSessionIdIsNullOrEmpty() throws Exception {
-        final UserDto userDto = UserDtoBuilder.builder()
+        // given
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername("Leo")
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
         try {
-            userService.disconnectUser(userDto);
+            //when
+            userService.disconnectUser();
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNullOrEmpty");
         } catch (CustomException e) {
+            //then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
         }
     }
 
     /**
      * @verifies throw and error if username is null or empty
-     * @see UserService#disconnectUser(UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldThrowAndErrorIfUsernameIsNullOrEmpty() throws Exception {
-        final UserDto userDto = UserDtoBuilder.builder()
+        // given
+        final Principal principal = PrincipalBuilder.builder()
                 .withSessionId("sessionId")
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
         try {
-            userService.disconnectUser(userDto);
+            // when
+            userService.disconnectUser();
             Assert.fail("shouldThrowAndErrorIfUsernameIsNullOrEmpty");
         } catch (CustomException e) {
+            //then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
         }
     }
 
     /**
      * @verifies throw an error if sessions is not found
-     * @see UserService#disconnectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldThrowAnErrorIfSessionsIsNotFound() throws Exception {
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withSessionId("invalid_session_id")
+        // given
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername("Leo")
+                .withSessionId("invalid_session_id")
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
         try {
-            userService.disconnectUser(userDto);
+            // when
+            userService.disconnectUser();
             Assert.fail("shouldThrowAnErrorIfSessionsIsNotFound");
         } catch (CustomException e) {
+            //then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
         }
     }
 
     /**
      * @verifies throw an error if user was not found
-     * @see UserService#disconnectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldThrowAnErrorIfUserWasNotFound() throws Exception {
+        // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
                 .build();
         sessionRepository.save(sessionEntity);
 
-        final UserDto userDto = UserDtoBuilder.builder()
+        final Principal principal = PrincipalBuilder.builder()
                 .withSessionId(sessionId)
                 .withUsername("invalid_username")
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+
         try {
-            userService.disconnectUser(userDto);
+            // when
+            userService.disconnectUser();
             Assert.fail("shouldThrowAnErrorIfUserWasNotFound");
         } catch (CustomException e) {
+            // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
         }
     }
 
     /**
      * @verifies set user as disconnected
-     * @see UserService#disconnectUser(com.influans.sp.dto.UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldSetUserAsDisconnected() throws Exception {
@@ -448,12 +485,15 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(connectedUser);
 
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withSessionId(sessionId)
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+
         // when
-        userService.disconnectUser(userDto);
+        userService.disconnectUser();
 
         //then
         final UserEntity userEntity = userRepository.findUser(sessionId, username);
@@ -462,7 +502,7 @@ public class UserServiceTest extends ApplicationTest {
 
     /**
      * @verifies send a websocket notification
-     * @see UserService#disconnectUser(UserDto)
+     * @see UserService#disconnectUser()
      */
     @Test
     public void disconnectUser_shouldSendAWebsocketNotification() throws Exception {
@@ -481,14 +521,16 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(connectedUser);
 
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withSessionId(sessionId)
+        final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
                 .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
         // when
-        userService.disconnectUser(userDto);
+        userService.disconnectUser();
 
         // then
-        verify(webSocketSender).sendNotification(userDto.getSessionId(), WsTypes.USER_DISCONNECTED, userDto.getUsername());
+        verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.USER_DISCONNECTED, principal.getUsername());
     }
 }

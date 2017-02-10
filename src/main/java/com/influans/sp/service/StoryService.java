@@ -8,7 +8,6 @@ import com.influans.sp.entity.def.StoryEntityDef;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
-import com.influans.sp.repository.DAOResponse;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.utils.StringUtils;
@@ -60,6 +59,7 @@ public class StoryService {
      * @should delete a story
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if story does not exist
+     * @should throw an exception if user is not admin of the related session
      * @should send a websocket notification
      */
     public DefaultResponse delete(String storyId) {
@@ -84,6 +84,7 @@ public class StoryService {
      * @should throw an exception if storyName is empty or null
      * @should throw an exception if storyName contains only spaces
      * @should throw an exception if session does not exist
+     * @should throw an exception if user is not admin of the related session
      * @should create a story related to the given sessionId
      * @should send a websocket notification
      */
@@ -112,6 +113,7 @@ public class StoryService {
      * @return empty response
      * @should throw an exception if storyId is empty or null
      * @should throw an exception if story does not exist
+     * @should throw an exception if user is not admin of the related session
      * @should set story as ended
      * @should send a websocket notification
      */
