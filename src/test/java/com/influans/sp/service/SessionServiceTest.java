@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author hazem
@@ -85,12 +86,13 @@ public class SessionServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw an error if sessionDto is null
-     * @see SessionService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionService#createSession(com.influans.sp.dto.SessionDto, Consumer)
      */
     @Test
     public void createSession_shouldThrowAnErrorIfSessionDtoIsNull() throws Exception {
         try {
-            sessionService.createSession(null);
+            sessionService.createSession(null, (t) -> {
+            });
             Assert.fail("shouldThrowAnErrorIfSessionDtoIsNull");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -99,7 +101,7 @@ public class SessionServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw an error if withUsername is null
-     * @see SessionService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionService#createSession(com.influans.sp.dto.SessionDto, Consumer)
      */
     @Test
     public void createSession_shouldThrowAnErrorIfUsernameIsNull() throws Exception {
@@ -107,7 +109,8 @@ public class SessionServiceTest extends ApplicationTest {
                 .withCardSet(CardSetEnum.FIBONACCI)
                 .build();
         try {
-            sessionService.createSession(sessionDto);
+            sessionService.createSession(sessionDto, (t) -> {
+            });
             Assert.fail("shouldThrowAnErrorIfUsernameIsNull");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -116,7 +119,7 @@ public class SessionServiceTest extends ApplicationTest {
 
     /**
      * @verifies throw an error if cardSet is null
-     * @see SessionService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionService#createSession(com.influans.sp.dto.SessionDto, Consumer)
      */
     @Test
     public void createSession_shouldThrowAnErrorIfCardSetIsNull() throws Exception {
@@ -124,7 +127,8 @@ public class SessionServiceTest extends ApplicationTest {
                 .withUsername("username")
                 .build();
         try {
-            sessionService.createSession(sessionDto);
+            sessionService.createSession(sessionDto, (t) -> {
+            });
             Assert.fail("shouldThrowAnErrorIfCardSetIsNull");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
@@ -133,18 +137,18 @@ public class SessionServiceTest extends ApplicationTest {
 
     /**
      * @verifies create session and an admin user
-     * @see SessionService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionService#createSession(com.influans.sp.dto.SessionDto, Consumer)
      */
     @Test
     public void createSession_shouldCreateSessionAndAnAdminUser() throws Exception {
         // given
         final SessionDto sessionDto = SessionDtoBuilder.builder()
                 .withUsername("username")
-                .withSprintName("sprint")
                 .withCardSet(CardSetEnum.FIBONACCI)
                 .build();
         //when
-        final SessionDto createdSession = sessionService.createSession(sessionDto);
+        final SessionDto createdSession = sessionService.createSession(sessionDto, (t) -> {
+        });
 
         //then
         Assertions.assertThat(createdSession).isNotNull();
@@ -154,7 +158,7 @@ public class SessionServiceTest extends ApplicationTest {
         Assertions.assertThat(sessionEntity).isNotNull();
         Assertions.assertThat(sessionEntity.getSessionId()).isNotNull();
         Assertions.assertThat(sessionEntity.getCardSet().name()).isEqualTo(sessionDto.getCardSet());
-        Assertions.assertThat(sessionEntity.getSprintName()).isEqualTo(sessionDto.getSprintName());
+        Assertions.assertThat(sessionEntity.getSprintName()).isNotNull();
 
         final UserEntity userEntity = userRepository.findUser(createdSession.getSessionId(), createdSession.getUsername());
         Assertions.assertThat(userEntity).isNotNull();
@@ -164,7 +168,7 @@ public class SessionServiceTest extends ApplicationTest {
 
     /**
      * @verifies create stories if stories list is not empty
-     * @see SessionService#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionService#createSession(com.influans.sp.dto.SessionDto, Consumer)
      */
     @Test
     public void createSession_shouldCreateStoriesIfStoriesListIsNotEmpty() throws Exception {
@@ -179,7 +183,8 @@ public class SessionServiceTest extends ApplicationTest {
                 .collect()
                 .build();
         //when
-        final SessionDto createdSession = sessionService.createSession(sessionDto);
+        final SessionDto createdSession = sessionService.createSession(sessionDto, (t) -> {
+        });
 
         //then
         final List<StoryEntity> storyEntities = storyRepository.findBySessionId(createdSession.getSessionId());

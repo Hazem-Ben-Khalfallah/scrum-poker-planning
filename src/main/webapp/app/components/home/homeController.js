@@ -18,14 +18,13 @@ var Events = {
 };
 
 homeController.controller('homeCtrl',
-    ['$http', '$log', '$scope', '$sessionStorage', '$location', 'webSocketFactory', 'storyFactory', 'voteFactory',
+    ['$http', '$log', '$scope', '$localStorage', '$location', 'webSocketFactory', 'storyFactory', 'voteFactory',
         'userFactory', 'session', 'users', 'stories',
-        function ($http, $log, $scope, $sessionStorage, $location, webSocketFactory, storyFactory, voteFactory,
+        function ($http, $log, $scope, $localStorage, $location, webSocketFactory, storyFactory, voteFactory,
                   userFactory, session, users, stories) {
 
             $scope.logout = function () {
-                $sessionStorage.$reset();
-                userFactory.disconnect($scope.currentUser, function (response) {
+                userFactory.disconnect(function (response) {
                     if (response.status === 'OK') {
                         webSocketFactory.disconnect();
                         $location.path('/login');
@@ -92,7 +91,7 @@ homeController.controller('homeCtrl',
                 if (!$scope.newStory.storyName) {
                     return;
                 }
-                $scope.newStory.sessionId = $scope.sessionId;
+                $scope.newStory.sessionId = $scope.currentUser.sessionId;
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
                     $scope.newStory = {};
@@ -102,7 +101,7 @@ homeController.controller('homeCtrl',
             $scope.createVote = function (card) {
                 $scope.loading = true;
                 var data = {
-                    sessionId: $scope.sessionId,
+                    sessionId: $scope.currentUser.sessionId,
                     storyId: $scope.currentStory.storyId,
                     username: $scope.currentUser.username,
                     value: card.id
@@ -312,7 +311,7 @@ homeController.controller('homeCtrl',
             }
 
             function init() {
-                if (!$sessionStorage.username || !$sessionStorage.sessionId) {
+                if (!$localStorage.currentUser) {
                     $location.path('/login');
                 }
                 //initialize clipboard (copy to keyboard feature)
@@ -331,22 +330,15 @@ homeController.controller('homeCtrl',
 
                 $scope.currentVote = {};
 
-                $scope.username = $sessionStorage.username;
-                $scope.sessionId = $sessionStorage.sessionId;
+                $scope.currentUser = $localStorage.currentUser;
 
                 //subscribe
-                webSocketFactory.subscribe($scope.sessionId, function (data) {
+                webSocketFactory.subscribe($scope.currentUser.sessionId, function (data) {
                     $scope.consumeEvent(data);
                 });
 
                 //get users
                 $scope.users = users;
-                //get current user
-                angular.forEach($scope.users, function (user) {
-                    if (user.username == $scope.username) {
-                        $scope.currentUser = user;
-                    }
-                });
 
                 //get session info
                 $scope.sprintName = session.sprintName;
@@ -419,23 +411,23 @@ homeController.controller('homeCtrl',
     ]);
 
 homeController.resolve = {
-    session: ['sessionFactory', '$sessionStorage', '$q', function (sessionFactory, $sessionStorage, $q) {
+    session: ['sessionFactory', '$localStorage', '$q', function (sessionFactory, $localStorage, $q) {
         var delay = $q.defer();
-        sessionFactory.get($sessionStorage.sessionId, function (data) {
+        sessionFactory.get($localStorage.currentUser.sessionId, function (data) {
             delay.resolve(data);
         });
         return delay.promise;
     }],
-    users: ['userFactory', '$sessionStorage', '$q', function (userFactory, $sessionStorage, $q) {
+    users: ['userFactory', '$localStorage', '$q', function (userFactory, $localStorage, $q) {
         var delay = $q.defer();
-        userFactory.get($sessionStorage.sessionId, function (data) {
+        userFactory.get($localStorage.currentUser.sessionId, function (data) {
             delay.resolve(data);
         });
         return delay.promise;
     }],
-    stories: ['storyFactory', '$sessionStorage', '$q', function (storyFactory, $sessionStorage, $q) {
+    stories: ['storyFactory', '$localStorage', '$q', function (storyFactory, $localStorage, $q) {
         var delay = $q.defer();
-        storyFactory.get($sessionStorage.sessionId, function (data) {
+        storyFactory.get($localStorage.currentUser.sessionId, function (data) {
             delay.resolve(data);
         });
         return delay.promise;

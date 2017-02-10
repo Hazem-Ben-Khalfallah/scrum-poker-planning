@@ -5,17 +5,21 @@ import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.StoryEntity;
 import com.influans.sp.entity.UserEntity;
 import com.influans.sp.enums.CardSetEnum;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.JwtService;
+import com.influans.sp.utils.DateUtils;
 import com.influans.sp.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author hazem
@@ -29,6 +33,8 @@ public class SessionService {
     private UserRepository userRepository;
     @Autowired
     private StoryRepository storyRepository;
+    @Autowired
+    private JwtService jwtService;
 
     /**
      * @param sessionId session id
@@ -55,11 +61,10 @@ public class SessionService {
      * @should throw an error if sessionDto is null
      * @should throw an error if username is null
      * @should throw an error if cardSet is null
-     * @should throw an exception if user has not session admin role
      * @should create session and an admin user
      * @should create stories if stories list is not empty
      */
-    public SessionDto createSession(SessionDto sessionDto) {
+    public SessionDto createSession(SessionDto sessionDto, Consumer<String> connectionConsumer) {
         if (sessionDto == null) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "Session should not be null");
         }
@@ -74,6 +79,7 @@ public class SessionService {
 
         //save session
         final SessionEntity sessionEntity = sessionDto.toEntity();
+        sessionEntity.setSprintName(String.format("Sprint planning %s", DateUtils.format("dd/MM/yyyy")));
         sessionRepository.save(sessionEntity);
         //save stories
         if (!CollectionUtils.isEmpty(sessionDto.getStories())) {
@@ -85,6 +91,12 @@ public class SessionService {
         userRepository.save(userEntity);
 
         sessionDto.setSessionId(sessionEntity.getSessionId());
+        sessionDto.setSprintName(sessionEntity.getSprintName());
+
+        // generate JWT token
+        final String token = jwtService.generate(sessionDto.getSessionId(), sessionDto.getUsername(), UserRole.SESSION_ADMIN);
+        connectionConsumer.accept(token);
+
         return sessionDto;
     }
 }

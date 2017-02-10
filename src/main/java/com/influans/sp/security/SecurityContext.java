@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class SecurityContext {
     public Principal getAuthenticationContext() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null)
+            return null;
+
         return ((ScrumPokerAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
     }
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.lanwen.verbalregex.VerbalExpression;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,8 +26,9 @@ public class JwtAccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAccessTokenAuthenticationFilter.class);
     private static final Pattern JWT_AUTH_HEADER = Pattern.compile("Bearer (.*)", Pattern.CASE_INSENSITIVE);
 
-    private final Set<Pair<String, String>> PERMITTED_URL = ImmutableSet.<Pair<String, String>>builder()
-            .add(ImmutablePair.of("POST", "/users/connect"))
+    private final Set<Pair<String, VerbalExpression>> PERMITTED_URL = ImmutableSet.<Pair<String, VerbalExpression>>builder()
+            .add(ImmutablePair.of("POST", VerbalExpression.regex().startOfLine().then("/users/connect").endOfLine().build()))
+            .add(ImmutablePair.of("POST", VerbalExpression.regex().startOfLine().then("/sessions").endOfLine().build()))
             .build();
 
     @Autowired
@@ -57,7 +59,9 @@ public class JwtAccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPermitted(HttpServletRequest request) {
         final String apiURI = getApiURI(request);
         final String method = getMethod(request);
-        return PERMITTED_URL.contains(ImmutablePair.of(method, apiURI));
+        return PERMITTED_URL.stream().anyMatch(stringVerbalExpressionPair ->
+                stringVerbalExpressionPair.getKey().equals(method) &&
+                        stringVerbalExpressionPair.getValue().testExact(apiURI));
     }
 
     private String getApiURI(HttpServletRequest request) {

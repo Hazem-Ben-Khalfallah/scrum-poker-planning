@@ -1,10 +1,9 @@
 var dashboardController = angular.module('dashboardController', []);
 
 dashboardController.controller('dashboardCtrl',
-    ['$scope', '$location', '$sessionStorage', '$log', 'sessionFactory',
-        function ($scope, $location, $sessionStorage, $log, sessionFactory) {
+    ['$scope', '$location', '$localStorage', '$log', 'sessionFactory',
+        function ($scope, $location, $localStorage, $log, sessionFactory) {
             function init() {
-                $sessionStorage.$reset();
                 $scope.show_modal = false;
                 $scope.stories = [];
                 $scope.cardSet = 'time';
@@ -51,11 +50,8 @@ dashboardController.controller('dashboardCtrl',
                 if(!username){
                     return;
                 }
-                $sessionStorage.sessionId = generateIdSession();
-                $sessionStorage.username = username;
+                
                 var data = {
-                    sessionId: $sessionStorage.sessionId,
-                    sprintName: $scope.sprintName,
                     username: username,
                     cardSet: $scope.cardSet,
                     stories: $scope.stories
@@ -63,20 +59,9 @@ dashboardController.controller('dashboardCtrl',
 
                 sessionFactory.create(data, function (response) {
                     $scope.closeModal();
-                    $location.path('/home/' + $sessionStorage.sessionId);
+                    $location.path('/home/' + $localStorage.currentUser.sessionId);
                 });
             };
-
-            function generateIdSession() {
-                var hash = "";
-                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-                for (var i = 0; i < 10; i++) {
-                    hash += possible.charAt(Math.floor(Math.random() * possible.length));
-                }
-
-                return hash;
-            }
 
             init();
         }]);

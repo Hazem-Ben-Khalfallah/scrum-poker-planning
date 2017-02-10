@@ -18,6 +18,7 @@ angular.module('userFactory', [])
                         $localStorage.currentUser = {
                             username: data.username,
                             sessionId: data.sessionId,
+                            admin: false,
                             token: token
                         };
                         // add jwt token to auth header for all requests made by the $http service
@@ -26,11 +27,11 @@ angular.module('userFactory', [])
                     onSuccess(body);
                 }, onError);
             },
-            disconnect: function (data, onSuccess, onError) {
+            disconnect: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
                 var url = '/users/disconnect';
-                $httpWrapper.post(url, data, function (body) {
+                $httpWrapper.post(url, {}, function (body) {
                     // remove user from local storage and clear http auth header
                     delete $localStorage.currentUser;
                     $http.defaults.headers.common.Authorization = '';

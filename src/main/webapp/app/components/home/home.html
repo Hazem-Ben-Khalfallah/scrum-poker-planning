@@ -1,7 +1,10 @@
 <div class="ui secondary pointing menu">
+    <div class="left menu">
+        <h3>{{sprintName}}</h3>
+    </div>
     <div class="right menu">
         <a class="ui item">
-            <span><strong>{{username}}</strong> | </span>
+            <span><strong>{{currentUser.username}}</strong> | </span>
 
             <div ng-click="logout()">
                 Logout
@@ -210,9 +213,9 @@
                 <!-- session copier -->
                 <div class="ui small action labeled input">
                     <div class="ui label" style="padding-top:11px">
-                        Share room
+                        Share session
                     </div>
-                    <input id="sessionId" value="{{sessionId}}" type="text" readonly>
+                    <input id="sessionId" value="{{currentUser.sessionId}}" type="text" readonly>
                     <button data-clipboard-target="#sessionId" class="ui right icon button clipboard">
                         <i class="copy icon"></i>
                     </button>

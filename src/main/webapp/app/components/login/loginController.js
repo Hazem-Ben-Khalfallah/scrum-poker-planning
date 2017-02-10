@@ -1,10 +1,12 @@
 var loginController = angular.module('loginController', []);
 
-loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage', '$log', 'userFactory', 'webSocketFactory',
-    function ($scope, $location, $sessionStorage, $log, userFactory, webSocketFactory) {
+loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage', '$log', 'userFactory',
+    function ($scope, $location, $localStorage, $log, userFactory) {
 
         function init() {
-            $sessionStorage.$reset();
+            if ($localStorage.currentUser) {
+                $location.path('/home/' + $localStorage.currentUser.sessionId);
+            }
         }
 
         $scope.connect = function () {
@@ -19,9 +21,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$sessionStorage
             };
             userFactory.connect(data, function () {
                 $scope.loading = false;
-                $sessionStorage.username = $scope.username;
-                $sessionStorage.sessionId = $scope.sessionId;
-                $location.path('/home/' + $sessionStorage.sessionId);
+                $location.path('/home/' + $localStorage.currentUser.sessionId);
             }, function () {
                 $scope.loading = false;
             });

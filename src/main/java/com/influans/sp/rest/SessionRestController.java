@@ -1,11 +1,14 @@
 package com.influans.sp.rest;
 
 import com.influans.sp.dto.SessionDto;
+import com.influans.sp.security.SecurityContext;
 import com.influans.sp.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class SessionRestController {
@@ -33,7 +36,8 @@ public class SessionRestController {
      */
     @RequestMapping(value = "/sessions", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<SessionDto> createSession(@RequestBody SessionDto sessionDto) {
-        return new ResponseEntity<>(sessionService.createSession(sessionDto), HttpStatus.OK);
+    public ResponseEntity<SessionDto> createSession(@RequestBody SessionDto sessionDto, HttpServletResponse httpServletResponse) {
+        return new ResponseEntity<>(sessionService.createSession(sessionDto,
+                (token) -> httpServletResponse.addHeader(SecurityContext.Headers.JWT_TOKEN, token)), HttpStatus.OK);
     }
 }
