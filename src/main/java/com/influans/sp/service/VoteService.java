@@ -2,7 +2,7 @@ package com.influans.sp.service;
 
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.VoteDto;
-import com.influans.sp.entity.EntityId;
+import com.influans.sp.entity.UserEntity;
 import com.influans.sp.entity.VoteEntity;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
@@ -96,9 +96,9 @@ public class VoteService {
      * @should throw an exception if sessionId is null or empty
      * @should throw an exception if username is null or empty
      * @should throw an exception if value is null or empty
-     * @should throw an exception if user is not connected to the related session
      * @should throw an exception if story does not exist with given Id
-     * @should throw an exception if user does not exist with given username
+     * @should throw an exception if no user has been connected to the related session with the given username
+     * @should throw an exception if user has been disconnected from the related session
      * @should throw an exception if session does not exist with given sessionId
      * @should Update existing vote if the user has already voted on the given story
      * @should create a vote for the given user on the selected story
@@ -129,8 +129,11 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + voteDto.getStoryId());
         }
 
-        if (!userRepository.exists(new EntityId(voteDto.getUsername(), voteDto.getSessionId()))) {
+        final UserEntity userEntity = userRepository.findUser(voteDto.getSessionId(), voteDto.getUsername());
+        if (userEntity == null) {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "user not found with username = " + voteDto.getUsername());
+        } else if (!userEntity.isConnected()) {
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user %s has been disconnected  from session %s ", voteDto.getUsername(), voteDto.getSessionId());
         }
 
         VoteEntity voteEntity = voteRepository.getVoteByUserOnStory(voteDto.getUsername(), voteDto.getStoryId());

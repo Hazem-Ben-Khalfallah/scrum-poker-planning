@@ -304,11 +304,11 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies throw an exception if user does not exist with given withUsername
+     * @verifies throw an exception if no user has been connected to the related session with the given username
      * @see VoteService#saveVote(com.influans.sp.dto.VoteDto)
      */
     @Test
-    public void saveVote_shouldThrowAnExceptionIfUserDoesNotExistWithGivenUsername() throws Exception {
+    public void saveVote_shouldThrowAnExceptionIfNoUserHasBeenConnectedToTheRelatedSessionWithTheGivenUsername() throws Exception {
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -322,10 +322,17 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         storyRepository.save(storyEntity);
 
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId("other_session_id")
+                .build();
+        userRepository.save(userEntity);
+
         final VoteDto voteDto = VoteDtoBuilder.builder()
                 .withSessionId(sessionId)
                 .withStoryId(storyId)
-                .withUsername("username")
+                .withUsername(username)
                 .withValue("value")
                 .build();
         try {
@@ -334,6 +341,52 @@ public class VoteServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
             Assertions.assertThat(e.getMessage()).startsWith("user not found");
+        }
+    }
+
+    /**
+     * @verifies throw an exception if user has been disconnected from the related session
+     * @see VoteService#saveVote(VoteDto)
+     */
+    @Test
+    public void saveVote_shouldThrowAnExceptionIfUserHasBeenDisconnectedFromTheRelatedSession() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
+        final String username = "username";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(false)
+                .build();
+        userRepository.save(userEntity);
+
+        final VoteDto voteDto = VoteDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withStoryId(storyId)
+                .withUsername(username)
+                .withValue("value")
+                .build();
+
+        try {
+            // when
+            voteService.saveVote(voteDto);
+            Assert.fail("shouldThrowAnExceptionIfUserHasBeenDisconnectedFromTheRelatedSession");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
+            Assertions.assertThat(e.getMessage()).contains("has been disconnected");
         }
     }
 

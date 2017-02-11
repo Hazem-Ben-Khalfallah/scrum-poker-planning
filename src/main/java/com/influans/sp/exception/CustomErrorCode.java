@@ -9,6 +9,7 @@ public enum CustomErrorCode {
     OBJECT_NOT_FOUND(Response.Status.NOT_FOUND, "Object not found"), //
     INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR, "Unmanaged exception"), //
     NOT_YET_IMPLEMENTED(Response.Status.NOT_IMPLEMENTED, "Service not yet implemented"), //
+    UNAUTHORIZED(Response.Status.UNAUTHORIZED, "Requires user authentication"), //
     PERMISSION_DENIED(Response.Status.FORBIDDEN, "Rights problem"), //
     SERVICE_UNAVAILABLE(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable"), //
     BAD_GATEWAY(Response.Status.BAD_GATEWAY, "Problem with external api service");

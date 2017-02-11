@@ -10,8 +10,8 @@ public class CustomException extends RuntimeException {
         this.customErrorCode = errorCode;
     }
 
-    public CustomException(CustomErrorCode errorCode, String message) {
-        super(message);
+    public CustomException(CustomErrorCode errorCode, String message, String... params) {
+        super(String.format(message, params));
         this.customErrorCode = errorCode;
     }
 
@@ -20,8 +20,8 @@ public class CustomException extends RuntimeException {
         this.customErrorCode = errorCode;
     }
 
-    public CustomException(CustomErrorCode errorCode, String message, Exception e) {
-        super(message, e);
+    public CustomException(CustomErrorCode errorCode, Throwable e, String message, String... params) {
+        super(String.format(message, params), e);
         this.customErrorCode = errorCode;
     }
 
