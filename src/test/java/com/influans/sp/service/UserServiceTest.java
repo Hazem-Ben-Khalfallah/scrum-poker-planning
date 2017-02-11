@@ -369,98 +369,19 @@ public class UserServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies throw and error if sessionId is null or empty
+     * @verifies check authenticated user
      * @see UserService#disconnectUser()
      */
     @Test
-    public void disconnectUser_shouldThrowAndErrorIfSessionIdIsNullOrEmpty() throws Exception {
+    public void disconnectUser_shouldCheckAuthenticatedUser() throws Exception {
         // given
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("Leo")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {
             //when
             userService.disconnectUser();
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNullOrEmpty");
         } catch (CustomException e) {
             //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    /**
-     * @verifies throw and error if username is null or empty
-     * @see UserService#disconnectUser()
-     */
-    @Test
-    public void disconnectUser_shouldThrowAndErrorIfUsernameIsNullOrEmpty() throws Exception {
-        // given
-        final Principal principal = PrincipalBuilder.builder()
-                .withSessionId("sessionId")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-        try {
-            // when
-            userService.disconnectUser();
-            Assert.fail("shouldThrowAndErrorIfUsernameIsNullOrEmpty");
-        } catch (CustomException e) {
-            //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    /**
-     * @verifies throw an error if sessions is not found
-     * @see UserService#disconnectUser()
-     */
-    @Test
-    public void disconnectUser_shouldThrowAnErrorIfSessionsIsNotFound() throws Exception {
-        // given
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("Leo")
-                .withSessionId("invalid_session_id")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-        try {
-            // when
-            userService.disconnectUser();
-            Assert.fail("shouldThrowAnErrorIfSessionsIsNotFound");
-        } catch (CustomException e) {
-            //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    /**
-     * @verifies throw an error if user was not found
-     * @see UserService#disconnectUser()
-     */
-    @Test
-    public void disconnectUser_shouldThrowAnErrorIfUserWasNotFound() throws Exception {
-        // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withSessionId(sessionId)
-                .withUsername("invalid_username")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-
-        try {
-            // when
-            userService.disconnectUser();
-            Assert.fail("shouldThrowAnErrorIfUserWasNotFound");
-        } catch (CustomException e) {
-            // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }

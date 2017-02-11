@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -41,6 +40,8 @@ public class UserService {
     private SecurityContext securityContext;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private AuthenticationService authenticationService;
 
 
     /**
@@ -114,38 +115,13 @@ public class UserService {
 
     /**
      * @return empty response
-     * @should throw and error if sessionId is null or empty
-     * @should throw and error if username is null or empty
-     * @should throw an error if user was not found
-     * @should throw an error if sessions is not found
+     * @should check authenticated user
      * @should set user as disconnected
      * @should send a websocket notification
      */
     public DefaultResponse disconnectUser() {
-        final Optional<Principal> optional = securityContext.getAuthenticationContext();
-
-        if (!optional.isPresent()) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated");
-        }
-
-        final Principal user = optional.get();
-
-        if (StringUtils.isEmpty(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "session should not be null or empty");
-        }
-
-        if (StringUtils.isEmpty(user.getUsername(), true)) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "username should not be null or empty");
-        }
-        if (!sessionRepository.exists(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "session not found with id = " + user.getSessionId());
-        }
-
+        final Principal user = authenticationService.checkAuthenticatedUser();
         final UserEntity userEntity = userRepository.findUser(user.getSessionId(), user.getUsername());
-
-        if (userEntity == null) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user not found with username = " + user.getUsername());
-        }
 
         userEntity.setConnected(false);
         userRepository.save(userEntity);

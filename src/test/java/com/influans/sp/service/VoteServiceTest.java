@@ -119,15 +119,56 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
+     * @verifies check authenticated user
+     * @see VoteService#delete(String)
+     */
+    @Test
+    public void delete_shouldCheckAuthenticatedUser() throws Exception {
+        // given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        try {
+            //when
+            voteService.delete("vote_id");
+            Assert.fail("shouldThrowAnExceptionIfUserIsNotConnectedToTheRelatedSession");
+        } catch (CustomException e) {
+            //then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    /**
      * @verifies throw an exception if voteId is null
      * @see VoteService#delete(String)
      */
     @Test
     public void delete_shouldThrowAnExceptionIfVoteIdIsNull() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         try {
+            // when
             voteService.delete(null);
             Assert.fail("shouldThrowAnExceptionIfVoteIdIsNull");
         } catch (CustomException e) {
+            // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
         }
     }
@@ -138,11 +179,79 @@ public class VoteServiceTest extends ApplicationTest {
      */
     @Test
     public void delete_shouldThrowAnExceptionIfVoteDoesNotExistWithGivenId() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         try {
+            // when
             voteService.delete("invalid_vote_id");
             Assert.fail("shouldThrowAnExceptionIfVoteDoesNotExistWithGivenId");
         } catch (CustomException e) {
+            // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @verifies throw an exception if user is not the vote owner
+     * @see VoteService#delete(String)
+     */
+    @Test
+    public void delete_shouldThrowAnExceptionIfUserIsNotTheVoteOwner() throws Exception {
+        // given
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withVoteId(voteId)
+                .withUsername("other_username")
+                .withSessionId("other_session_id")
+                .build();
+        voteRepository.save(voteEntity);
+
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        try {
+            // when
+            voteService.delete(voteId);
+            Assert.fail("shouldThrowAnExceptionIfUserIsNotTheVoteOwner");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
         }
     }
 
@@ -158,6 +267,26 @@ public class VoteServiceTest extends ApplicationTest {
                 .withVoteId(voteId)
                 .build();
         voteRepository.save(voteEntity);
+
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         // when
         voteService.delete(voteId);
@@ -180,11 +309,55 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         voteRepository.save(voteEntity);
 
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         voteService.delete(voteId);
 
         // then
         verify(webSocketSender).sendNotification(voteEntity.getSessionId(), WsTypes.VOTE_REMOVED, voteId);
+    }
+
+    /**
+     * @verifies check authenticated user
+     * @see VoteService#saveVote(VoteCreationDto)
+     */
+    @Test
+    public void saveVote_shouldCheckAuthenticatedUser() throws Exception {
+        // given
+        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
+                .withValue("value")
+                .withStoryId("story_id")
+                .build();
+
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+
+        try {
+            // when
+            voteService.saveVote(voteCreationDto);
+            Assert.fail("shouldThrowAnExceptionIfUserIsNotAuthenticated");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
+        }
     }
 
     /**
@@ -198,9 +371,22 @@ public class VoteServiceTest extends ApplicationTest {
                 .withValue("value")
                 .build();
 
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
         final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
-                .withSessionId("sessionId")
+                .withUsername(username)
+                .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
         Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
@@ -225,9 +411,22 @@ public class VoteServiceTest extends ApplicationTest {
                 .withStoryId("storyId")
                 .build();
 
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
         final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
-                .withSessionId("sessionId")
+                .withUsername(username)
+                .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
         Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
@@ -238,87 +437,6 @@ public class VoteServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
-        }
-    }
-
-    /**
-     * @verifies throw an exception if withSessionId is null or empty
-     * @see VoteService#saveVote(VoteCreationDto)
-     */
-    @Test
-    public void saveVote_shouldThrowAnExceptionIfSessionIdIsNullOrEmpty() throws Exception {
-        // given
-        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
-                .withStoryId("storyId")
-                .withValue("value")
-                .build();
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-        try {
-            // when
-            voteService.saveVote(voteCreationDto);
-            Assert.fail("shouldThrowAnExceptionIfSessionIdIsNullOrEmpty");
-        } catch (CustomException e) {
-            //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    /**
-     * @verifies throw an exception if withUsername is null or empty
-     * @see VoteService#saveVote(VoteCreationDto)
-     */
-    @Test
-    public void saveVote_shouldThrowAnExceptionIfUsernameIsNullOrEmpty() throws Exception {
-        // given
-        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
-                .withStoryId("storyId")
-                .withValue("value")
-                .build();
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withSessionId("sessionId")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-        try {
-            // when
-            voteService.saveVote(voteCreationDto);
-            Assert.fail("shouldThrowAnExceptionIfUsernameIsNullOrEmpty");
-        } catch (CustomException e) {
-            // then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    /**
-     * @verifies throw an exception if session does not exist with given withSessionId
-     * @see VoteService#saveVote(VoteCreationDto)
-     */
-    @Test
-    public void saveVote_shouldThrowAnExceptionIfSessionDoesNotExistWithGivenSessionId() throws Exception {
-        // given
-        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
-                .withStoryId("storyId")
-                .withValue("value")
-                .build();
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
-                .withSessionId("invalid_session_id")
-                .withRole(UserRole.VOTER)
-                .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
-        try {
-            voteService.saveVote(voteCreationDto);
-            Assert.fail("shouldThrowAnExceptionIfSessionDoesNotExistWithGivenSessionId");
-        } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).startsWith("session not found");
         }
     }
 
@@ -335,17 +453,25 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
         final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
                 .withStoryId("storyId")
                 .withValue("value")
                 .build();
 
         final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
+                .withUsername(username)
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
         Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         try {
             // when
             voteService.saveVote(voteCreationDto);

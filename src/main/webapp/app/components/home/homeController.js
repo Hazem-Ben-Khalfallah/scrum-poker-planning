@@ -101,9 +101,7 @@ homeController.controller('homeCtrl',
             $scope.createVote = function (card) {
                 $scope.loading = true;
                 var data = {
-                    sessionId: $scope.currentUser.sessionId,
                     storyId: $scope.currentStory.storyId,
-                    username: $scope.currentUser.username,
                     value: card.id
                 };
 

@@ -135,6 +135,26 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .build();
         voteRepository.save(voteEntity);
 
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final DefaultResponse response = givenJsonClient()
                 .delete("/votes/{voteId}", voteId)
@@ -154,6 +174,27 @@ public class VoteRestControllerTest extends AppIntegrationTest {
      */
     @Test
     public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
                 .delete("/votes/{voteId}", "invalid_vote_id")
