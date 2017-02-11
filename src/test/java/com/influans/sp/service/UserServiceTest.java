@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.verify;
@@ -378,14 +379,14 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername("Leo")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
         try {
             //when
             userService.disconnectUser();
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNullOrEmpty");
         } catch (CustomException e) {
             //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
@@ -400,14 +401,14 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId("sessionId")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
         try {
             // when
             userService.disconnectUser();
             Assert.fail("shouldThrowAndErrorIfUsernameIsNullOrEmpty");
         } catch (CustomException e) {
             //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
@@ -423,14 +424,14 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId("invalid_session_id")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
         try {
             // when
             userService.disconnectUser();
             Assert.fail("shouldThrowAnErrorIfSessionsIsNotFound");
         } catch (CustomException e) {
             //then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
@@ -452,7 +453,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername("invalid_username")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         try {
             // when
@@ -460,7 +461,7 @@ public class UserServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAnErrorIfUserWasNotFound");
         } catch (CustomException e) {
             // then
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
@@ -490,7 +491,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         // when
         userService.disconnectUser();
@@ -526,7 +527,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
         // when
         userService.disconnectUser();
 

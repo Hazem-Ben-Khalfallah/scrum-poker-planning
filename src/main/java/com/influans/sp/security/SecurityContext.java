@@ -4,17 +4,20 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * @author hazem
  */
 @Component
 @Profile("!test")
 public class SecurityContext {
-    public Principal getAuthenticationContext() {
+    public Optional<Principal> getAuthenticationContext() {
         if (SecurityContextHolder.getContext().getAuthentication() == null)
-            return null;
+            return Optional.empty();
 
-        return ((ScrumPokerAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        final Principal principal = ((ScrumPokerAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        return Optional.of(principal);
     }
 
     public class Headers {

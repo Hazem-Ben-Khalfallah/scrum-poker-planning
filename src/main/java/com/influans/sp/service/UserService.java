@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -121,23 +122,29 @@ public class UserService {
      * @should send a websocket notification
      */
     public DefaultResponse disconnectUser() {
-        final Principal user = securityContext.getAuthenticationContext();
+        final Optional<Principal> optional = securityContext.getAuthenticationContext();
+
+        if (!optional.isPresent()) {
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated");
+        }
+
+        final Principal user = optional.get();
 
         if (StringUtils.isEmpty(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "session should not be null or empty");
         }
 
         if (StringUtils.isEmpty(user.getUsername(), true)) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "username should not be null or empty");
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "username should not be null or empty");
         }
         if (!sessionRepository.exists(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + user.getSessionId());
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "session not found with id = " + user.getSessionId());
         }
 
         final UserEntity userEntity = userRepository.findUser(user.getSessionId(), user.getUsername());
 
         if (userEntity == null) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "user not found with username = " + user.getUsername());
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user not found with username = " + user.getUsername());
         }
 
         userEntity.setConnected(false);

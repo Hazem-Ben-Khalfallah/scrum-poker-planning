@@ -5,26 +5,34 @@ import com.influans.sp.AppIntegrationTest;
 import com.influans.sp.builders.*;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.ErrorResponse;
+import com.influans.sp.dto.VoteCreationDto;
 import com.influans.sp.dto.VoteDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.StoryEntity;
 import com.influans.sp.entity.UserEntity;
 import com.influans.sp.entity.VoteEntity;
 import com.influans.sp.enums.ResponseStatus;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.UserRepository;
 import com.influans.sp.repository.VoteRepository;
+import com.influans.sp.security.Principal;
+import com.influans.sp.security.SecurityContext;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
 import static com.influans.sp.dto.ErrorResponse.Attributes.EXCEPTION;
 import static com.influans.sp.dto.ErrorResponse.Attributes.URI;
 import static com.influans.sp.exception.CustomErrorCode.OBJECT_NOT_FOUND;
+import static com.influans.sp.exception.CustomErrorCode.UNAUTHORIZED;
 
 /**
  * @author hazem
@@ -39,6 +47,14 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     private SessionRepository sessionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SecurityContext securityContext;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(securityContext);
+    }
 
     /**
      * @verifies return 200 status
@@ -153,7 +169,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see VoteRestController#saveVote(com.influans.sp.dto.VoteDto)
+     * @see VoteRestController#saveVote(VoteCreationDto)
      */
     @Test
     public void saveVote_shouldReturn200Status() throws Exception {
@@ -178,16 +194,21 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .build();
         userRepository.save(userEntity);
 
-        final VoteDto voteDto = VoteDtoBuilder.builder()
-                .withSessionId(sessionId)
+        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
                 .withStoryId(storyId)
-                .withUsername(username)
                 .withValue("value")
                 .build();
 
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final VoteDto response = givenJsonClient()
-                .body(voteDto)
+                .body(voteCreationDto)
                 .post("/votes")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
@@ -202,24 +223,29 @@ public class VoteRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see VoteRestController#saveVote(com.influans.sp.dto.VoteDto)
+     * @see VoteRestController#saveVote(VoteCreationDto)
      */
     @Test
     public void saveVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final VoteDto voteDto = VoteDtoBuilder.builder()
-                .withSessionId("invalid_session_id")
+        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
                 .withStoryId("storyId")
-                .withUsername("username")
                 .withValue("value")
                 .build();
 
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername("username")
+                .withSessionId("sessionId")
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .body(voteDto)
+                .body(voteCreationDto)
                 .post("/votes")
                 .then()
-                .statusCode(OBJECT_NOT_FOUND.getStatusCode())
+                .statusCode(UNAUTHORIZED.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 

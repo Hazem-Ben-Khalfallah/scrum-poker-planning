@@ -1,5 +1,6 @@
 package com.influans.sp.rest;
 
+import com.influans.sp.dto.VoteCreationDto;
 import com.influans.sp.dto.VoteDto;
 import com.influans.sp.service.VoteService;
 import com.influans.sp.websocket.WebSocketSender;
@@ -42,14 +43,14 @@ public class VoteRestController {
     }
 
     /**
-     * @param voteDto vote that will be create
+     * @param voteCreationDto vote that will be create
      * @return VoteDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/votes", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<VoteDto> saveVote(@RequestBody VoteDto voteDto) {
-        return new ResponseEntity<>(voteService.saveVote(voteDto), HttpStatus.OK);
+    public ResponseEntity<VoteCreationDto> saveVote(@RequestBody VoteCreationDto voteCreationDto) {
+        return new ResponseEntity<>(voteService.saveVote(voteCreationDto), HttpStatus.OK);
     }
 }

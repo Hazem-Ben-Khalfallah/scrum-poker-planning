@@ -18,7 +18,6 @@ import com.influans.sp.repository.UserRepository;
 import com.influans.sp.security.Principal;
 import com.influans.sp.security.SecurityContext;
 import org.assertj.core.api.Assertions;
-import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
 import static com.influans.sp.dto.ErrorResponse.Attributes.EXCEPTION;
 import static com.influans.sp.dto.ErrorResponse.Attributes.URI;
 import static com.influans.sp.exception.CustomErrorCode.BAD_ARGS;
 import static com.influans.sp.exception.CustomErrorCode.OBJECT_NOT_FOUND;
+import static com.influans.sp.exception.CustomErrorCode.UNAUTHORIZED;
 
 /**
  * @author hazem
@@ -192,7 +193,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         // when
         final DefaultResponse response = givenJsonClient()
@@ -218,13 +219,13 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withUsername("Leo")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(principal);
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
                 .post("/users/disconnect")
                 .then()
-                .statusCode(BAD_ARGS.getStatusCode())
+                .statusCode(UNAUTHORIZED.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 
