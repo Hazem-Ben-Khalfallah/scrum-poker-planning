@@ -11,7 +11,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -65,8 +64,7 @@ public class JwtService {
             final Principal principal = new Principal(username, sessionId, UserRole.valueOf(role));
             return new ScrumPokerAuthenticationToken(principal);
         } catch (Exception e) {
-            LOGGER.debug("Invalid JWT ", e);
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("Invalid JWT ", e);
             return null;
         }
     }

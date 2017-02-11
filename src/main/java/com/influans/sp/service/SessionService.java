@@ -13,12 +13,15 @@ import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.repository.UserRepository;
 import com.influans.sp.security.JwtService;
 import com.influans.sp.utils.DateUtils;
+import com.influans.sp.utils.HashId;
 import com.influans.sp.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 /**
@@ -35,6 +38,8 @@ public class SessionService {
     private StoryRepository storyRepository;
     @Autowired
     private JwtService jwtService;
+    @Value("application.id")
+    private String applicationId;
 
     /**
      * @param sessionId session id
@@ -79,6 +84,8 @@ public class SessionService {
 
         //save session
         final SessionEntity sessionEntity = sessionDto.toEntity();
+        final HashId hashid = new HashId(applicationId);
+        sessionEntity.setSessionId(hashid.encrypt(new Random().nextInt(9999), DateUtils.now().getTime()));
         sessionEntity.setSprintName(String.format("Sprint planning %s", DateUtils.format("dd/MM/yyyy")));
         sessionRepository.save(sessionEntity);
         //save stories

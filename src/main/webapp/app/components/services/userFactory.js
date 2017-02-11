@@ -21,8 +21,6 @@ angular.module('userFactory', [])
                             admin: false,
                             token: token
                         };
-                        // add jwt token to auth header for all requests made by the $http service
-                        $http.defaults.headers.common.Authorization = 'Bearer ' + token;
                     }
                     onSuccess(body);
                 }, onError);
