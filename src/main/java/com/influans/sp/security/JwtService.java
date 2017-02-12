@@ -28,15 +28,17 @@ public class JwtService {
     private static final String ROLE_CLAIM = "role";
 
 
-    @Value("jwt.secret-key")
+    @Value("jwt.secret")
     private String secretKey;
+    @Value("${jwt.expiration:5}")
+    private Integer expirationAfter;
 
     public String generate(String sessionId, String username, UserRole role) {
-        final Date expiration = DateUtils.addHours(DateUtils.now(), 8);
+        final Date expiration = DateUtils.addSeconds(DateUtils.now(), expirationAfter);
         return buildToken(username, DateUtils.now(), expiration, ImmutableMap.of(SESSION_CLAIM, sessionId, ROLE_CLAIM, role));
     }
 
-    private String buildToken(String id, Date now, Date expiration, Map<String, Object> claims) {
+    String buildToken(String id, Date now, Date expiration, Map<String, Object> claims) {
         JwtBuilder builder = Jwts.builder() //
                 .signWith(SignatureAlgorithm.HS256, secretKey) //
                 .setIssuer(ISSUER) //
