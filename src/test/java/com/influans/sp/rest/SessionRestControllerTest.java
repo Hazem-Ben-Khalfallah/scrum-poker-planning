@@ -1,9 +1,11 @@
 package com.influans.sp.rest;
 
 import com.influans.sp.AppIntegrationTest;
+import com.influans.sp.builders.SessionCreationDtoBuilder;
 import com.influans.sp.builders.SessionDtoBuilder;
 import com.influans.sp.builders.SessionEntityBuilder;
 import com.influans.sp.dto.ErrorResponse;
+import com.influans.sp.dto.SessionCreationDto;
 import com.influans.sp.dto.SessionDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.enums.CardSetEnum;
@@ -12,6 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import static com.influans.sp.dto.ErrorResponse.Attributes.EXCEPTION;
@@ -76,20 +79,19 @@ public class SessionRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see SessionRestController#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionRestController#createSession(SessionCreationDto, HttpServletResponse)
      */
     @Test
     public void createSession_shouldReturn200Status() throws Exception {
         // given
-        final SessionDto sessionDto = SessionDtoBuilder.builder()
+        final SessionCreationDto sessionCreationDto = SessionCreationDtoBuilder.builder()
                 .withUsername("username")
-                .withSprintName("sprint")
                 .withCardSet(CardSetEnum.FIBONACCI)
                 .build();
 
         // when
         final SessionDto response = givenJsonClient()
-                .body(sessionDto)
+                .body(sessionCreationDto)
                 .post("/sessions")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
@@ -102,19 +104,18 @@ public class SessionRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see SessionRestController#createSession(com.influans.sp.dto.SessionDto)
+     * @see SessionRestController#createSession(SessionCreationDto, HttpServletResponse)
      */
     @Test
     public void createSession_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         /// given
-        final SessionDto sessionDto = SessionDtoBuilder.builder()
-                .withSprintName("sprint")
+        final SessionCreationDto sessionCreationDto = SessionCreationDtoBuilder.builder()
                 .withCardSet(CardSetEnum.FIBONACCI)
                 .build();
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .body(sessionDto)
+                .body(sessionCreationDto)
                 .post("/sessions")
                 .then()
                 .statusCode(BAD_ARGS.getStatusCode())

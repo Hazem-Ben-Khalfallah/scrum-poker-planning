@@ -1,5 +1,6 @@
 package com.influans.sp.rest;
 
+import com.influans.sp.dto.SessionCreationDto;
 import com.influans.sp.dto.SessionDto;
 import com.influans.sp.security.SecurityContext;
 import com.influans.sp.service.SessionService;
@@ -29,15 +30,15 @@ public class SessionRestController {
     }
 
     /**
-     * @param sessionDto Session that will be created
+     * @param sessionCreationDto Session that will be created
      * @return SessionDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/sessions", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<SessionDto> createSession(@RequestBody SessionDto sessionDto, HttpServletResponse httpServletResponse) {
-        return new ResponseEntity<>(sessionService.createSession(sessionDto,
+    public ResponseEntity<SessionCreationDto> createSession(@RequestBody SessionCreationDto sessionCreationDto, HttpServletResponse httpServletResponse) {
+        return new ResponseEntity<>(sessionService.createSession(sessionCreationDto,
                 (token) -> httpServletResponse.addHeader(SecurityContext.Headers.JWT_TOKEN, token)), HttpStatus.OK);
     }
 }
