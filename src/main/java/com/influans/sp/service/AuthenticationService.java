@@ -1,6 +1,7 @@
 package com.influans.sp.service;
 
 import com.influans.sp.entity.UserEntity;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
@@ -65,5 +66,13 @@ public class AuthenticationService {
                     user.getUsername(), user.getSessionId());
         }
         return user;
+    }
+
+    public Principal checkAuthenticatedAdmin() {
+        final Principal principal = checkAuthenticatedUser();
+        if (!UserRole.SESSION_ADMIN.equals(principal.getRole())) {
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "user has not session admin role");
+        }
+        return principal;
     }
 }

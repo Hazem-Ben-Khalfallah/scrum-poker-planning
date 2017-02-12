@@ -2,6 +2,7 @@ package com.influans.sp.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.influans.sp.dto.DefaultResponse;
+import com.influans.sp.dto.StoryCreationDto;
 import com.influans.sp.dto.StoryDto;
 import com.influans.sp.entity.StoryEntity;
 import com.influans.sp.entity.def.StoryEntityDef;
@@ -10,6 +11,7 @@ import com.influans.sp.exception.CustomErrorCode;
 import com.influans.sp.exception.CustomException;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
+import com.influans.sp.security.Principal;
 import com.influans.sp.utils.StringUtils;
 import com.influans.sp.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class StoryService {
     private SessionRepository sessionRepository;
     @Autowired
     private WebSocketSender webSocketSender;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     /**
      * @param sessionId session id
@@ -59,10 +63,13 @@ public class StoryService {
      * @should delete a story
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if story does not exist
-     * @should throw an exception if user is not admin of the related session
+     * @should check that the user is authenticated as admin
+     * @should check that the user is connected to the related session
      * @should send a websocket notification
      */
     public DefaultResponse delete(String storyId) {
+        final Principal principal = authenticationService.checkAuthenticatedAdmin();
+
         if (StringUtils.isEmpty(storyId)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
@@ -70,6 +77,11 @@ public class StoryService {
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (Objects.isNull(storyEntity)) {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
+        }
+
+        if (!storyEntity.getSessionId().equals(principal.getSessionId())) {
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User %s is not admin of session %s ",
+                    principal.getUsername(), storyEntity.getSessionId());
         }
 
         storyRepository.delete(storyId);
@@ -78,34 +90,27 @@ public class StoryService {
     }
 
     /**
-     * @param storyDto storyDto
+     * @param storyCreationDto storyDto
      * @return StoryDto with new id
-     * @should throw an exception if sessionId is empty or null
      * @should throw an exception if storyName is empty or null
      * @should throw an exception if storyName contains only spaces
-     * @should throw an exception if session does not exist
-     * @should throw an exception if user is not admin of the related session
+     * @should check that the user is authenticated as admin
      * @should create a story related to the given sessionId
      * @should send a websocket notification
      */
-    public StoryDto createStory(StoryDto storyDto) {
-        if (StringUtils.isEmpty(storyDto.getSessionId())) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
-        }
+    public StoryCreationDto createStory(StoryCreationDto storyCreationDto) {
+        final Principal principal = authenticationService.checkAuthenticatedAdmin();
 
-        if (StringUtils.isEmpty(storyDto.getStoryName(), true)) {
+        if (StringUtils.isEmpty(storyCreationDto.getStoryName(), true)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "story name should not be null or empty");
         }
 
-        if (!sessionRepository.exists(storyDto.getSessionId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
-        }
-
-        final StoryEntity storyEntity = new StoryEntity(storyDto.getSessionId(), storyDto.getStoryName(), storyDto.getOrder());
+        final StoryEntity storyEntity = new StoryEntity(principal.getSessionId(), storyCreationDto.getStoryName(),
+                storyCreationDto.getOrder());
         storyRepository.save(storyEntity);
-        storyDto.setStoryId(storyEntity.getStoryId());
-        webSocketSender.sendNotification(storyEntity.getSessionId(), WsTypes.STORY_ADDED, storyDto);
-        return storyDto;
+        storyCreationDto.setStoryId(storyEntity.getStoryId());
+        webSocketSender.sendNotification(storyEntity.getSessionId(), WsTypes.STORY_ADDED, storyCreationDto);
+        return storyCreationDto;
     }
 
     /**
@@ -113,11 +118,14 @@ public class StoryService {
      * @return empty response
      * @should throw an exception if storyId is empty or null
      * @should throw an exception if story does not exist
-     * @should throw an exception if user is not admin of the related session
+     * @should check that the user is authenticated as admin
+     * @should check that the user is connected to the related session
      * @should set story as ended
      * @should send a websocket notification
      */
     public DefaultResponse endStory(String storyId) {
+        final Principal principal = authenticationService.checkAuthenticatedAdmin();
+
         if (StringUtils.isEmpty(storyId)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
@@ -125,6 +133,11 @@ public class StoryService {
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (Objects.isNull(storyEntity)) {
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
+        }
+
+        if (!storyEntity.getSessionId().equals(principal.getSessionId())) {
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User %s is not admin of session %s ",
+                    principal.getUsername(), storyEntity.getSessionId());
         }
 
         storyRepository.update(storyId, ImmutableMap.<String, Object>builder()

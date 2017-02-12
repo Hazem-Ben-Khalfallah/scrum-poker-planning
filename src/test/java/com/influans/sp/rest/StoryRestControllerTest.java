@@ -2,26 +2,34 @@ package com.influans.sp.rest;
 
 import com.google.common.collect.ImmutableList;
 import com.influans.sp.AppIntegrationTest;
-import com.influans.sp.builders.SessionEntityBuilder;
-import com.influans.sp.builders.StoryDtoBuilder;
-import com.influans.sp.builders.StoryEntityBuilder;
+import com.influans.sp.builders.*;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.ErrorResponse;
+import com.influans.sp.dto.StoryCreationDto;
 import com.influans.sp.dto.StoryDto;
 import com.influans.sp.entity.SessionEntity;
 import com.influans.sp.entity.StoryEntity;
+import com.influans.sp.entity.UserEntity;
 import com.influans.sp.enums.ResponseStatus;
+import com.influans.sp.enums.UserRole;
 import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.StoryRepository;
+import com.influans.sp.repository.UserRepository;
+import com.influans.sp.security.Principal;
+import com.influans.sp.security.SecurityContext;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
 import static com.influans.sp.dto.ErrorResponse.Attributes.EXCEPTION;
 import static com.influans.sp.dto.ErrorResponse.Attributes.URI;
+import static com.influans.sp.exception.CustomErrorCode.BAD_ARGS;
 import static com.influans.sp.exception.CustomErrorCode.OBJECT_NOT_FOUND;
 
 /**
@@ -33,6 +41,16 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     private StoryRepository storyRepository;
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SecurityContext securityContext;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(securityContext);
+    }
 
     /**
      * @verifies return 200 status
@@ -106,6 +124,21 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -132,6 +165,28 @@ public class StoryRestControllerTest extends AppIntegrationTest {
      */
     @Test
     public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
                 .delete("/stories/{storyId}", "invalid_story_id")
@@ -157,6 +212,21 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .build();
         sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -184,6 +254,28 @@ public class StoryRestControllerTest extends AppIntegrationTest {
      */
     @Test
     public void endStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
                 .post("/stories/{storyId}", "invalid_story_id")
@@ -199,7 +291,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see StoryRestController#createStory(com.influans.sp.dto.StoryDto)
+     * @see StoryRestController#createStory(StoryCreationDto)
      */
     @Test
     public void createStory_shouldReturn200Status() throws Exception {
@@ -210,15 +302,29 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
-        final StoryDto storyDto = StoryDtoBuilder.builder()
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
                 .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story-name")
                 .withOrder(2)
                 .build();
 
         // when
         final StoryDto response = givenJsonClient()
-                .body(storyDto)
+                .body(storyCreationDto)
                 .post("/stories")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
@@ -232,23 +338,42 @@ public class StoryRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestController#createStory(com.influans.sp.dto.StoryDto)
+     * @see StoryRestController#createStory(StoryCreationDto)
      */
     @Test
     public void createStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final StoryDto storyDto = StoryDtoBuilder.builder()
-                .withSessionId("invalid_session_id")
-                .withStoryName("story-name")
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withOrder(2)
                 .build();
 
         /// when
         final ErrorResponse errorResponse = givenJsonClient()
-                .body(storyDto)
+                .body(storyCreationDto)
                 .post("/stories")
                 .then()
-                .statusCode(OBJECT_NOT_FOUND.getStatusCode())
+                .statusCode(BAD_ARGS.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 

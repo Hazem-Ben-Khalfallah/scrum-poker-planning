@@ -119,11 +119,11 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies check authenticated user
+     * @verifies check that the user is authenticated
      * @see VoteService#delete(String)
      */
     @Test
-    public void delete_shouldCheckAuthenticatedUser() throws Exception {
+    public void delete_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         // given
         Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {
@@ -262,12 +262,6 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void delete_shouldDeleteVoteWithTheGivenId() throws Exception {
         // given
-        final String voteId = "voteId";
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
-                .withVoteId(voteId)
-                .build();
-        voteRepository.save(voteEntity);
-
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -280,6 +274,14 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .build();
         userRepository.save(userEntity);
+
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withVoteId(voteId)
+                .withSessionId(sessionId)
+                .withUsername(username)
+                .build();
+        voteRepository.save(voteEntity);
 
         final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
@@ -302,13 +304,6 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void delete_shouldSendAWebsocketNotification() throws Exception {
         // given
-        final String voteId = "voteId";
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
-                .withSessionId("sessionId")
-                .withVoteId(voteId)
-                .build();
-        voteRepository.save(voteEntity);
-
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -321,6 +316,14 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .build();
         userRepository.save(userEntity);
+
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .withVoteId(voteId)
+                .withUsername(username)
+                .build();
+        voteRepository.save(voteEntity);
 
         final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
@@ -337,11 +340,11 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies check authenticated user
+     * @verifies check that the user is authenticated
      * @see VoteService#saveVote(VoteCreationDto)
      */
     @Test
-    public void saveVote_shouldCheckAuthenticatedUser() throws Exception {
+    public void saveVote_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         // given
         final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
                 .withValue("value")

@@ -369,11 +369,11 @@ public class UserServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies check authenticated user
+     * @verifies check that the user is authenticated
      * @see UserService#disconnectUser()
      */
     @Test
-    public void disconnectUser_shouldCheckAuthenticatedUser() throws Exception {
+    public void disconnectUser_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         // given
         Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {

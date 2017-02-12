@@ -122,19 +122,6 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Test
     public void delete_shouldReturn200Status() throws Exception {
         // given
-        final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withStoryId(storyId)
-                .build();
-        storyRepository.save(storyEntity);
-
-        final String voteId = "voteId";
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
-                .withStoryId(storyId)
-                .withVoteId(voteId)
-                .build();
-        voteRepository.save(voteEntity);
-
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -147,6 +134,22 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .build();
         userRepository.save(userEntity);
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withSessionId(sessionId)
+                .build();
+        storyRepository.save(storyEntity);
+
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withVoteId(voteId)
+                .withSessionId(sessionId)
+                .withUsername(username)
+                .build();
+        voteRepository.save(voteEntity);
 
         final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)

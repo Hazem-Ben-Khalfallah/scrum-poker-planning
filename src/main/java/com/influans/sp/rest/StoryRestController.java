@@ -1,5 +1,6 @@
 package com.influans.sp.rest;
 
+import com.influans.sp.dto.StoryCreationDto;
 import com.influans.sp.dto.StoryDto;
 import com.influans.sp.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +54,15 @@ public class StoryRestController {
     }
 
     /**
-     * @param storyDto story that will be created
+     * @param storyCreationDto story that will be created
      * @return StoryDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/stories", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<StoryDto> createStory(@RequestBody StoryDto storyDto) {
-        return new ResponseEntity<>(storyService.createStory(storyDto), HttpStatus.OK);
+    public ResponseEntity<StoryCreationDto> createStory(@RequestBody StoryCreationDto storyCreationDto) {
+        return new ResponseEntity<>(storyService.createStory(storyCreationDto), HttpStatus.OK);
     }
 
 

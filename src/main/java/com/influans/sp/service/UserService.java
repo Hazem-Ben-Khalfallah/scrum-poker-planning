@@ -11,7 +11,6 @@ import com.influans.sp.repository.SessionRepository;
 import com.influans.sp.repository.UserRepository;
 import com.influans.sp.security.JwtService;
 import com.influans.sp.security.Principal;
-import com.influans.sp.security.SecurityContext;
 import com.influans.sp.utils.StringUtils;
 import com.influans.sp.websocket.WebSocketSender;
 import org.slf4j.Logger;
@@ -36,8 +35,6 @@ public class UserService {
     private SessionRepository sessionRepository;
     @Autowired
     private WebSocketSender webSocketSender;
-    @Autowired
-    private SecurityContext securityContext;
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -115,7 +112,7 @@ public class UserService {
 
     /**
      * @return empty response
-     * @should check authenticated user
+     * @should check that the user is authenticated
      * @should set user as disconnected
      * @should send a websocket notification
      */

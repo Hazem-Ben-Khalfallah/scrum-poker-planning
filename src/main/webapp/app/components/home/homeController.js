@@ -91,7 +91,6 @@ homeController.controller('homeCtrl',
                 if (!$scope.newStory.storyName) {
                     return;
                 }
-                $scope.newStory.sessionId = $scope.currentUser.sessionId;
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
                     $scope.newStory = {};

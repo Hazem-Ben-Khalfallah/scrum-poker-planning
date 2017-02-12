@@ -64,7 +64,7 @@ public class VoteService {
     /**
      * @param voteId voteId
      * @return empty response
-     * @should check authenticated user
+     * @should check that the user is authenticated
      * @should throw an exception if voteId is null
      * @should throw an exception if vote does not exist with given id
      * @should throw an exception if user is not the vote owner
@@ -97,7 +97,7 @@ public class VoteService {
     /**
      * @param voteCreationDto voteDto
      * @return voteDto with new id
-     * @should check authenticated user
+     * @should check that the user is authenticated
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if value is null or empty
      * @should throw an exception if story does not exist with given Id
