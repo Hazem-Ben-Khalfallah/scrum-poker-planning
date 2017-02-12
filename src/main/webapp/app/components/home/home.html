@@ -66,6 +66,21 @@
             <div class="ui horizontal divider">
                 Select a card
             </div>
+            <!-- error message -->
+            <div class="ui mini negative message" data-ng-show="hasMessage">
+                <i class="close icon" data-ng-click="hideMassage()"></i>
+                <div class="header">
+                    Oops...
+                </div>
+                <div>
+                    {{message}}
+                    <span class="pull-right">
+                        {{messageCountDown}} s
+                    </span>
+                </div>
+
+            </div>
+            <!-- Cards -->
             <div class="ui five link cards">
                 <div class="card {{card.color}} {{card.animate}}"
                      ng-click="selectCard(card)"

@@ -1,6 +1,11 @@
 angular.module('$httpWrapper', [])
     .factory('$httpWrapper', ['$http', '$localStorage', '$location', '$log',
         function ($http, $localStorage, $location, $log) {
+            function disconnectUser() {
+                delete $localStorage.currentUser;
+                $location.path('/login');
+            }
+
             return {
                 get: function (url, onSuccess, onError) {
                     onSuccess = onSuccess || angular.noop;
@@ -19,8 +24,7 @@ angular.module('$httpWrapper', [])
                         .error(function (body, status, headers, httpResponse) {
                             $log.error('GET: ' + ' [' + status + '] ' + url);
                             if (status == 401) {
-                                delete $localStorage.currentUser;
-                                $location.path('/login');
+                                disconnectUser();
                             }
                             onError(body, status);
                         });
@@ -42,8 +46,7 @@ angular.module('$httpWrapper', [])
                         .error(function (body, status, headers, httpResponse) {
                             $log.error('POST ' + ' [' + status + '] ' + url + ' ' + angular.toJson(body));
                             if (status == 401) {
-                                delete $localStorage.currentUser;
-                                $location.path('/login');
+                                disconnectUser();
                             }
                             onError(body, status);
                         });
@@ -65,8 +68,7 @@ angular.module('$httpWrapper', [])
                         .error(function (body, status, headers, httpResponse) {
                             $log.error('DELETE ' + ' [' + status + '] ' + url + ' ' + angular.toJson(body));
                             if (status == 401) {
-                                delete $localStorage.currentUser;
-                                $location.path('/login');
+                                disconnectUser();
                             }
                             onError(body, status);
                         });

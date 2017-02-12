@@ -18,10 +18,10 @@ var Events = {
 };
 
 homeController.controller('homeCtrl',
-    ['$http', '$log', '$scope', '$localStorage', '$location', 'webSocketFactory', 'storyFactory', 'voteFactory',
-        'userFactory', 'session', 'users', 'stories',
-        function ($http, $log, $scope, $localStorage, $location, webSocketFactory, storyFactory, voteFactory,
-                  userFactory, session, users, stories) {
+    ['$http', '$log', '$scope', '$localStorage', '$location', '$timeout',
+        'webSocketFactory', 'storyFactory', 'voteFactory', 'userFactory', 'session', 'users', 'stories',
+        function ($http, $log, $scope, $localStorage, $location, $timeout,
+                  webSocketFactory, storyFactory, voteFactory, userFactory, session, users, stories) {
 
             $scope.logout = function () {
                 userFactory.disconnect(function (response) {
@@ -78,6 +78,29 @@ homeController.controller('homeCtrl',
                 getVotes();
             };
 
+            $scope.hideMassage = function () {
+                $scope.hasMessage = false;
+                $timeout.cancel($scope.errorCountDown);
+            };
+
+            $scope.showMassage = function (message) {
+                $scope.message = message;
+                $timeout.cancel($scope.errorCountDown);
+                hideMessageAfter(5);// seconds
+                $scope.hasMessage = true;
+            };
+
+            function hideMessageAfter(seconds) {
+                $scope.messageCountDown = seconds;
+                $scope.errorCountDown = $timeout(function () {
+                    if (seconds == 0) {
+                        $scope.hideMassage();
+                    } else {
+                        hideMessageAfter(seconds - 1);
+                    }
+                }, 1000);
+            }
+
             $scope.removeStory = function (story) {
                 $scope.stories.splice($scope.getIndex(Types.story, story), 1);
                 storyFactory.remove(story.storyId, function (data) {
@@ -99,6 +122,9 @@ homeController.controller('homeCtrl',
 
             $scope.createVote = function (card) {
                 $scope.loading = true;
+                // hide error message
+                $scope.hideMassage();
+
                 var data = {
                     storyId: $scope.currentStory.storyId,
                     value: card.id
@@ -120,15 +146,25 @@ homeController.controller('homeCtrl',
                 voteFactory.create(data, function (response) {
                     $scope.loading = false;
                     var index = $scope.getIndex(Types.vote, response);
-                    if (index < 0) {
+                    if (index >= 0) {
                         $scope.votes[index] = response;
                     }
                     $scope.currentVote = response;
+                }, function (error, status) {
+                    $scope.loading = false;
+                    $scope.currentVote = {};
+                    animateCard(card);
+                    highlightVotes();
+
+                    $scope.showMassage(error.exception);
                 });
             };
 
             $scope.removeVote = function (card) {
                 $scope.loading = true;
+                // hide error message
+                $scope.hideMassage();
+
                 voteFactory.remove($scope.currentVote.voteId, function (response) {
                     $scope.loading = false;
                     if (response.status === 'OK') {
@@ -137,6 +173,9 @@ homeController.controller('homeCtrl',
                         animateCard(card);
                         highlightVotes();
                     }
+                }, function (error, status) {
+                    $scope.loading = false;
+                    $scope.showMassage(error.exception);
                 });
             };
 
