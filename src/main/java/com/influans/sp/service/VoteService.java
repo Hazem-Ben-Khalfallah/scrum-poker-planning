@@ -132,7 +132,11 @@ public class VoteService {
         voteRepository.save(voteEntity);
         voteCreationDto.setVoteId(voteEntity.getVoteId());
 
-        webSocketSender.sendNotification(user.getSessionId(), WsTypes.VOTE_ADDED, voteCreationDto);
+        final VoteDto voteDto = voteCreationDto.toVoteDto();
+        voteDto.setSessionId(user.getSessionId());
+        voteDto.setUsername(user.getUsername());
+
+        webSocketSender.sendNotification(user.getSessionId(), WsTypes.VOTE_ADDED, voteDto);
         return voteCreationDto;
     }
 }

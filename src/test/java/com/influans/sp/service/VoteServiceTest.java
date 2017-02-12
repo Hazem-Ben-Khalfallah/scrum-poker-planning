@@ -733,6 +733,9 @@ public class VoteServiceTest extends ApplicationTest {
         final VoteCreationDto createdVote = voteService.saveVote(voteCreationDto);
 
         // then
-        verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.VOTE_ADDED, createdVote);
+        final VoteDto sentVote = createdVote.toVoteDto();
+        sentVote.setUsername(principal.getUsername());
+        sentVote.setSessionId(principal.getSessionId());
+        verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.VOTE_ADDED, sentVote);
     }
 }

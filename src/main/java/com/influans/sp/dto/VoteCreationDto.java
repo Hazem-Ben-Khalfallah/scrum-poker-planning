@@ -34,4 +34,12 @@ public class VoteCreationDto {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public VoteDto toVoteDto() {
+        final VoteDto voteDto = new VoteDto();
+        voteDto.setVoteId(this.voteId);
+        voteDto.setStoryId(this.storyId);
+        voteDto.setValue(this.value);
+        return voteDto;
+    }
 }

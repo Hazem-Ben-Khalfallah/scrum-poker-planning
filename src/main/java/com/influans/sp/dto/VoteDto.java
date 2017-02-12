@@ -1,5 +1,8 @@
 package com.influans.sp.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * @author hazem
  */
@@ -59,5 +62,33 @@ public class VoteDto {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VoteDto voteDto = (VoteDto) o;
+
+        return new EqualsBuilder()
+                .append(voteId, voteDto.voteId)
+                .append(storyId, voteDto.storyId)
+                .append(sessionId, voteDto.sessionId)
+                .append(username, voteDto.username)
+                .append(value, voteDto.value)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(voteId)
+                .append(storyId)
+                .append(sessionId)
+                .append(username)
+                .append(value)
+                .toHashCode();
     }
 }
