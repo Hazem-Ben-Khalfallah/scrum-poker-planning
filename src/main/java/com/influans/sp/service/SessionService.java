@@ -39,7 +39,7 @@ public class SessionService {
     private StoryRepository storyRepository;
     @Autowired
     private JwtService jwtService;
-    @Value("application.id")
+    @Value("${application.id}")
     private String applicationId;
 
     /**

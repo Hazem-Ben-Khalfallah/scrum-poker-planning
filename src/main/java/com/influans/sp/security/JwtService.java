@@ -28,7 +28,7 @@ public class JwtService {
     private static final String ROLE_CLAIM = "role";
 
 
-    @Value("jwt.secret")
+    @Value("${jwt.secret}")
     private String secretKey;
     @Value("${jwt.expiration:5}")
     private Integer expirationAfter;
