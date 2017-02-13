@@ -13,7 +13,7 @@ add the following statement into your Tomcat VM options:
 
 #Demo
 You are welcome to use this free app on: 
-http://influans-scrum-poker.herokuapp.com/
+http://pokerscrum.herokuapp.com/
 
 #Snapshots
 - Configure Poker Planning stories
