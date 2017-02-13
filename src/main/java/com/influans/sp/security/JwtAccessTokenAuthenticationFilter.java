@@ -34,13 +34,10 @@ public class JwtAccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtService jwtService;
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoUrl;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        LOGGER.info("[test] {}", mongoUrl);
         final String authorizationHeader = request.getHeader(SecurityContext.Headers.AUTHORIZATION);
 
         if (isPermitted(request) || authorizationHeader == null) {
