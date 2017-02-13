@@ -310,7 +310,7 @@ public class StoryServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
-            Assertions.assertThat(e.getMessage()).contains("is not admin of session");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("User is not the session admin");
         }
     }
 
@@ -720,7 +720,7 @@ public class StoryServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
-            Assertions.assertThat(e.getMessage()).contains("is not admin of session");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("User is not the session admin");
         }
     }
 

@@ -14,6 +14,9 @@
                     <div class="ui two column centered grid">
                         <div class="column">
                             <div class="ui center aligned basic segment">
+                                <!-- error message -->
+                                <ng-message data-message="{{message}}" data-visible="{{messageVisible}}"></ng-message>
+                                <!-- join session -->
                                 <div class="ui form">
                                     <h4 class="ui dividing header">Join a session</h4>
                                     <div class="field">
@@ -38,6 +41,7 @@
                                 <div class="ui horizontal divider">
                                     Or
                                 </div>
+                                <!-- create session -->
                                 <h4 class="ui dividing header">Create session</h4>
                                 <div class="ui big green labeled icon button" data-ng-click="newSession()">
                                     <i class="wizard icon"></i>

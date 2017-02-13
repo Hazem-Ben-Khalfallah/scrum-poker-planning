@@ -137,7 +137,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAnExceptionIfUserDoesNotExistWithGivenUsername");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).startsWith("user not found");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("Invalid user credentials");
         }
     }
 
@@ -176,7 +176,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).contains("has been disconnected");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("User already disconnected from session");
         }
     }
 
@@ -198,7 +198,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAnExceptionIfSessionDoesNotExistWithGivenSessionId");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).startsWith("session not found");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("Invalid session id");
         }
     }
 }

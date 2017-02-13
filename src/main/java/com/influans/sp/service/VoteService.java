@@ -12,6 +12,8 @@ import com.influans.sp.repository.VoteRepository;
 import com.influans.sp.security.Principal;
 import com.influans.sp.utils.StringUtils;
 import com.influans.sp.websocket.WebSocketSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import java.util.Objects;
  */
 @Service
 public class VoteService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoteService.class);
 
     @Autowired
     private VoteRepository voteRepository;
@@ -47,7 +50,8 @@ public class VoteService {
         }
 
         if (!storyRepository.exists(storyId)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "no story found with given Id " + storyId);
+            LOGGER.error("no story found with given Id {}", storyId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found");
         }
 
         final List<VoteDto> votes = new ArrayList<>();
@@ -81,12 +85,13 @@ public class VoteService {
         final VoteEntity voteEntity = voteRepository.findOne(voteId);
 
         if (Objects.isNull(voteEntity)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "no vote found with given Id " + voteId);
+            LOGGER.error("no vote found with id = {}", voteId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Vote not found");
         }
 
         if (!voteEntity.getUsername().equals(user.getUsername()) || !voteEntity.getSessionId().equals(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "username %s is not permitted to delete vote %s in session %s",
-                    user.getUsername(), voteId, user.getSessionId());
+            LOGGER.error("username {} is not permitted to delete vote {} in session {}", user.getUsername(), voteId, user.getSessionId());
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "Permission denied");
         }
 
         voteRepository.delete(voteId);
@@ -117,7 +122,8 @@ public class VoteService {
         }
 
         if (!storyRepository.exists(voteCreationDto.getStoryId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + voteCreationDto.getStoryId());
+            LOGGER.error("story not found with id = {}" , voteCreationDto.getStoryId());
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
         }
 
         VoteEntity voteEntity = voteRepository.getVoteByUserOnStory(user.getUsername(), voteCreationDto.getStoryId());

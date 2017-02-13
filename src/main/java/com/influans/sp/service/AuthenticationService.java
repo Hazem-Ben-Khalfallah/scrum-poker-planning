@@ -9,6 +9,8 @@ import com.influans.sp.repository.UserRepository;
 import com.influans.sp.security.Principal;
 import com.influans.sp.security.SecurityContext;
 import com.influans.sp.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.Optional;
  */
 @Service
 public class AuthenticationService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -54,16 +57,17 @@ public class AuthenticationService {
         }
 
         if (!sessionRepository.exists(user.getSessionId())) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "session not found with id = " + user.getSessionId());
+            LOGGER.error("session not found with id = {}", user.getSessionId());
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "Invalid session id");
         }
 
         final UserEntity userEntity = userRepository.findUser(user.getSessionId(), user.getUsername());
         if (userEntity == null) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user not found with username %s in session %s ",
-                    user.getUsername(), user.getSessionId());
+            LOGGER.error("user not found with username {} in session {}", user.getUsername(), user.getSessionId());
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "Invalid user credentials");
         } else if (!userEntity.isConnected()) {
-            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "user %s has been disconnected  from session %s ",
-                    user.getUsername(), user.getSessionId());
+            LOGGER.error("user {} has been disconnected  from session {}", user.getUsername(), user.getSessionId());
+            throw new CustomException(CustomErrorCode.UNAUTHORIZED, "User already disconnected from session");
         }
         return user;
     }

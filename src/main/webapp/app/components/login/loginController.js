@@ -9,7 +9,19 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage',
             }
         }
 
+        $scope.hideMassage = function () {
+            $scope.messageVisible = false;
+        };
+
+
+        $scope.showMassage = function (message) {
+            $scope.message = message;
+            $scope.messageVisible = true;
+        };
+
         $scope.connect = function () {
+            $scope.hideMassage();
+
             if (!$scope.username || !$scope.sessionId || $scope.loading) {
                 return;
             }
@@ -22,8 +34,9 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage',
             userFactory.connect(data, function () {
                 $scope.loading = false;
                 $location.path('/home/' + $localStorage.currentUser.sessionId);
-            }, function () {
+            }, function (error, status) {
                 $scope.loading = false;
+                $scope.showMassage(error.exception);
             });
 
         };

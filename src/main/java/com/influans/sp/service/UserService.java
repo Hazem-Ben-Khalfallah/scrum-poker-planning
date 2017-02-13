@@ -55,7 +55,8 @@ public class UserService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
         }
         if (!sessionRepository.exists(sessionId)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + sessionId);
+            LOGGER.error("session not found with id = {}" , sessionId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
         }
         final List<UserEntity> users = userRepository.findUsersBySessionId(sessionId);
         return users.stream()
@@ -86,7 +87,8 @@ public class UserService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "username should not be null or empty");
         }
         if (!sessionRepository.exists(userDto.getSessionId())) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + userDto.getSessionId());
+            LOGGER.error("session not found with id = " + userDto.getSessionId());
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Invalid session id");
         }
 
         UserEntity userEntity = userRepository.findUser(userDto.getSessionId(), userDto.getUsername());
@@ -99,7 +101,8 @@ public class UserService {
                 userEntity.setConnected(true);
                 userRepository.save(userEntity);
             } else {
-                throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, String.format("username %s already used in session %s", userDto.getUsername(), userDto.getSessionId()));
+                LOGGER.error("username {} already used in session {}", userDto.getUsername(), userDto.getSessionId());
+                throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, "username already used in current session");
             }
 
         }

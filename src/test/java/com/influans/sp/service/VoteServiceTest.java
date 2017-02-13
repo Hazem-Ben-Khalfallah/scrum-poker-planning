@@ -529,7 +529,7 @@ public class VoteServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAnExceptionIfUserDoesNotExistWithGivenUsername");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).startsWith("user not found");
+            Assertions.assertThat(e.getMessage()).startsWith("Invalid user credentials");
         }
     }
 
@@ -580,7 +580,7 @@ public class VoteServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
-            Assertions.assertThat(e.getMessage()).contains("has been disconnected");
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("User already disconnected from session");
         }
     }
 

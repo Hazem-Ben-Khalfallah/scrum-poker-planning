@@ -14,6 +14,8 @@ import com.influans.sp.repository.StoryRepository;
 import com.influans.sp.security.Principal;
 import com.influans.sp.utils.StringUtils;
 import com.influans.sp.websocket.WebSocketSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ import java.util.Objects;
  */
 @Service
 public class StoryService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StoryService.class);
 
     @Autowired
     private StoryRepository storyRepository;
@@ -48,7 +51,8 @@ public class StoryService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "sessionId should not be null or empty");
         }
         if (!sessionRepository.exists(sessionId)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found with id = " + sessionId);
+            LOGGER.error("session not found with id = {}", sessionId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
         }
 
         final List<StoryDto> stories = new ArrayList<>();
@@ -76,12 +80,13 @@ public class StoryService {
 
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (Objects.isNull(storyEntity)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
+            LOGGER.error("story not found with id = {}", storyId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
         }
 
         if (!storyEntity.getSessionId().equals(principal.getSessionId())) {
-            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User %s is not admin of session %s ",
-                    principal.getUsername(), storyEntity.getSessionId());
+            LOGGER.error("User {} is not admin of session {} ", principal.getUsername(), storyEntity.getSessionId());
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User is not the session admin");
         }
 
         storyRepository.delete(storyId);
@@ -132,12 +137,13 @@ public class StoryService {
 
         final StoryEntity storyEntity = storyRepository.findOne(storyId);
         if (Objects.isNull(storyEntity)) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found with id = " + storyId);
+            LOGGER.error("story not found with id = {}", storyId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found ");
         }
 
         if (!storyEntity.getSessionId().equals(principal.getSessionId())) {
-            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User %s is not admin of session %s ",
-                    principal.getUsername(), storyEntity.getSessionId());
+            LOGGER.error("User {} is not admin of session {}", principal.getUsername(), storyEntity.getSessionId());
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User is not the session admin");
         }
 
         storyRepository.update(storyId, ImmutableMap.<String, Object>builder()
