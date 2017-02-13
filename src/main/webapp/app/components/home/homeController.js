@@ -167,8 +167,20 @@ homeController.controller('homeCtrl',
 
 
             $scope.selectCard = function (card) {
-                if ($scope.currentStory.ended || $scope.loading)
+                if (!$scope.currentStory) {
+                    $scope.showMassage("You should select a story");
                     return;
+                }
+
+                if ($scope.currentStory.ended) {
+                    $scope.showMassage("Selected story has already ended");
+                    return;
+                }
+
+                if ($scope.loading) {
+                    return;
+                }
+
                 if (!card.selected) {
                     $scope.createVote(card);
                 } else {

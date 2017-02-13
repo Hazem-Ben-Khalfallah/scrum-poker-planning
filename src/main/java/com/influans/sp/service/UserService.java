@@ -80,11 +80,11 @@ public class UserService {
      */
     public DefaultResponse connectUser(UserDto userDto, Consumer<String> connectionConsumer) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "Session should not be null or empty");
         }
 
         if (StringUtils.isEmpty(userDto.getUsername(), true)) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "username should not be null or empty");
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "Username should not be null or empty");
         }
         if (!sessionRepository.exists(userDto.getSessionId())) {
             LOGGER.error("session not found with id = " + userDto.getSessionId());
@@ -102,7 +102,7 @@ public class UserService {
                 userRepository.save(userEntity);
             } else {
                 LOGGER.error("username {} already used in session {}", userDto.getUsername(), userDto.getSessionId());
-                throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, "username already used in current session");
+                throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, "Username already used");
             }
 
         }

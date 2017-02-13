@@ -217,9 +217,16 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void delete_shouldThrowAnExceptionIfUserIsNotTheVoteOwner() throws Exception {
         // given
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
         final String voteId = "voteId";
         final VoteEntity voteEntity = VoteEntityBuilder.builder()
                 .withVoteId(voteId)
+                .withStoryId(storyId)
                 .withUsername("other_username")
                 .withSessionId("other_session_id")
                 .build();
@@ -256,6 +263,60 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
+     * @verifies throw an exception if story has been already ended
+     * @see VoteService#delete(String)
+     */
+    @Test
+    public void delete_shouldThrowAnExceptionIfStoryHasBeenAlreadyEnded() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withEnded(true)
+                .build();
+        storyRepository.save(storyEntity);
+
+        final String voteId = "voteId";
+        final VoteEntity voteEntity = VoteEntityBuilder.builder()
+                .withVoteId(voteId)
+                .withStoryId(storyId)
+                .withSessionId(sessionId)
+                .withUsername(username)
+                .build();
+        voteRepository.save(voteEntity);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        try {
+            // when
+            voteService.delete(voteId);
+            Assert.fail("shouldThrowAnExceptionIfStoryHasBeenAlreadyEnded");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
+            Assertions.assertThat(e.getMessage()).isEqualTo("story has been ended");
+        }
+    }
+
+    /**
      * @verifies delete vote with the given id
      * @see VoteService#delete(String)
      */
@@ -275,10 +336,17 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(userEntity);
 
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
         final String voteId = "voteId";
         final VoteEntity voteEntity = VoteEntityBuilder.builder()
                 .withVoteId(voteId)
                 .withSessionId(sessionId)
+                .withStoryId(storyId)
                 .withUsername(username)
                 .build();
         voteRepository.save(voteEntity);
@@ -317,9 +385,16 @@ public class VoteServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(userEntity);
 
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .build();
+        storyRepository.save(storyEntity);
+
         final String voteId = "voteId";
         final VoteEntity voteEntity = VoteEntityBuilder.builder()
                 .withSessionId(sessionId)
+                .withStoryId(storyId)
                 .withVoteId(voteId)
                 .withUsername(username)
                 .build();
@@ -483,6 +558,56 @@ public class VoteServiceTest extends ApplicationTest {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
             Assertions.assertThat(e.getMessage()).startsWith("story not found");
+        }
+    }
+
+    /**
+     * @verifies throw an exception if story has been already ended
+     * @see VoteService#saveVote(VoteCreationDto)
+     */
+    @Test
+    public void saveVote_shouldThrowAnExceptionIfStoryHasBeenAlreadyEnded() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity userEntity = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .build();
+        userRepository.save(userEntity);
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withEnded(true)
+                .build();
+        storyRepository.save(storyEntity);
+
+        final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
+                .withStoryId(storyId)
+                .withValue("value")
+                .build();
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        try {
+            // when
+            voteService.saveVote(voteCreationDto);
+            Assert.fail("shouldThrowAnExceptionIfStoryHasBeenAlreadyEnded");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
+            Assertions.assertThat(e.getMessage()).startsWith("story has been ended");
         }
     }
 

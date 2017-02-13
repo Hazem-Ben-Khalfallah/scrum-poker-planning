@@ -184,6 +184,7 @@ public class UserServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNullOrEmpty");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
+            Assertions.assertThat(e.getMessage()).isEqualTo("Session should not be null or empty");
         }
     }
 
@@ -202,6 +203,7 @@ public class UserServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAndErrorIfUsernameIsNullOrEmpty");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
+            Assertions.assertThat(e.getMessage()).isEqualToIgnoringWhitespace("Username should not be null or empty");
         }
     }
 
@@ -240,6 +242,7 @@ public class UserServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAndErrorIfSessionIdIsNotValid");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            Assertions.assertThat(e.getMessage()).isEqualTo("Invalid session id");
         }
     }
 
@@ -303,6 +306,7 @@ public class UserServiceTest extends ApplicationTest {
             Assert.fail("shouldThrowAnExceptionIfUsernameAlreadyUsedInTheGivenSessionIdWithConnectedStatus");
         } catch (CustomException e) {
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.DUPLICATE_IDENTIFIER);
+            Assertions.assertThat(e.getMessage()).isEqualTo("Username already used");
         }
     }
 

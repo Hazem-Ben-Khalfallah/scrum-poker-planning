@@ -3,6 +3,7 @@ package com.influans.sp.service;
 import com.influans.sp.dto.DefaultResponse;
 import com.influans.sp.dto.VoteCreationDto;
 import com.influans.sp.dto.VoteDto;
+import com.influans.sp.entity.StoryEntity;
 import com.influans.sp.entity.VoteEntity;
 import com.influans.sp.enums.WsTypes;
 import com.influans.sp.exception.CustomErrorCode;
@@ -72,6 +73,7 @@ public class VoteService {
      * @should throw an exception if voteId is null
      * @should throw an exception if vote does not exist with given id
      * @should throw an exception if user is not the vote owner
+     * @should throw an exception if story has been already ended
      * @should delete vote with the given id
      * @should send a websocket notification
      */
@@ -88,6 +90,9 @@ public class VoteService {
             LOGGER.error("no vote found with id = {}", voteId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Vote not found");
         }
+
+        // check story status
+        checkStoryStatus(voteEntity.getStoryId());
 
         if (!voteEntity.getUsername().equals(user.getUsername()) || !voteEntity.getSessionId().equals(user.getSessionId())) {
             LOGGER.error("username {} is not permitted to delete vote {} in session {}", user.getUsername(), voteId, user.getSessionId());
@@ -106,6 +111,7 @@ public class VoteService {
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if value is null or empty
      * @should throw an exception if story does not exist with given Id
+     * @should throw an exception if story has been already ended
      * @should Update existing vote if the user has already voted on the given story
      * @should create a vote for the given user on the selected story
      * @should send a websocket notification
@@ -121,10 +127,8 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "value should not be null or empty");
         }
 
-        if (!storyRepository.exists(voteCreationDto.getStoryId())) {
-            LOGGER.error("story not found with id = {}" , voteCreationDto.getStoryId());
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
-        }
+        // check story status
+        checkStoryStatus(voteCreationDto.getStoryId());
 
         VoteEntity voteEntity = voteRepository.getVoteByUserOnStory(user.getUsername(), voteCreationDto.getStoryId());
         if (Objects.isNull(voteEntity)) {
@@ -144,5 +148,16 @@ public class VoteService {
 
         webSocketSender.sendNotification(user.getSessionId(), WsTypes.VOTE_ADDED, voteDto);
         return voteCreationDto;
+    }
+
+    private void checkStoryStatus(String storyId) {
+        final StoryEntity storyEntity = storyRepository.findOne(storyId);
+        if (storyEntity == null) {
+            LOGGER.error("story not found with id = {}", storyId);
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
+        } else if (storyEntity.isEnded()) {
+            LOGGER.error("story with id = {} has been already ended", storyId);
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "story has been ended");
+        }
     }
 }

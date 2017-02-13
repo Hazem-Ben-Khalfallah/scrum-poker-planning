@@ -9,8 +9,10 @@ ngMessage.directive('ngMessage', function () {
         };
 
         $scope.$watch('visible', function () {
-            if ($scope.visible) {
+            if ($scope.visible == true || $scope.visible == "true") {
                 $scope.showMassage($scope.message);
+            } else {
+                $scope.visible = false;
             }
         });
 
