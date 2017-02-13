@@ -79,27 +79,13 @@ homeController.controller('homeCtrl',
             };
 
             $scope.hideMassage = function () {
-                $scope.hasMessage = false;
-                $timeout.cancel($scope.errorCountDown);
+                $scope.messageVisible = false;
             };
 
             $scope.showMassage = function (message) {
                 $scope.message = message;
-                $timeout.cancel($scope.errorCountDown);
-                hideMessageAfter(5);// seconds
-                $scope.hasMessage = true;
+                $scope.messageVisible = true;
             };
-
-            function hideMessageAfter(seconds) {
-                $scope.messageCountDown = seconds;
-                $scope.errorCountDown = $timeout(function () {
-                    if (seconds == 0) {
-                        $scope.hideMassage();
-                    } else {
-                        hideMessageAfter(seconds - 1);
-                    }
-                }, 1000);
-            }
 
             $scope.removeStory = function (story) {
                 $scope.stories.splice($scope.getIndex(Types.story, story), 1);

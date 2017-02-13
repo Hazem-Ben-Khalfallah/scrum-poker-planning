@@ -1,4 +1,4 @@
-<div class="ui secondary pointing menu">
+<div class="ui secondary pointing menu" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <div class="left menu">
         <div class="ui item">
             <strong>{{sprintName}}</strong>
@@ -66,20 +66,10 @@
             <div class="ui horizontal divider">
                 Select a card
             </div>
-            <!-- error message -->
-            <div class="ui mini negative message" data-ng-show="hasMessage">
-                <i class="close icon" data-ng-click="hideMassage()"></i>
-                <div class="header">
-                    Oops...
-                </div>
-                <div>
-                    {{message}}
-                    <span class="pull-right">
-                        {{messageCountDown}} s
-                    </span>
-                </div>
 
-            </div>
+            <!-- error message -->
+            <ng-message data-message="{{message}}" data-visible="{{messageVisible}}"></ng-message>
+
             <!-- Cards -->
             <div class="ui five link cards">
                 <div class="card {{card.color}} {{card.animate}}"

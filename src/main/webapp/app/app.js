@@ -5,6 +5,7 @@ var myApp = angular.module('scrumPokApp', [
     'ngStomp',
     'ngStorage',
     'ngEnter',
+    'ngMessage',
     'storiesFilter',
     'webSocketFactory',
     'sessionFactory',
