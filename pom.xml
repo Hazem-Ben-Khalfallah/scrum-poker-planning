@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.5.3</jackson.version>
         <java.version>1.8</java.version>
-        <start-class>com.influans.sp.Application</start-class>
+        <start-class>com.blacknebula.scrumpoker.Application</start-class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
