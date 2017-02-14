@@ -62,17 +62,20 @@ var cards = {
         {
             id: "pass",
             value: 'pass',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "?",
             value: '?',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "break",
             value: 'break',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         }
     ],
     fibonacci: [
@@ -129,17 +132,20 @@ var cards = {
         {
             id: "pass",
             value: 'pass',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "?",
             value: '?',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "break",
             value: 'break',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         }
     ],
     modifiedFibonacci: [
@@ -201,17 +207,20 @@ var cards = {
         {
             id: "pass",
             value: 'pass',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "?",
             value: '?',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         },
         {
             id: "break",
             value: 'break',
-            color: 'grey'
+            color: 'grey',
+            skip: true
         }
     ]
 };

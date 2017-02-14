@@ -62,7 +62,7 @@ homeController.controller('homeCtrl',
 
                 if (type === Types.card) {
                     for (var i = 0, len = $scope.cards.length; i < len; i++) {
-                        if ($scope.cards[i].id === item.id) {
+                        if (!$scope.cards[i].skip && $scope.cards[i].id === item.id) {
                             return i;
                         }
                     }
@@ -230,11 +230,13 @@ homeController.controller('homeCtrl',
                     var min = angular.undefined, max = angular.undefined, current;
                     angular.forEach($scope.votes, function (vote) {
                         current = $scope.getIndex(Types.card, {id: vote.value});
-                        if (!max || current > max) {
-                            max = current;
-                        }
-                        if (!min || current < min) {
-                            min = current
+                        if (current > 0) {
+                            if (!max || current > max) {
+                                max = current;
+                            }
+                            if (!min || current < min) {
+                                min = current
+                            }
                         }
                     });
 
