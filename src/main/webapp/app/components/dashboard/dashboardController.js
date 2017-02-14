@@ -7,6 +7,7 @@ dashboardController.controller('dashboardCtrl',
                 $scope.show_modal = false;
                 $scope.stories = [];
                 $scope.cardSet = 'time';
+                $scope.storyNamePrefix = '';
             }
 
             $scope.convertToStories = function () {
@@ -17,7 +18,7 @@ dashboardController.controller('dashboardCtrl',
                         .replace("\r\n", "\n")
                         .split("\n");
                     angular.forEach(values, function (value) {
-                        sanitizedValue = value.trim();
+                        sanitizedValue = $scope.storyNamePrefix + value.trim();
                         if (sanitizedValue.length > 0) {
                             if ($scope.stories.indexOf(sanitizedValue) < 0) {
                                 $scope.stories.push(sanitizedValue);
@@ -47,12 +48,13 @@ dashboardController.controller('dashboardCtrl',
             };
 
             $scope.save = function (username) {
-                if(!username){
+                if (!username) {
                     return;
                 }
-                
+
                 var data = {
                     username: username,
+                    storyNamePrefix: $scope.storyNamePrefix,
                     cardSet: $scope.cardSet,
                     stories: $scope.stories
                 };

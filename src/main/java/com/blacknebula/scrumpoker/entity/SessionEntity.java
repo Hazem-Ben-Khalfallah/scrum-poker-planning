@@ -12,6 +12,8 @@ public class SessionEntity {
     private String sessionId;
     @Field(SessionEntityDef.SPRINT_NAME)
     private String sprintName;
+    @Field(SessionEntityDef.SPRINT_NAME_PREFIX)
+    private String storyNamePrefix;
     @Field(SessionEntityDef.CARD_SET)
     private CardSetEnum cardSet;
 
@@ -44,5 +46,13 @@ public class SessionEntity {
 
     public void setSprintName(String sprintName) {
         this.sprintName = sprintName;
+    }
+
+    public String getStoryNamePrefix() {
+        return storyNamePrefix;
+    }
+
+    public void setStoryNamePrefix(String storyNamePrefix) {
+        this.storyNamePrefix = storyNamePrefix;
     }
 }

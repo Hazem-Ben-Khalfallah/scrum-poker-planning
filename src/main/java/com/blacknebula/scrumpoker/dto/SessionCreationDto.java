@@ -13,6 +13,7 @@ import java.util.List;
 public class SessionCreationDto {
     private String sessionId;
     private String username;
+    private String storyNamePrefix;
     private String cardSet;
     private List<String> stories = new ArrayList<>();
 
@@ -22,6 +23,7 @@ public class SessionCreationDto {
     public SessionEntity toEntity() {
         final SessionEntity sessionEntity = new SessionEntity();
         sessionEntity.setSessionId(sessionId);
+        sessionEntity.setStoryNamePrefix(storyNamePrefix);
         sessionEntity.setCardSet(CardSetEnum.toEnum(cardSet));
         return sessionEntity;
     }
@@ -66,5 +68,13 @@ public class SessionCreationDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getStoryNamePrefix() {
+        return storyNamePrefix;
+    }
+
+    public void setStoryNamePrefix(String storyNamePrefix) {
+        this.storyNamePrefix = storyNamePrefix;
     }
 }

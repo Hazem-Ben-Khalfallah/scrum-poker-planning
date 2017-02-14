@@ -1,8 +1,6 @@
 package com.blacknebula.scrumpoker.dto;
 
-import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +12,7 @@ public class SessionDto {
     private String sessionId;
     private String username;
     private String sprintName;
+    private String storyNamePrefix;
     private String cardSet;
     private List<String> stories = new ArrayList<>();
 
@@ -23,25 +22,8 @@ public class SessionDto {
     public SessionDto(SessionEntity sessionEntity) {
         this.sessionId = sessionEntity.getSessionId();
         this.sprintName = sessionEntity.getSprintName();
+        this.storyNamePrefix = sessionEntity.getStoryNamePrefix();
         this.cardSet = sessionEntity.getCardSet() != null ? sessionEntity.getCardSet().getValue() : null;
-    }
-
-    public SessionEntity toEntity() {
-        final SessionEntity sessionEntity = new SessionEntity();
-        sessionEntity.setSessionId(sessionId);
-        sessionEntity.setSprintName(sprintName);
-        sessionEntity.setCardSet(CardSetEnum.toEnum(cardSet));
-        return sessionEntity;
-    }
-
-    public List<StoryEntity> toStories(String sessionId) {
-        final List<StoryEntity> storyEntities = new ArrayList<>();
-        int order = 1;
-        for (String story : stories) {
-            storyEntities.add(new StoryEntity(sessionId, story, order));
-            order++;
-        }
-        return storyEntities;
     }
 
     public String getCardSet() {
@@ -82,5 +64,13 @@ public class SessionDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getStoryNamePrefix() {
+        return storyNamePrefix;
+    }
+
+    public void setStoryNamePrefix(String storyNamePrefix) {
+        this.storyNamePrefix = storyNamePrefix;
     }
 }

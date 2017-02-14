@@ -100,6 +100,9 @@ homeController.controller('homeCtrl',
                 if (!$scope.newStory.storyName) {
                     return;
                 }
+                if (session.storyNamePrefix) {
+                    $scope.newStory.storyName = session.storyNamePrefix + $scope.newStory.storyName;
+                }
                 $scope.newStory.order = $scope.stories.length + 1;
                 storyFactory.create($scope.newStory, function (data) {
                     $scope.newStory = {};
