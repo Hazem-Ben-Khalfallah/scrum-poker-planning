@@ -1,16 +1,16 @@
 package com.blacknebula.scrumpoker.service;
 
+import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.UserDto;
+import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.enums.WsTypes;
+import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
+import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.security.JwtService;
 import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.dto.DefaultResponse;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.exception.CustomErrorCode;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.utils.StringUtils;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class UserService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
         }
         if (!sessionRepository.exists(sessionId)) {
-            LOGGER.error("session not found with id = {}" , sessionId);
+            LOGGER.error("session not found with id = {}", sessionId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
         }
         final List<UserEntity> users = userRepository.findUsersBySessionId(sessionId);
@@ -121,12 +121,17 @@ public class UserService {
      */
     public DefaultResponse disconnectUser() {
         final Principal user = authenticationService.checkAuthenticatedUser();
-        final UserEntity userEntity = userRepository.findUser(user.getSessionId(), user.getUsername());
+        final String username = user.getUsername();
+        final String sessionId = user.getSessionId();
+        disconnectUserInternal(sessionId, username);
+        return DefaultResponse.ok();
+    }
+
+    public void disconnectUserInternal(String sessionId, String username) {
+        final UserEntity userEntity = userRepository.findUser(sessionId, username);
 
         userEntity.setConnected(false);
         userRepository.save(userEntity);
-        webSocketSender.sendNotification(user.getSessionId(), WsTypes.USER_DISCONNECTED, user.getUsername());
-        LOGGER.info("[SECURITY] Principal.username: {} , user.username: {}, equal: {}", user.getUsername(), user.getUsername(), user.getUsername().equals(user.getUsername()));
-        return DefaultResponse.ok();
+        webSocketSender.sendNotification(sessionId, WsTypes.USER_DISCONNECTED, username);
     }
 }
