@@ -85,7 +85,8 @@
                         <div class="ui inverted active dimmer" ng-show="card.selected && loading">
                             <div class="ui loader"></div>
                         </div>
-                        <div class="header capitalize center-text text-overflow clip" ng-hide="card.selected && loading">
+                        <div class="header capitalize center-text text-overflow clip"
+                             ng-hide="card.selected && loading">
                             {{card.value}}
                             <span class="meta lowercase">{{card.unit}}</span>
                         </div>
@@ -131,15 +132,18 @@
             </div>
             <!-- info zone -->
             <div class="ui top attached tabular menu">
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'stories'}" ng-click="info.selected = 'stories'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'stories'}"
+                     ng-click="info.selected = 'stories'">
                     <i class="icon tasks"></i>
                     Stories
                 </div>
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'users'}" ng-click="info.selected = 'users'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'users'}"
+                     ng-click="info.selected = 'users'">
                     <i class="icon users"></i>
                     Users
                 </div>
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'share'}" ng-click="info.selected = 'share'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'share'}"
+                     ng-click="info.selected = 'share'">
                     <i class="icon share alternate"></i>
                     Share
                 </div>
@@ -147,35 +151,33 @@
             <!-- Stories -->
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'stories'}">
                 <div class="ui grid">
-                    <div class="two column row">
-                        <div class="column">
-                            <div class="ui move right reveal" ng-class="{active: showAddStory}"
-                                 ng-show="currentUser.admin">
-                                <div class="visible content">
-                                    <!-- add button -->
-                                    <div class="add-story-button">
-                                        <button class="ui circular icon button block" ng-click="addStory()">
-                                            <i class="add icon"></i>
-                                        </button>
-                                    </div>
+                    <div class="sixteen wide column" ng-show="currentUser.admin">
+                        <div class="ui move right reveal" ng-class="{active: showAddStory}">
+                            <div class="visible content">
+                                <!-- add button -->
+                                <div class="add-story-button">
+                                    <button class="ui circular icon button block" ng-click="addStory()">
+                                        <i class="add icon"></i>
+                                    </button>
                                 </div>
-                                <div class="hidden content">
-                                    <div class="ui left icon input">
-                                        <input type="text" placeholder="Story name" class="add-story-input"
-                                               ng-enter="addStory()"
-                                               ng-model="newStory.storyName">
-                                        <i class="wizard icon"></i>
-                                    </div>
+                            </div>
+                            <div class="hidden content">
+                                <div class="ui left icon input">
+                                    <input type="text" placeholder="Story name" class="add-story-input"
+                                           ng-enter="addStory()"
+                                           ng-model="newStory.storyName">
+                                    <i class="wizard icon"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="column">
-                            <!-- hide ended stories -->
-                            <div class="pull-right hide-ended-stories">
-                                <div class="ui toggle checkbox">
-                                    <input type="checkbox" name="showEndedStories" ng-model="showEndedStories">
-                                    <label>Show ended stories</label>
-                                </div>
+                    </div>
+
+                    <div class="sixteen wide column">
+                        <!-- hide ended stories -->
+                        <div class="pull-right hide-ended-stories">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" name="showEndedStories" ng-model="showEndedStories">
+                                <label>Show ended stories</label>
                             </div>
                         </div>
                     </div>
@@ -230,7 +232,8 @@
                         Share session
                     </div>
                     <input id="sessionId" value="{{currentUser.sessionId}}" type="text" readonly style="width: 40%">
-                    <button data-clipboard-target="#sessionId" class="ui right icon button clipboard" style="width: 25%">
+                    <button data-clipboard-target="#sessionId" class="ui right icon button clipboard"
+                            style="width: 25%">
                         <i class="copy icon"></i>
                     </button>
                 </div>
