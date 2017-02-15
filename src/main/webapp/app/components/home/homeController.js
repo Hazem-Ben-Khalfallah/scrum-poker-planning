@@ -27,7 +27,7 @@ homeController.controller('homeCtrl',
                 userFactory.disconnect(function (response) {
                     if (response.status === 'OK') {
                         webSocketFactory.disconnect();
-                        $location.path('/login');
+                        $location.path('/static/login');
                     }
                 });
             };
@@ -220,6 +220,7 @@ homeController.controller('homeCtrl',
                 if (!vote) {
                     return {};
                 }
+                console.log(vote);
                 var field = $scope.getCard(vote).color,
                     color = {};
                 color[field] = $scope.currentStory.ended;
@@ -388,7 +389,7 @@ homeController.controller('homeCtrl',
 
             function init() {
                 if (!$localStorage.currentUser) {
-                    $location.path('/login');
+                    $location.path('/static/login');
                 }
                 //initialize clipboard (copy to keyboard feature)
                 new Clipboard('.clipboard');

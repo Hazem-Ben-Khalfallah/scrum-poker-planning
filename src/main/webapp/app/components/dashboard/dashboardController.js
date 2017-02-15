@@ -7,7 +7,7 @@ dashboardController.controller('dashboardCtrl',
                 $scope.show_modal = false;
                 $scope.stories = [];
                 $scope.cardSet = 'time';
-                $scope.cardTheme = '';
+                $scope.cardTheme = 'none';
                 $scope.storyNamePrefix = '';
             }
 
@@ -37,7 +37,7 @@ dashboardController.controller('dashboardCtrl',
             };
 
             $scope.cancel = function () {
-                $location.path('/login');
+                $location.path('/static/login');
             };
 
             $scope.openModal = function () {
@@ -63,7 +63,7 @@ dashboardController.controller('dashboardCtrl',
 
                 sessionFactory.create(data, function (response) {
                     $scope.closeModal();
-                    $location.path('/home/' + $localStorage.currentUser.sessionId);
+                    $location.path('/static/home/' + $localStorage.currentUser.sessionId);
                 });
             };
 

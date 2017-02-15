@@ -50,8 +50,8 @@
                     <div class="image" ng-class="{'vote-active': user.hasVoted}" ng-hide="currentStory.ended">
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
-                    <div class="image" ng-show="currentStory.ended && theme">
-                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.png">
+                    <div class="image" ng-show="currentStory.ended && theme != 'none'">
+                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.png" ng-if="theme != 'none'">
                     </div>
                     <div class="content">
                         <div class="header capitalize center-text">
@@ -78,8 +78,8 @@
                 <div class="card {{card.color}} {{card.animate}}"
                      ng-click="selectCard(card)"
                      ng-repeat="card in cards">
-                    <div class="image" data-ng-show="theme">
-                        <img ng-src="/images/{{theme}}/{{card.index}}.png">
+                    <div class="image" data-ng-show="theme != 'none'">
+                        <img ng-src="/images/{{theme}}/{{card.index}}.png" ng-if="theme != 'none'">
                     </div>
                     <div class="content">
                         <div class="ui inverted active dimmer" ng-show="card.selected && loading">

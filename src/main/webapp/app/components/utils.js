@@ -3,7 +3,8 @@ angular.module('$httpWrapper', [])
         function ($http, $localStorage, $location, $log) {
             function disconnectUser() {
                 delete $localStorage.currentUser;
-                $location.path('/login');
+                $http.defaults.headers.common.Authorization = '';
+                $location.path('/static/login');
             }
 
             return {

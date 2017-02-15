@@ -5,7 +5,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage',
 
         function init() {
             if ($localStorage.currentUser) {
-                $location.path('/home/' + $localStorage.currentUser.sessionId);
+                $location.path('/static/home/' + $localStorage.currentUser.sessionId);
             }
         }
 
@@ -33,7 +33,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage',
             };
             userFactory.connect(data, function () {
                 $scope.loading = false;
-                $location.path('/home/' + $localStorage.currentUser.sessionId);
+                $location.path('/static/home/' + $localStorage.currentUser.sessionId);
             }, function (error, status) {
                 $scope.loading = false;
                 $scope.showMassage(error.exception);
@@ -42,7 +42,7 @@ loginController.controller('loginCtrl', ['$scope', '$location', '$localStorage',
         };
 
         $scope.newSession = function () {
-            $location.path('/dashboard');
+            $location.path('/static/dashboard');
         };
 
         init();
