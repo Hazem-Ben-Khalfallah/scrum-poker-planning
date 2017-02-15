@@ -110,23 +110,28 @@
 
                 <div class="ui yellow statistic">
                     <div class="label">
-                        <i class="arrow down icon"></i>
                         Min
                     </div>
-                    <div class="text value">
-                        {{min.value}}
-                        <span class="lowercase">{{min.unit}}</span>
+                    <div class="text value lowercase">
+                        {{min.value}} {{min.unit}}
                     </div>
                 </div>
 
                 <div class="ui orange statistic">
                     <div class="label">
-                        <i class="arrow up icon"></i>
                         Max
                     </div>
-                    <div class="text value">
-                        {{max.value}}
-                        <span class="lowercase">{{max.unit}}</span>
+                    <div class="text value lowercase">
+                        {{max.value}} {{max.unit}}
+                    </div>
+                </div>
+
+                <div class="ui blue statistic">
+                    <div class="label">
+                        Mean
+                    </div>
+                    <div class="text value lowercase">
+                        {{mean}}
                     </div>
                 </div>
             </div>

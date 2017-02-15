@@ -256,8 +256,45 @@ homeController.controller('homeCtrl',
                         $scope.max.value = $scope.cards[max].value;
                         $scope.max.unit = unit;
                     }
+
+                    if (min || max) {
+                        if (!min) {
+                            $scope.mean = $scope.max;
+                        } else if (!max) {
+                            $scope.mean = $scope.min;
+                        } else {
+                            var mean = ($scope.max.value * convertToHours($scope.max.unit) + $scope.min.value * convertToHours($scope.min.unit)) / 2
+                            $scope.mean = prettify(mean);
+                        }
+                    }
                 }
             };
+
+            function convertToHours(unit) {
+                if (unit === 'h')
+                    return 1;
+                if (unit === 'd')
+                    return 8; // 8h / day
+                else
+                    return 40; // 40h / week
+            }
+
+            function prettify(durationInHours) {
+                var weeks = Math.floor(durationInHours / 40);
+                var days = Math.floor((durationInHours % 40) / 8);
+                var hours = durationInHours - days * 8 - weeks * 40;
+                var duration = '';
+                if (weeks > 0) {
+                    duration += weeks + ' w ';
+                }
+                if (days > 0) {
+                    duration += days + ' d ';
+                }
+                if (hours > 0) {
+                    duration += hours + ' h';
+                }
+                return duration;
+            }
 
             $scope.consumeEvent = function (item) {
                 $log.info(item);

@@ -20,7 +20,7 @@
 }
 
 .lowercase {
-    text-transform: lowercase;
+    text-transform: lowercase !important;
 }
 
 .center-text {
