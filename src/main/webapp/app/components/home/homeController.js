@@ -379,7 +379,7 @@ homeController.controller('homeCtrl',
                 //get users
                 $scope.users = users;
 
-                $scope.theme = "star-wars";
+                $scope.theme = session.cardTheme;
 
                 //get session info
                 $scope.sprintName = session.sprintName;

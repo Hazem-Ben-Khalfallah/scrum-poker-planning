@@ -15,23 +15,17 @@
                         <label>Choose card set</label>
 
                         <div class="field">
-                            <div class="field">
-                                <div class="ui radio checkbox">
-                                    <input type="radio" ng-model="cardSet" name="card-set" value="time">
-                                    <label>Time ( 1h, 2h, 4h, 1d, 2d, 3d, 4d, 1w, ?, Pass, Break )</label>
-                                </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" ng-model="cardSet" name="card-set" value="time">
+                                <label>Time ( 1h, 2h, 4h, 1d, 2d, 3d, 4d, 1w, ?, Pass, Break )</label>
                             </div>
                             <div class="ui radio checkbox">
                                 <input type="radio" ng-model="cardSet" name="card-set" value="fibonacci">
-                                <label>Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass, Break
-                                    )</label>
+                                <label>Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass, Break)</label>
                             </div>
-                        </div>
-                        <div class="field">
                             <div class="ui radio checkbox">
                                 <input type="radio" ng-model="cardSet" name="card-set" value="modifiedFibonacci">
-                                <label>Modified Fibonacci ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass,Break)
-                                </label>
+                                <label>Modified Fibonacci ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass,Break)</label>
                             </div>
                         </div>
                     </div>
@@ -46,50 +40,68 @@
                         </div>
                     </div>
 
-                    <div class="field">
-                        <label>Enter stories</label>
+                    <div class="grouped fields">
+                        <label>Choose cards Theme</label>
 
-                        <textarea id="stories"
-                                  placeholder="Put each story on its own line, separated by Return/Enter"
-                                  rows="5" columns="100" maxlength="40000" ng-model="rowStories"></textarea>
-
-                        <div style="margin-top: 5px" class="ui teal submit button"
-                             ng-click="convertToStories()">
-                            <i class="icon exchange"></i>
-                            convert to stories
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" ng-model="cardTheme" name="card-theme" value="">
+                                <label>None</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" ng-model="cardTheme" name="card-theme" value="star-wars">
+                                <label>Star wars</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" ng-model="cardTheme" name="card-theme" value="super-heroes">
+                                <label>Super heroes</label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="field" ng-hide="stories.length == 0">
-                        <label>Adjust stories</label>
+                        <div class="field">
+                            <label>Enter stories</label>
 
-                        <div class="ui four column grid">
-                            <div class="row" ng-repeat="story in stories">
-                                <div class="column">
-                                    {{story}}
-                                </div>
-                                <div class="column">
-                                    <button class="circular ui red icon button" ng-click="remove(story)">
-                                        <i class="remove icon"></i>
-                                    </button>
+                            <textarea id="stories"
+                                      placeholder="Put each story on its own line, separated by Return/Enter"
+                                      rows="5" columns="100" maxlength="40000" ng-model="rowStories"></textarea>
+
+                            <div style="margin-top: 5px" class="ui teal submit button"
+                                 ng-click="convertToStories()">
+                                <i class="icon exchange"></i>
+                                convert to stories
+                            </div>
+                        </div>
+
+                        <div class="field" ng-hide="stories.length == 0">
+                            <label>Adjust stories</label>
+
+                            <div class="ui four column grid">
+                                <div class="row" ng-repeat="story in stories">
+                                    <div class="column">
+                                        {{story}}
+                                    </div>
+                                    <div class="column">
+                                        <button class="circular ui red icon button" ng-click="remove(story)">
+                                            <i class="remove icon"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="ui buttons">
-                        <div class="ui submit button" ng-click="cancel()">
-                            <i class="icon cancel"></i>
-                            cancel
+                        <div class="ui buttons">
+                            <div class="ui submit button" ng-click="cancel()">
+                                <i class="icon cancel"></i>
+                                cancel
+                            </div>
+                            <div class="or"></div>
+                            <div class="ui green submit button" ng-click="openModal()">
+                                <i class="icon play"></i>
+                                save & start
+                            </div>
                         </div>
-                        <div class="or"></div>
-                        <div class="ui green submit button" ng-click="openModal()">
-                            <i class="icon play"></i>
-                            save & start
-                        </div>
-                    </div>
 
-                </div>
+                    </div>
             </form>
 
         </div>

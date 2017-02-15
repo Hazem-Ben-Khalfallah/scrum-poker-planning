@@ -50,7 +50,7 @@
                     <div class="image" ng-class="{'vote-active': user.hasVoted}" ng-hide="currentStory.ended">
                         <img src="/app/components/home/img/cardback.svg">
                     </div>
-                    <div class="image" ng-show="currentStory.ended">
+                    <div class="image" ng-show="currentStory.ended && theme">
                         <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.png">
                     </div>
                     <div class="content">
@@ -78,7 +78,7 @@
                 <div class="card {{card.color}} {{card.animate}}"
                      ng-click="selectCard(card)"
                      ng-repeat="card in cards">
-                    <div class="image">
+                    <div class="image" data-ng-show="theme">
                         <img ng-src="/images/{{theme}}/{{card.index}}.png">
                     </div>
                     <div class="content">

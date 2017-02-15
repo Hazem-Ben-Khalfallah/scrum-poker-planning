@@ -7,6 +7,7 @@ dashboardController.controller('dashboardCtrl',
                 $scope.show_modal = false;
                 $scope.stories = [];
                 $scope.cardSet = 'time';
+                $scope.cardTheme = '';
                 $scope.storyNamePrefix = '';
             }
 
@@ -56,6 +57,7 @@ dashboardController.controller('dashboardCtrl',
                     username: username,
                     storyNamePrefix: $scope.storyNamePrefix,
                     cardSet: $scope.cardSet,
+                    cardTheme: $scope.cardTheme,
                     stories: $scope.stories
                 };
 

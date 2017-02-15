@@ -14,6 +14,7 @@ public class SessionCreationDto {
     private String sessionId;
     private String username;
     private String storyNamePrefix;
+    private String cardTheme;
     private String cardSet;
     private List<String> stories = new ArrayList<>();
 
@@ -24,6 +25,7 @@ public class SessionCreationDto {
         final SessionEntity sessionEntity = new SessionEntity();
         sessionEntity.setSessionId(sessionId);
         sessionEntity.setStoryNamePrefix(storyNamePrefix);
+        sessionEntity.setCardTheme(cardTheme);
         sessionEntity.setCardSet(CardSetEnum.toEnum(cardSet));
         return sessionEntity;
     }
@@ -76,5 +78,13 @@ public class SessionCreationDto {
 
     public void setStoryNamePrefix(String storyNamePrefix) {
         this.storyNamePrefix = storyNamePrefix;
+    }
+
+    public String getCardTheme() {
+        return cardTheme;
+    }
+
+    public void setCardTheme(String cardTheme) {
+        this.cardTheme = cardTheme;
     }
 }

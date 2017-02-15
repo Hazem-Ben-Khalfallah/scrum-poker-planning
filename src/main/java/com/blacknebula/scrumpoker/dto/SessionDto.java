@@ -13,6 +13,7 @@ public class SessionDto {
     private String username;
     private String sprintName;
     private String storyNamePrefix;
+    private String cardTheme;
     private String cardSet;
     private List<String> stories = new ArrayList<>();
 
@@ -23,6 +24,7 @@ public class SessionDto {
         this.sessionId = sessionEntity.getSessionId();
         this.sprintName = sessionEntity.getSprintName();
         this.storyNamePrefix = sessionEntity.getStoryNamePrefix();
+        this.cardTheme = sessionEntity.getCardTheme();
         this.cardSet = sessionEntity.getCardSet() != null ? sessionEntity.getCardSet().getValue() : null;
     }
 
@@ -72,5 +74,13 @@ public class SessionDto {
 
     public void setStoryNamePrefix(String storyNamePrefix) {
         this.storyNamePrefix = storyNamePrefix;
+    }
+
+    public String getCardTheme() {
+        return cardTheme;
+    }
+
+    public void setCardTheme(String cardTheme) {
+        this.cardTheme = cardTheme;
     }
 }
