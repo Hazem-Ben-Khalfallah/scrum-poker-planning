@@ -319,6 +319,9 @@ homeController.controller('homeCtrl',
                     }
 
                 } else if (item.type === Events.vote_added) {
+                    if (!$scope.currentStory || $scope.currentStory.storyId != item.data.storyId) {
+                        return;
+                    }
                     index = $scope.getIndex(Types.vote, item.data);
                     if (index < 0) {
                         $scope.votes.push(item.data);
