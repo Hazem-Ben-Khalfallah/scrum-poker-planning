@@ -229,6 +229,7 @@ homeController.controller('homeCtrl',
             $scope.getStats = function () {
                 $scope.min = {value: '-', unit: ''};
                 $scope.max = {value: '-', unit: ''};
+                $scope.mean = '-';
                 if ($scope.currentStory.ended) {
                     var min = angular.undefined, max = angular.undefined, current;
                     angular.forEach($scope.votes, function (vote) {
