@@ -379,6 +379,8 @@ homeController.controller('homeCtrl',
                 //get users
                 $scope.users = users;
 
+                $scope.theme = "star-wars";
+
                 //get session info
                 $scope.sprintName = session.sprintName;
                 if (session.cardSet == 'time') {
