@@ -9,63 +9,72 @@ var cards = {
         {
             id: "time-1h",
             value: 1,
-            unit: 'hour',
+            unit: 'h',
+            unitFull: 'hour',
             color: 'blue',
             index: 1
         },
         {
             id: "time-2h",
             value: 2,
-            unit: 'hours',
+            unit: 'h',
+            unitFull: 'hours',
             color: 'blue',
             index: 2
         },
         {
             id: "time-4h",
             value: 4,
-            unit: 'hours',
+            unit: 'h',
+            unitFull: 'hours',
             color: 'blue',
             index: 3
         },
         {
             id: "time-1d",
             value: 1,
-            unit: 'day',
+            unit: 'd',
+            unitFull: 'day',
             color: 'green',
             index: 4
         },
         {
             id: "time-2d",
             value: 2,
-            unit: 'days',
+            unit: 'd',
+            unitFull: 'days',
             color: 'green',
             index: 5
         },
         {
             id: "time-3d",
             value: 3,
-            unit: 'days',
+            unit: 'd',
+            unitFull: 'days',
             color: 'green',
             index: 6
         },
         {
             id: "time-4d",
             value: 4,
-            unit: 'days',
+            unit: 'd',
+            unitFull: 'days',
             color: 'green',
             index: 7
         },
         {
             id: "time-1w",
             value: 1,
-            unit: 'week',
+            unit: 'w',
+            unitFull: 'week',
             color: 'orange',
             index: 8
         },
         {
             id: "time-2w",
             value: 2,
-            unit: 'weeks',
+            unit: 'w',
+            unitFull: 'weeks',
             color: 'orange',
             index: 9
         },

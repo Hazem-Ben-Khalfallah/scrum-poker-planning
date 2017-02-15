@@ -227,8 +227,8 @@ homeController.controller('homeCtrl',
             };
 
             $scope.getStats = function () {
-                $scope.min = '-';
-                $scope.max = '-';
+                $scope.min = {value: '-', unit: ''};
+                $scope.max = {value: '-', unit: ''};
                 if ($scope.currentStory.ended) {
                     var min = angular.undefined, max = angular.undefined, current;
                     angular.forEach($scope.votes, function (vote) {
@@ -246,19 +246,15 @@ homeController.controller('homeCtrl',
                     var unit;
                     if (min) {
                         unit = $scope.cards[min].unit;
-                        $scope.min = $scope.cards[min].value;
-                        if (unit) {
-                            $scope.min += " " + unit;
-                        }
+                        $scope.min.value = $scope.cards[min].value;
+                        $scope.min.unit = unit;
                     }
 
 
                     if (max) {
                         unit = $scope.cards[max].unit;
-                        $scope.max = $scope.cards[max].value;
-                        if (unit) {
-                            $scope.max += " " + unit;
-                        }
+                        $scope.max.value = $scope.cards[max].value;
+                        $scope.max.unit = unit;
                     }
                 }
             };

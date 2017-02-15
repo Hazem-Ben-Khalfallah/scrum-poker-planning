@@ -19,6 +19,10 @@
     text-transform: capitalize;
 }
 
+.lowercase {
+    text-transform: lowercase;
+}
+
 .center-text {
     text-align: center;
 }
@@ -71,4 +75,15 @@
 
 .hide-ended-stories {
     padding-top: 10px;
+}
+
+.text-overflow {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.clip {
+    text-overflow: clip !important;
 }

@@ -55,12 +55,12 @@
                     </div>
                     <div class="content">
                         <div class="header capitalize center-text">
-                            <p>{{user.username}}</p>
+                            <p class="text-overflow">{{user.username}}</p>
 
-                            <p ng-show="currentStory.ended">{{getCard(user.vote).value}}</p>
-                        </div>
-                        <div class="meta capitalize center-text" ng-show="currentStory.ended">
-                            {{getCard(user.vote).unit}}
+                            <p ng-show="currentStory.ended">
+                                {{getCard(user.vote).value}}
+                                <span class="meta lowercase">{{getCard(user.vote).unit}}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -85,10 +85,9 @@
                         <div class="ui inverted active dimmer" ng-show="card.selected && loading">
                             <div class="ui loader"></div>
                         </div>
-                        <div class="header capitalize center-text" ng-hide="card.selected && loading">{{card.value}}
-                        </div>
-                        <div class="meta capitalize center-text " ng-hide="card.selected && loading">
-                            {{card.unit}}
+                        <div class="header capitalize center-text text-overflow clip" ng-hide="card.selected && loading">
+                            {{card.value}}
+                            <span class="meta lowercase">{{card.unit}}</span>
                         </div>
                     </div>
                 </div>
@@ -114,7 +113,8 @@
                         Min
                     </div>
                     <div class="text value">
-                        {{min}}
+                        {{min.value}}
+                        <span class="lowercase">{{min.unit}}</span>
                     </div>
                 </div>
 
@@ -124,21 +124,22 @@
                         Max
                     </div>
                     <div class="text value">
-                        {{max}}
+                        {{max.value}}
+                        <span class="lowercase">{{max.unit}}</span>
                     </div>
                 </div>
             </div>
             <!-- info zone -->
             <div class="ui top attached tabular menu">
-                <div class="item" ng-class="{active: info.selected == 'stories'}" ng-click="info.selected = 'stories'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'stories'}" ng-click="info.selected = 'stories'">
                     <i class="icon tasks"></i>
                     Stories
                 </div>
-                <div class="item" ng-class="{active: info.selected == 'users'}" ng-click="info.selected = 'users'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'users'}" ng-click="info.selected = 'users'">
                     <i class="icon users"></i>
                     Users
                 </div>
-                <div class="item" ng-class="{active: info.selected == 'share'}" ng-click="info.selected = 'share'">
+                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'share'}" ng-click="info.selected = 'share'">
                     <i class="icon share alternate"></i>
                     Share
                 </div>
@@ -225,11 +226,11 @@
 
                 <!-- session copier -->
                 <div class="ui small action labeled input">
-                    <div class="ui label" style="padding-top:11px">
+                    <div class="ui label" style="padding-top:11px; width: 35%">
                         Share session
                     </div>
-                    <input id="sessionId" value="{{currentUser.sessionId}}" type="text" readonly>
-                    <button data-clipboard-target="#sessionId" class="ui right icon button clipboard">
+                    <input id="sessionId" value="{{currentUser.sessionId}}" type="text" readonly style="width: 40%">
+                    <button data-clipboard-target="#sessionId" class="ui right icon button clipboard" style="width: 25%">
                         <i class="copy icon"></i>
                     </button>
                 </div>
