@@ -127,6 +127,34 @@ public class UserService {
         return DefaultResponse.ok();
     }
 
+    /**
+     * @return empty response
+     * @should check that the user is authenticated as admin
+     * @should throw an exception if banned username does not exist in related session
+     * @should throw an exception if the session admin try to ban himself
+     * @should ban a user even if he is another session admin
+     * @should set banned user as disconnected
+     * @should send a websocket notification
+     */
+    public DefaultResponse ban(String username) {
+        final Principal user = authenticationService.checkAuthenticatedAdmin();
+
+        if (user.getUsername().equals(username)) {
+            LOGGER.error("Cannot ban: User with username {} is admin of session {}", user.getUsername(), user.getSessionId());
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "Cannot ban user");
+        }
+
+        final UserEntity userEntity = userRepository.findUser(user.getSessionId(), username);
+        if (userEntity == null) {
+            LOGGER.error("user not found with username {} in session {}", user.getUsername(), user.getSessionId());
+            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Invalid username");
+        }
+
+        final String sessionId = user.getSessionId();
+        disconnectUserInternal(sessionId, username);
+        return DefaultResponse.ok();
+    }
+
     public void disconnectUserInternal(String sessionId, String username) {
         final UserEntity userEntity = userRepository.findUser(sessionId, username);
 

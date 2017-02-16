@@ -1,23 +1,23 @@
 package com.blacknebula.scrumpoker.service;
 
-import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
-import com.blacknebula.scrumpoker.dto.UserDto;
-import com.blacknebula.scrumpoker.enums.UserRole;
-import com.blacknebula.scrumpoker.enums.WsTypes;
-import com.blacknebula.scrumpoker.exception.CustomException;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.security.SecurityContext;
-import com.google.common.collect.ImmutableList;
 import com.blacknebula.scrumpoker.ApplicationTest;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
 import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
 import com.blacknebula.scrumpoker.builders.UserDtoBuilder;
 import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
+import com.blacknebula.scrumpoker.dto.UserDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
+import com.blacknebula.scrumpoker.enums.UserRole;
+import com.blacknebula.scrumpoker.enums.WsTypes;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
+import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
+import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.Principal;
+import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
+import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
@@ -458,5 +458,260 @@ public class UserServiceTest extends ApplicationTest {
 
         // then
         verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.USER_DISCONNECTED, principal.getUsername());
+    }
+
+    /**
+     * @verifies check that the user is authenticated as admin
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldCheckThatTheUserIsAuthenticatedAsAdmin() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(false)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.VOTER)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        try {
+            //when
+            userService.ban("username");
+            Assert.fail("shouldCheckThatTheUserIsAuthenticatedAsAdmin");
+        } catch (CustomException e) {
+            //then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
+        }
+    }
+
+    /**
+     * @verifies throw an exception if banned username does not exist in related session
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldThrowAnExceptionIfBannedUsernameDoesNotExistInRelatedSession() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        try {
+            //when
+            userService.ban("invalid_username");
+            Assert.fail("shouldThrowAnExceptionIfBannedUsernameDoesNotExistInRelatedSession");
+        } catch (CustomException e) {
+            //then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            Assertions.assertThat(e.getMessage()).isEqualTo("Invalid username");
+        }
+    }
+
+    /**
+     * @verifies throw an exception if the session admin try to ban himself
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldThrowAnExceptionIfTheSessionAdminTryToBanHimself() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        try {
+            //when
+            userService.ban(username);
+            Assert.fail("shouldThrowAnExceptionIfBannedUsernameIsTheCurrentSessionAdmin");
+        } catch (CustomException e) {
+            //then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
+            Assertions.assertThat(e.getMessage()).isEqualTo("Cannot ban user");
+        }
+    }
+
+    /**
+     * @verifies ban a user even if he is another session admin
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldBanAUserEvenIfHeIsAnotherSessionAdmin() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String admin_username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final String username = "Mike";
+        final UserEntity secondUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(secondUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        // when
+        userService.ban(username);
+
+        // then
+        final UserEntity userEntity = userRepository.findUser(sessionId, username);
+        Assertions.assertThat(userEntity.isConnected()).isFalse();
+    }
+
+    /**
+     * @verifies set banned user as disconnected
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldSetBannedUserAsDisconnected() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String admin_username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final String username = "Mike";
+        final UserEntity secondUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(false)
+                .build();
+        userRepository.save(secondUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        // when
+        userService.ban(username);
+
+        // then
+        final UserEntity userEntity = userRepository.findUser(sessionId, username);
+        Assertions.assertThat(userEntity.isConnected()).isFalse();
+    }
+
+    /**
+     * @verifies send a websocket notification
+     * @see UserService#ban(String)
+     */
+    @Test
+    public void ban_shouldSendAWebsocketNotification() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String admin_username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final String username = "Mike";
+        final UserEntity secondUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(false)
+                .build();
+        userRepository.save(secondUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(admin_username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        // when
+        userService.ban(username);
+
+        // then
+        verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.USER_DISCONNECTED, username);
     }
 }

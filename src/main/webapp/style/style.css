@@ -87,3 +87,7 @@
 .clip {
     text-overflow: clip !important;
 }
+
+.link {
+    cursor: hand;
+}

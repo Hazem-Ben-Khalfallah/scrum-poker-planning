@@ -53,4 +53,17 @@ public class UserRestController {
         return new ResponseEntity<>(userService.disconnectUser(), HttpStatus.OK);
     }
 
+    /**
+     * @param username username
+     * @return empty response
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
+    @RequestMapping(value = "/users/ban/{username}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<DefaultResponse> ban(@PathVariable("username") String username) {
+        return new ResponseEntity<>(userService.ban(username), HttpStatus.OK);
+    }
+
+
 }

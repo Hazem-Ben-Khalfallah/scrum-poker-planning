@@ -11,6 +11,7 @@ public class UserEntityBuilder {
     private String username;
     private String sessionId;
     private boolean connected = true;
+    private boolean admin;
 
     public static UserEntityBuilder builder() {
         return new UserEntityBuilder();
@@ -32,10 +33,16 @@ public class UserEntityBuilder {
         return this;
     }
 
+    public UserEntityBuilder withAdmin(boolean admin) {
+        this.admin = admin;
+        return this;
+    }
+
     public UserEntity build() {
         final UserEntity userEntity = new UserEntity();
         userEntity.setUserId(new EntityId(username, sessionId));
         userEntity.setConnected(connected);
+        userEntity.setAdmin(admin);
         return userEntity;
     }
 }

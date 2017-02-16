@@ -35,6 +35,12 @@ angular.module('userFactory', [])
                     $http.defaults.headers.common.Authorization = '';
                     onSuccess(body);
                 }, onError);
+            },
+            banUser: function (username, onSuccess, onError) {
+                onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
+                var url = '/users/ban/' + username;
+                $httpWrapper.delete(url, onSuccess, onError);
             }
         };
     }]);

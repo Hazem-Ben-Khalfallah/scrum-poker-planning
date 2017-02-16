@@ -28,7 +28,7 @@
             <div class="sub header">Story # {{currentStory.order}}/{{stories.length}}</div>
         </div>
         <div>
-            <div class="ui toggle checkbox" ng-show="currentUser.admin">
+            <div class="ui toggle checkbox" ng-if="currentUser.admin">
                 <input type="checkbox" name="vote" ng-disabled="currentStory.ended" ng-model="currentStory.ended"
                        ng-click="endVote()">
                 <label>End vote</label>
@@ -54,6 +54,10 @@
                         <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.png" ng-if="theme != 'none'">
                     </div>
                     <div class="content">
+                        <i class="right floated remove icon link" ng-if="currentUser.admin"
+                           ng-hide="currentUser.username === user.username"
+                           ng-click="banUser(user)">
+                        </i>
                         <div class="header capitalize center-text">
                             <p class="text-overflow">{{user.username}}</p>
 
@@ -156,7 +160,7 @@
             <!-- Stories -->
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'stories'}">
                 <div class="ui grid">
-                    <div class="sixteen wide column" ng-show="currentUser.admin">
+                    <div class="sixteen wide column" ng-if="currentUser.admin">
                         <div class="ui move right reveal" ng-class="{active: showAddStory}">
                             <div class="visible content">
                                 <!-- add button -->
@@ -195,7 +199,7 @@
                         <th class="left aligned">Status</th>
                         <th>#</th>
                         <th>Name</th>
-                        <th class="right aligned" ng-show="currentUser.admin">Actions</th>
+                        <th class="right aligned" ng-if="currentUser.admin">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -213,7 +217,7 @@
                         <td>{{story.storyName}}</td>
                         <td class="right aligned">
                             <div class="ui small basic icon buttons"
-                                 ng-show="currentUser.admin && story.storyId !== currentStory.storyId">
+                                 ng-if="currentUser.admin && story.storyId !== currentStory.storyId">
                                 <button class="ui button" ng-click="removeStory(story)"><i class="remove icon"></i>
                                 </button>
                             </div>

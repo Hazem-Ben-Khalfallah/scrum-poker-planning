@@ -220,7 +220,6 @@ homeController.controller('homeCtrl',
                 if (!vote) {
                     return {};
                 }
-                console.log(vote);
                 var field = $scope.getCard(vote).color,
                     color = {};
                 color[field] = $scope.currentStory.ended;
@@ -297,6 +296,18 @@ homeController.controller('homeCtrl',
                 }
                 return duration;
             }
+
+            $scope.banUser = function (user) {
+                if (!user || $scope.currentUser.username === user.username) {
+                    return;
+                }
+                userFactory.banUser(user.username, function () {
+                    var index = $scope.getIndex(Types.user, {username: user.username});
+                    if (index >= 0) {
+                        $scope.users.splice(index, 1);
+                    }
+                });
+            };
 
             $scope.consumeEvent = function (item) {
                 $log.info(item);

@@ -2,22 +2,22 @@ package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.AppIntegrationTest;
 import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
 import com.blacknebula.scrumpoker.builders.UserDtoBuilder;
 import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
+import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.UserDto;
+import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.ResponseStatus;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
+import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
-import com.blacknebula.scrumpoker.dto.DefaultResponse;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
@@ -227,5 +227,97 @@ public class UserRestControllerTest extends AppIntegrationTest {
         // then
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/disconnect");
+    }
+
+    /**
+     * @verifies return 200 status
+     * @see UserRestController#ban(String)
+     */
+    @Test
+    public void ban_shouldReturn200Status() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String adminUsername = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(adminUsername)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final String username = "Mike";
+        final UserEntity user = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(user);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(adminUsername)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        // when
+        final DefaultResponse response = givenJsonClient()
+                .delete("/users/ban/{username}", username)
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract()
+                .as(DefaultResponse.class);
+
+        // then
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+    }
+
+    /**
+     * @verifies return valid error status if an exception has been thrown
+     * @see UserRestController#ban(String)
+     */
+    @Test
+    public void ban_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .withAdmin(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        // when
+        final ErrorResponse errorResponse = givenJsonClient()
+                .delete("/users/ban/{username}", "invalid_username")
+                .then()
+                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
+                .extract()
+                .as(ErrorResponse.class);
+
+        // then
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/ban/invalid_username");
     }
 }
