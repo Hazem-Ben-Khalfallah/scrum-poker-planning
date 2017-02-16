@@ -42,23 +42,15 @@ public class UserService {
 
 
     /**
-     * @param sessionId session id
      * @return return list of connected user on this session
-     * @should return users list if session exists
-     * @should throw an error if session is null or empty
-     * @should throw an error if session does not exist
-     * @should return empty list if no user is connected on this session
-     * @should not return disconnected users
+     * @should check that the user is authenticated
+     * @should return connected users only
+     *
      */
-    public List<UserDto> listUsers(String sessionId) {
-        if (StringUtils.isEmpty(sessionId)) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "session should not be null or empty");
-        }
-        if (!sessionRepository.exists(sessionId)) {
-            LOGGER.error("session not found with id = {}", sessionId);
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
-        }
-        final List<UserEntity> users = userRepository.findUsersBySessionId(sessionId);
+    public List<UserDto> listUsers() {
+        final Principal user = authenticationService.checkAuthenticatedUser();
+
+        final List<UserEntity> users = userRepository.findUsersBySessionId(user.getSessionId());
         return users.stream()
                 .map(userEntity -> new UserDto(userEntity.getUserId().getEntityId(),
                         userEntity.getUserId().getSessionId(),

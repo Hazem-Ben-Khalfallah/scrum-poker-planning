@@ -4,6 +4,8 @@ import com.blacknebula.scrumpoker.ApplicationTest;
 import com.blacknebula.scrumpoker.builders.*;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
 import com.blacknebula.scrumpoker.dto.StoryDto;
+import com.blacknebula.scrumpoker.entity.SessionEntity;
+import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.enums.WsTypes;
@@ -16,8 +18,6 @@ import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,36 +56,26 @@ public class StoryServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies throw an exception if session id is null or empty
-     * @see StoryService#listStories(String)
+     * @verifies check that the user is authenticated
+     * @see StoryService#listStories()
      */
     @Test
-    public void listStories_shouldThrowAnExceptionIfSessionIdIsNullOrEmpty() throws Exception {
+    public void listStories_shouldCheckThatTheUserIsAuthenticated() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {
-            storyService.listStories(null);
-            Assert.fail("shouldThrowAnExceptionIfSessionIdIsNullOrEmpty");
+            // when
+            storyService.listStories();
+            Assert.fail("shouldCheckThatTheUserIsAuthenticated");
         } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
-        }
-    }
-
-    /**
-     * @verifies throw an exception if session id is not valid
-     * @see StoryService#listStories(String)
-     */
-    @Test
-    public void listStories_shouldThrowAnExceptionIfSessionIdIsNotValid() throws Exception {
-        try {
-            storyService.listStories("invalid_session_id");
-            Assert.fail("shouldThrowAnExceptionIfSessionIdIsNotValid");
-        } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
     /**
      * @verifies return stories related to the given session
-     * @see StoryService#listStories(String)
+     * @see StoryService#listStories()
      */
     @Test
     public void listStories_shouldReturnStoriesRelatedToTheGivenSession() throws Exception {
@@ -95,6 +85,21 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .build();
         sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         final List<StoryEntity> stories = ImmutableList.<StoryEntity>builder()
                 .add(StoryEntityBuilder.builder()
@@ -109,7 +114,7 @@ public class StoryServiceTest extends ApplicationTest {
         storyRepository.save(stories);
 
         // when
-        final List<StoryDto> foundStories = storyService.listStories(sessionId);
+        final List<StoryDto> foundStories = storyService.listStories();
 
         // then
         Assertions.assertThat(foundStories).hasSize(2);

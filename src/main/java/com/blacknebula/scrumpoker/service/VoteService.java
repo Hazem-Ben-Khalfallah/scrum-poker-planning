@@ -1,10 +1,10 @@
 package com.blacknebula.scrumpoker.service;
 
-import com.blacknebula.scrumpoker.entity.VoteEntity;
 import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.VoteCreationDto;
 import com.blacknebula.scrumpoker.dto.VoteDto;
 import com.blacknebula.scrumpoker.entity.StoryEntity;
+import com.blacknebula.scrumpoker.entity.VoteEntity;
 import com.blacknebula.scrumpoker.enums.WsTypes;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
@@ -41,18 +41,26 @@ public class VoteService {
     /**
      * @param storyId storyId
      * @return list of votes
+     * @should check that the user is authenticated
+     * @should throw an exception if user is not connected to the session related to the given story
      * @should throw an exception if storyId is null or empty
      * @should throw an exception if story does not exist with given id
      * @should return list of votes related to the given story
      */
     public List<VoteDto> listVotes(String storyId) {
+        final Principal user = authenticationService.checkAuthenticatedUser();
+
         if (StringUtils.isEmpty(storyId)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
 
-        if (!storyRepository.exists(storyId)) {
+        final StoryEntity storyEntity = storyRepository.findOne(storyId);
+        if (storyEntity == null) {
             LOGGER.error("no story found with given Id {}", storyId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found");
+        } else if (!storyEntity.getSessionId().equals(user.getSessionId())) {
+            LOGGER.error("username {} is not permitted to list votes from session {}", user.getUsername(), storyEntity.getSessionId());
+            throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "Permission denied");
         }
 
         final List<VoteDto> votes = new ArrayList<>();

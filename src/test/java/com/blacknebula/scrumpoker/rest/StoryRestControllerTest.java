@@ -7,6 +7,7 @@ import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
 import com.blacknebula.scrumpoker.dto.StoryDto;
 import com.blacknebula.scrumpoker.entity.UserEntity;
+import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.blacknebula.scrumpoker.enums.ResponseStatus;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
@@ -50,7 +51,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see StoryRestController#listStories(String)
+     * @see StoryRestController#listStories()
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -61,6 +62,21 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .build();
         sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
 
         final List<StoryEntity> stories = ImmutableList.<StoryEntity>builder()
                 .add(StoryEntityBuilder.builder()
@@ -89,16 +105,18 @@ public class StoryRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see StoryRestController#listStories(String)
+     * @see StoryRestController#listStories()
      */
     @Test
     public void listStories_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .queryParam("sessionId", "invalid_session_id")
                 .get("/stories")
                 .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
+                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 

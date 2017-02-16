@@ -33,30 +33,20 @@ public class StoryService {
     @Autowired
     private StoryRepository storyRepository;
     @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
     private WebSocketSender webSocketSender;
     @Autowired
     private AuthenticationService authenticationService;
 
     /**
-     * @param sessionId session id
      * @return list of stories
+     * @should check that the user is authenticated
      * @should return stories related to the given session
-     * @should throw an exception if session id is null or empty
-     * @should throw an exception if session id is not valid
      */
-    public List<StoryDto> listStories(String sessionId) {
-        if (StringUtils.isEmpty(sessionId)) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "sessionId should not be null or empty");
-        }
-        if (!sessionRepository.exists(sessionId)) {
-            LOGGER.error("session not found with id = {}", sessionId);
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "session not found");
-        }
+    public List<StoryDto> listStories() {
+        final Principal user = authenticationService.checkAuthenticatedUser();
 
         final List<StoryDto> stories = new ArrayList<>();
-        storyRepository.findBySessionId(sessionId).forEach(storyEntity -> //
+        storyRepository.findBySessionId(user.getSessionId()).forEach(storyEntity -> //
                 stories.add(new StoryDto(storyEntity)));
         return stories;
     }

@@ -18,15 +18,14 @@ public class UserRestController {
     private UserService userService;
 
     /**
-     * @param sessionId session id
      * @return list of UserDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<UserDto>> listUsers(@RequestParam("sessionId") String sessionId) {
-        return new ResponseEntity<>(userService.listUsers(sessionId), HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> listUsers() {
+        return new ResponseEntity<>(userService.listUsers(), HttpStatus.OK);
     }
 
     /**

@@ -1,21 +1,31 @@
 package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.AppIntegrationTest;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.SessionCreationDto;
+import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.CardSetEnum;
+import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.builders.SessionCreationDtoBuilder;
 import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
 import com.blacknebula.scrumpoker.dto.SessionDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
+import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.Principal;
+import com.blacknebula.scrumpoker.security.SecurityContext;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 /**
  * @author hazem
@@ -24,10 +34,20 @@ public class SessionRestControllerTest extends AppIntegrationTest {
 
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SecurityContext securityContext;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(securityContext);
+    }
 
     /**
      * @verifies return 200 status
-     * @see SessionRestController#getSession(String)
+     * @see SessionRestController#getSession()
      */
     @Test
     public void getSession_shouldReturn200Status() throws Exception {
@@ -39,9 +59,24 @@ public class SessionRestControllerTest extends AppIntegrationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final SessionDto sessionDto = givenJsonClient()
-                .get("/sessions/{sessionId}", sessionId)
+                .get("/sessions")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -55,21 +90,24 @@ public class SessionRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see SessionRestController#getSession(String)
+     * @see SessionRestController#getSession()
      */
     @Test
     public void getSession_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .get("/sessions/{sessionId}", "invalid_session_id")
+                .get("/sessions")
                 .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
+                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 
         // then
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
-        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/sessions/invalid_session_id");
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/sessions");
     }
 
     /**

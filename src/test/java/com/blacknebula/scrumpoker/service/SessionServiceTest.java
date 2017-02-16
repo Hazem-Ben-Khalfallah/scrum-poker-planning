@@ -1,25 +1,33 @@
 package com.blacknebula.scrumpoker.service;
 
-import com.blacknebula.scrumpoker.dto.SessionCreationDto;
 import com.blacknebula.scrumpoker.ApplicationTest;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
 import com.blacknebula.scrumpoker.builders.SessionCreationDtoBuilder;
 import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
+import com.blacknebula.scrumpoker.dto.SessionCreationDto;
 import com.blacknebula.scrumpoker.dto.SessionDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.CardSetEnum;
+import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.StoryRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.Principal;
+import com.blacknebula.scrumpoker.security.SecurityContext;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -35,38 +43,36 @@ public class SessionServiceTest extends ApplicationTest {
     private StoryRepository storyRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SecurityContext securityContext;
 
-    /**
-     * @verifies throw an error if withSessionId is null or empty
-     * @see SessionService#getSession(String)
-     */
-    @Test
-    public void getSession_shouldThrowAnErrorIfSessionIdIsNullOrEmpty() throws Exception {
-        try {
-            sessionService.getSession(null);
-            Assert.fail("shouldThrowAnErrorIfSessionIdIsNullOrEmpty");
-        } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
-        }
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.reset(securityContext);
     }
 
     /**
-     * @verifies throw an error if session does not exist
-     * @see SessionService#getSession(String)
+     * @verifies check that the user is authenticated
+     * @see SessionService#getSession()
      */
     @Test
-    public void getSession_shouldThrowAnErrorIfSessionDoesNotExist() throws Exception {
+    public void getSession_shouldCheckThatTheUserIsAuthenticated() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {
-            sessionService.getSession("invalid_session_id");
-            Assert.fail("shouldThrowAnErrorIfSessionDoesNotExist");
+            // when
+            sessionService.getSession();
+            Assert.fail("shouldCheckThatTheUserIsAuthenticated");
         } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
     /**
      * @verifies return valid session if it exists
-     * @see SessionService#getSession(String)
+     * @see SessionService#getSession()
      */
     @Test
     public void getSession_shouldReturnValidSessionIfItExists() throws Exception {
@@ -77,8 +83,23 @@ public class SessionServiceTest extends ApplicationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         //when
-        final SessionDto session = sessionService.getSession(sessionId);
+        final SessionDto session = sessionService.getSession();
 
         //then
         Assertions.assertThat(session).isNotNull();

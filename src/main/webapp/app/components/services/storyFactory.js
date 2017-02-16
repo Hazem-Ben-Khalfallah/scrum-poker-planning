@@ -1,10 +1,10 @@
 angular.module('storyFactory', [])
     .factory('storyFactory', ['$httpWrapper', function ($httpWrapper) {
         return {
-            get: function (sessionId, onSuccess, onError) {
+            get: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
-                var url = '/stories?sessionId=' + sessionId;
+                var url = '/stories';
                 $httpWrapper.get(url, onSuccess, onError);
             },
             remove: function (storyId, onSuccess, onError) {

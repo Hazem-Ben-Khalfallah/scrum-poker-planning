@@ -50,7 +50,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return 200 status
-     * @see UserRestController#listUsers(String)
+     * @see UserRestController#listUsers()
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -62,10 +62,11 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
         final List<UserEntity> users = ImmutableList.<UserEntity>builder()
                 .add(UserEntityBuilder.builder()
                         .withSessionId(sessionId)
-                        .withUsername("Leo")
+                        .withUsername(username)
                         .build())
                 .add(UserEntityBuilder.builder()
                         .withSessionId(sessionId)
@@ -74,9 +75,15 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .build();
         userRepository.save(users);
 
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final List<UserDto> response = givenJsonClient()
-                .queryParam("sessionId", sessionId)
                 .get("/users")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
@@ -88,16 +95,18 @@ public class UserRestControllerTest extends AppIntegrationTest {
 
     /**
      * @verifies return valid error status if an exception has been thrown
-     * @see UserRestController#listUsers(String)
+     * @see UserRestController#listUsers()
      */
     @Test
     public void listUsers_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
-                .queryParam("sessionId", "invalid_session_id")
                 .get("/users")
                 .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
+                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
                 .extract()
                 .as(ErrorResponse.class);
 

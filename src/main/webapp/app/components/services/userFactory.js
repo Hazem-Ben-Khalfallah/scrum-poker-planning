@@ -1,10 +1,10 @@
 angular.module('userFactory', [])
     .factory('userFactory', ['$http', '$httpWrapper', '$localStorage', function ($http, $httpWrapper, $localStorage) {
         return {
-            get: function (sessionId, onSuccess, onError) {
+            get: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
-                var url = '/users?sessionId=' + sessionId;
+                var url = '/users';
                 $httpWrapper.get(url, onSuccess, onError);
             },
             connect: function (data, onSuccess, onError) {

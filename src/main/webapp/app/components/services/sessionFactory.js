@@ -18,10 +18,10 @@ angular.module('sessionFactory', [])
                     onSuccess(body);
                 }, onError);
             },
-            get: function (sessionId, onSuccess, onError) {
+            get: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
-                var url = '/sessions/' + sessionId;
+                var url = '/sessions';
                 $httpWrapper.get(url, onSuccess, onError);
             }
         };

@@ -1,18 +1,19 @@
 package com.blacknebula.scrumpoker.service;
 
 import com.blacknebula.scrumpoker.dto.SessionCreationDto;
-import com.blacknebula.scrumpoker.enums.CardSetEnum;
-import com.blacknebula.scrumpoker.enums.UserRole;
-import com.blacknebula.scrumpoker.exception.CustomException;
-import com.blacknebula.scrumpoker.repository.StoryRepository;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.JwtService;
 import com.blacknebula.scrumpoker.dto.SessionDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
+import com.blacknebula.scrumpoker.enums.CardSetEnum;
+import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
+import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
+import com.blacknebula.scrumpoker.repository.StoryRepository;
+import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.JwtService;
+import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.utils.DateUtils;
 import com.blacknebula.scrumpoker.utils.HashId;
 import com.blacknebula.scrumpoker.utils.StringUtils;
@@ -39,25 +40,22 @@ public class SessionService {
     private StoryRepository storyRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private AuthenticationService authenticationService;
+
+
     @Value("${application.id}")
     private String applicationId;
 
     /**
-     * @param sessionId session id
      * @return sessionDto
-     * @should throw an error if sessionId is null or empty
-     * @should throw an error if session does not exist
+     * @should check that the user is authenticated
      * @should return valid session if it exists
      */
-    public SessionDto getSession(String sessionId) {
-        if (StringUtils.isEmpty(sessionId)) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "SessionId should not be empty");
-        }
-        final SessionEntity sessionEntity = sessionRepository.findSessionBySessionId(sessionId);
-        if (sessionEntity == null) {
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found");
-        }
-
+    public SessionDto getSession() {
+        // check also session validity
+        final Principal user = authenticationService.checkAuthenticatedUser();
+        final SessionEntity sessionEntity = sessionRepository.findSessionBySessionId(user.getSessionId());
         return new SessionDto(sessionEntity);
     }
 

@@ -18,15 +18,14 @@ public class StoryRestController {
     private StoryService storyService;
 
     /**
-     * @param sessionId sessionId
      * @return List of StoryDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/stories", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<StoryDto>> listStories(@QueryParam("sessionId") String sessionId) {
-        return new ResponseEntity<>(storyService.listStories(sessionId), HttpStatus.OK);
+    public ResponseEntity<List<StoryDto>> listStories() {
+        return new ResponseEntity<>(storyService.listStories(), HttpStatus.OK);
     }
 
     /**

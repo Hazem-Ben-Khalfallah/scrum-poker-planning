@@ -55,39 +55,29 @@ public class UserServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies throw an error if session is null or empty
-     * @see UserService#listUsers(String)
+     * @verifies check that the user is authenticated
+     * @see UserService#listUsers()
      */
     @Test
-    public void listUsers_shouldThrowAnErrorIfSessionIsNullOrEmpty() throws Exception {
+    public void listUsers_shouldCheckThatTheUserIsAuthenticated() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
         try {
-            userService.listUsers(null);
-            Assert.fail("shouldThrowAnErrorIfSessionIsNullOrEmpty");
+            // when
+            userService.listUsers();
+            Assert.fail("shouldCheckThatTheUserIsAuthenticated");
         } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
         }
     }
 
     /**
-     * @verifies throw an error if session does not exist
-     * @see UserService#listUsers(String)
+     * @verifies return connected users only
+     * @see UserService#listUsers()
      */
     @Test
-    public void listUsers_shouldThrowAnErrorIfSessionDoesNotExist() throws Exception {
-        try {
-            userService.listUsers("invalid_session_id");
-            Assert.fail("shouldThrowAnErrorIfSessionIsNullOrEmpty");
-        } catch (CustomException e) {
-            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
-        }
-    }
-
-    /**
-     * @verifies return empty list if no user is connected on this session
-     * @see UserService#listUsers(String)
-     */
-    @Test
-    public void listUsers_shouldReturnEmptyListIfNoUserIsConnectedOnThisSession() throws Exception {
+    public void listUsers_shouldReturnConnectedUsersOnly() throws Exception {
         // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
@@ -95,62 +85,11 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
         sessionRepository.save(sessionEntity);
 
-        // when
-        final List<UserDto> connectedUsers = userService.listUsers(sessionId);
-
-        // then
-        Assertions.assertThat(connectedUsers).isEmpty();
-    }
-
-    /**
-     * @verifies return users list if session exists
-     * @see UserService#listUsers(String)
-     */
-    @Test
-    public void listUsers_shouldReturnUsersListIfSessionExists() throws Exception {
-        // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
+        final String username = "Leo";
         final List<UserEntity> users = ImmutableList.<UserEntity>builder()
                 .add(UserEntityBuilder.builder()
                         .withSessionId(sessionId)
-                        .withUsername("Leo")
-                        .build())
-                .add(UserEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withUsername("Leander")
-                        .build())
-                .build();
-        userRepository.save(users);
-
-        // when
-        final List<UserDto> connectedUsers = userService.listUsers(sessionId);
-
-        // then
-        Assertions.assertThat(connectedUsers).hasSize(2);
-    }
-
-    /**
-     * @verifies not return disconnected users
-     * @see UserService#listUsers(String)
-     */
-    @Test
-    public void listUsers_shouldNotReturnDisconnectedUsers() throws Exception {
-        // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final List<UserEntity> users = ImmutableList.<UserEntity>builder()
-                .add(UserEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withUsername("Leo")
+                        .withUsername(username)
                         .withConnected(true)
                         .build())
                 .add(UserEntityBuilder.builder()
@@ -161,12 +100,19 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
         userRepository.save(users);
 
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
-        final List<UserDto> connectedUsers = userService.listUsers(sessionId);
+        final List<UserDto> connectedUsers = userService.listUsers();
 
         // then
         Assertions.assertThat(connectedUsers).hasSize(1);
-        Assertions.assertThat(connectedUsers.get(0).getUsername()).isEqualTo("Leo");
+        Assertions.assertThat(connectedUsers.get(0).getUsername()).isEqualTo(username);
     }
 
     /**

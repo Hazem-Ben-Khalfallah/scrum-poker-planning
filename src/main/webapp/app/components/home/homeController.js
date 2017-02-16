@@ -504,21 +504,21 @@ homeController.controller('homeCtrl',
 homeController.resolve = {
     session: ['sessionFactory', '$localStorage', '$q', function (sessionFactory, $localStorage, $q) {
         var delay = $q.defer();
-        sessionFactory.get($localStorage.currentUser.sessionId, function (data) {
+        sessionFactory.get(function (data) {
             delay.resolve(data);
         });
         return delay.promise;
     }],
     users: ['userFactory', '$localStorage', '$q', function (userFactory, $localStorage, $q) {
         var delay = $q.defer();
-        userFactory.get($localStorage.currentUser.sessionId, function (data) {
+        userFactory.get(function (data) {
             delay.resolve(data);
         });
         return delay.promise;
     }],
     stories: ['storyFactory', '$localStorage', '$q', function (storyFactory, $localStorage, $q) {
         var delay = $q.defer();
-        storyFactory.get($localStorage.currentUser.sessionId, function (data) {
+        storyFactory.get(function (data) {
             delay.resolve(data);
         });
         return delay.promise;

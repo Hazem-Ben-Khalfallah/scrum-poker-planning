@@ -60,15 +60,114 @@ public class VoteServiceTest extends ApplicationTest {
     }
 
     /**
+     * @verifies check that the user is authenticated
+     * @see VoteService#listVotes(String)
+     */
+    @Test
+    public void listVotes_shouldCheckThatTheUserIsAuthenticated() throws Exception {
+        //given
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        try {
+            // when
+            voteService.listVotes("storyId");
+            Assert.fail("shouldCheckThatTheUserIsAuthenticated");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    /**
+     * @verifies throw an exception if user is not connected to the session related to the given story
+     * @see VoteService#listVotes(String)
+     */
+    @Test
+    public void listVotes_shouldThrowAnExceptionIfUserIsNotConnectedToTheSessionRelatedToTheGivenStory() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        final String storyId = "storyId";
+        final StoryEntity storyEntity = StoryEntityBuilder.builder()
+                .withStoryId(storyId)
+                .withSessionId("other_session")
+                .build();
+        storyRepository.save(storyEntity);
+
+        final List<VoteEntity> votes = ImmutableList.<VoteEntity>builder()
+                .add(VoteEntityBuilder.builder()
+                        .withStoryId(storyId)
+                        .withVoteId("vote1")
+                        .build())
+                .add(VoteEntityBuilder.builder()
+                        .withStoryId(storyId)
+                        .withVoteId("vote2")
+                        .build())
+                .build();
+        voteRepository.save(votes);
+
+        try {
+            // when
+            voteService.listVotes(storyId);
+            Assert.fail("shouldThrowAnExceptionIfUserIsNotConnectedToTheSessionRelatedToTheGivenStory");
+        } catch (CustomException e) {
+            // then
+            Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.PERMISSION_DENIED);
+        }
+    }
+
+    /**
      * @verifies throw an exception if storyId is null or empty
      * @see VoteService#listVotes(String)
      */
     @Test
     public void listVotes_shouldThrowAnExceptionIfStoryIdIsNullOrEmpty() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         try {
+            // when
             voteService.listVotes(null);
             Assert.fail("shouldThrowAnExceptionIfStoryIdIsNullOrEmpty");
         } catch (CustomException e) {
+            //then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.BAD_ARGS);
         }
     }
@@ -79,10 +178,34 @@ public class VoteServiceTest extends ApplicationTest {
      */
     @Test
     public void listVotes_shouldThrowAnExceptionIfStoryDoesNotExistWithGivenId() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         try {
+            //when
             voteService.listVotes("invalid_story_id");
             Assert.fail("shouldThrowAnExceptionIfStoryDoesNotExistWithGivenId");
         } catch (CustomException e) {
+            //then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
         }
     }
@@ -94,10 +217,31 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void listVotes_shouldReturnListOfVotesRelatedToTheGivenStory() throws Exception {
         // given
-        final String storyId = "storyId";
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
 
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
+        final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
                 .withStoryId(storyId)
+                .withSessionId(sessionId)
                 .build();
         storyRepository.save(storyEntity);
 

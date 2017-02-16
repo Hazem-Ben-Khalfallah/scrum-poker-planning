@@ -62,9 +62,31 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @SuppressWarnings("unchecked")
     public void listVote_shouldReturn200Status() throws Exception {
         // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
                 .withStoryId(storyId)
+                .withSessionId(sessionId)
                 .build();
         storyRepository.save(storyEntity);
 
@@ -99,6 +121,28 @@ public class VoteRestControllerTest extends AppIntegrationTest {
      */
     @Test
     public void listVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity connectedUser = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(true)
+                .build();
+        userRepository.save(connectedUser);
+
+        final Principal principal = PrincipalBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withRole(UserRole.SESSION_ADMIN)
+                .build();
+        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+
         // when
         final ErrorResponse errorResponse = givenJsonClient()
                 .queryParam("storyId", "invalid_story_id")

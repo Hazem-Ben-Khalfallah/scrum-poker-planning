@@ -18,15 +18,14 @@ public class SessionRestController {
     private SessionService sessionService;
 
     /**
-     * @param sessionId sessionId
      * @return SessionDto
      * @should return 200 status
      * @should return valid error status if an exception has been thrown
      */
-    @RequestMapping(value = "/sessions/{sessionId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/sessions", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<SessionDto> getSession(@PathVariable("sessionId") String sessionId) {
-        return new ResponseEntity<>(sessionService.getSession(sessionId), HttpStatus.OK);
+    public ResponseEntity<SessionDto> getSession() {
+        return new ResponseEntity<>(sessionService.getSession(), HttpStatus.OK);
     }
 
     /**
