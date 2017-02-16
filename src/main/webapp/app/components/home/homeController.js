@@ -281,6 +281,7 @@ homeController.controller('homeCtrl',
             }
 
             function prettify(durationInHours) {
+                durationInHours = Math.floor(durationInHours);
                 var weeks = Math.floor(durationInHours / 40);
                 var days = Math.floor((durationInHours % 40) / 8);
                 var hours = durationInHours - days * 8 - weeks * 40;
