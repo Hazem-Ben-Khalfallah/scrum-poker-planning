@@ -16,7 +16,8 @@ var myApp = angular.module('scrumPokApp', [
 
     'loginController',
     'dashboardController',
-    'homeController'
+    'homeController',
+    'notFoundCtrl'
 ]);
 
 myApp.config(function ($routeProvider, $locationProvider) {
@@ -38,7 +39,14 @@ myApp.config(function ($routeProvider, $locationProvider) {
             templateUrl: 'app/components/dashboard/dashboard.html',
             controller: 'dashboardCtrl'
         })
-        .otherwise({
+        .when('/static/404', {
+            templateUrl: 'app/components/404/404.html',
+            controller: 'notFoundCtrl'
+        })
+        .when('/', {
             redirectTo: '/static/login'
+        })
+        .otherwise({
+            redirectTo: '/static/404'
         });
 });

@@ -11,6 +11,24 @@
     top: 20%;
 }
 
+.center-page {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+}
+
+.center-img {
+    display: block;
+    margin: auto auto 20px;
+}
+
+.cool-font {
+    font-family: Andale Mono, monospace;
+    font-size: large;
+}
+
 .block {
     margin: 2px !important;
 }
@@ -89,5 +107,5 @@
 }
 
 .link {
-    cursor: hand;
+    cursor: pointer;
 }
