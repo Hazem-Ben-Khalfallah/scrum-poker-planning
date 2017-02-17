@@ -231,15 +231,22 @@ homeController.controller('homeCtrl',
                 $scope.max = {value: '-', unit: ''};
                 $scope.mean = '-';
                 if ($scope.currentStory.ended) {
-                    var min = angular.undefined, max = angular.undefined, current;
+                    var min = angular.undefined,
+                        max = angular.undefined,
+                        sum = 0,
+                        totalValidVotes = 0,
+                        index;
                     angular.forEach($scope.votes, function (vote) {
-                        current = $scope.getIndex(Types.card, {id: vote.value});
-                        if (current > 0) {
-                            if (!max || current > max) {
-                                max = current;
+                        index = $scope.getIndex(Types.card, {id: vote.value});
+                        if (index > 0) {
+                            var card = $scope.cards[index];
+                            sum += card.value * convertToHours(card.unit); // add value in hours
+                            totalValidVotes++;
+                            if (!max || index > max) {
+                                max = index;
                             }
-                            if (!min || current < min) {
-                                min = current
+                            if (!min || index < min) {
+                                min = index
                             }
                         }
                     });
@@ -258,15 +265,9 @@ homeController.controller('homeCtrl',
                         $scope.max.unit = unit;
                     }
 
-                    if (min || max) {
-                        if (!min) {
-                            $scope.mean = $scope.max;
-                        } else if (!max) {
-                            $scope.mean = $scope.min;
-                        } else {
-                            var mean = ($scope.max.value * convertToHours($scope.max.unit) + $scope.min.value * convertToHours($scope.min.unit)) / 2
-                            $scope.mean = prettify(mean);
-                        }
+                    if (totalValidVotes > 0) {
+                        var mean = sum / totalValidVotes;
+                        $scope.mean = prettify(mean);
                     }
                 }
             };
