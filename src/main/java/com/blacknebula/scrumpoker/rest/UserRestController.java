@@ -31,7 +31,7 @@ public class UserRestController {
     /**
      * @param userDto user that will be connected
      * @return UserDto
-     * @should return 200 status and a not null token
+     * @should return 200 status and a not null jwt token
      * @should return valid error status if an exception has been thrown
      */
     @RequestMapping(value = "/users/connect", method = RequestMethod.POST)

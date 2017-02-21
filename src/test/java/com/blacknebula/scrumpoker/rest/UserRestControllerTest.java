@@ -20,6 +20,7 @@ import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.core.IsNull;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -116,11 +117,11 @@ public class UserRestControllerTest extends AppIntegrationTest {
     }
 
     /**
-     * @verifies return 200 status and a not null token
+     * @verifies return 200 status and a not null jwt token
      * @see UserRestController#connect(UserDto, HttpServletResponse)
      */
     @Test
-    public void connect_shouldReturn200StatusAndANotNullToken() throws Exception {
+    public void connect_shouldReturn200StatusAndANotNullJwtToken() throws Exception {
         // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()

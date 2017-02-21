@@ -2,21 +2,18 @@ package com.blacknebula.scrumpoker;
 
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
-import org.junit.Before;
-import org.springframework.boot.test.IntegrationTest;
+import org.springframework.beans.factory.annotation.Value;
 
 import static com.jayway.restassured.RestAssured.given;
 
-@IntegrationTest
 public abstract class AppIntegrationTest extends ApplicationTest {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-    }
+    @Value("${server.address:localhost}")
+    protected String serverAddress;
+    @Value("${server.port:8080}")
+    protected String serverPort;
 
-    protected String getBaseUrl() {
+    private String getBaseUrl() {
         return "http://" + serverAddress + ":" + serverPort + "/";
     }
 

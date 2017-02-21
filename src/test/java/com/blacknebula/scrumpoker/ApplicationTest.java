@@ -16,11 +16,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @IntegrationTest
 public abstract class ApplicationTest extends SpringTest {
 
-    @Value("${server.address:localhost}")
-    protected String serverAddress;
-    @Value("${server.port:8080}")
-    protected String serverPort;
-
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -39,10 +34,6 @@ public abstract class ApplicationTest extends SpringTest {
         mongoTemplate.getDb().getCollectionNames().stream().filter(name -> !name.startsWith("system.")).forEach(name -> {
             mongoTemplate.getDb().getCollection(name).remove(new BasicDBObject());
         });
-    }
-
-    protected String serverUrl() {
-        return "http://" + serverAddress + ":" + serverPort + "/";
     }
 
 }
