@@ -367,9 +367,14 @@ homeController.controller('homeCtrl',
                     }
 
                 } else if (item.type === Events.user_disconnected) {
-                    index = $scope.getIndex(Types.user, {username: item.data});
-                    if (index >= 0) {
-                        $scope.users.splice(index, 1);
+                    // if user has been disconnected by admin
+                    if (item.data === $scope.currentUser.username) {
+                        $scope.logout();
+                    } else {
+                        index = $scope.getIndex(Types.user, {username: item.data});
+                        if (index >= 0) {
+                            $scope.users.splice(index, 1);
+                        }
                     }
                 }
                 $scope.$apply();
