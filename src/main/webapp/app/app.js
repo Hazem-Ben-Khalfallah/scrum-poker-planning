@@ -1,4 +1,4 @@
-var myApp = angular.module('scrumPokApp', [
+var myApp = angular.module('scrumPokerApp', [
     'ngRoute',
     '$httpWrapper',
     'angularify.semantic.modal',
