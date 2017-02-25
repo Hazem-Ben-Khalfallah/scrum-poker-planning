@@ -16,3 +16,6 @@ tmp
 src/main/main.iml
 src/test/test.iml
 /src/main/webapp/node_modules/
+/src/main/webapp/dist/
+/src/main/webapp/etc/
+/src/main/webapp/node/

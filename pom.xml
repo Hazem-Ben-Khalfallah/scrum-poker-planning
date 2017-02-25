@@ -228,7 +228,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
+                <version>2.19.1</version>
                 <configuration>
                     <argLine>${surefireArgLine}</argLine>
                     <skipTests>${skip.unit.tests}</skipTests>
@@ -258,40 +258,43 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.3</version>
+
                 <executions>
+                    <execution>
+                        <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
 
                     <execution>
-                        <id>npm</id>
-                        <phase>initialize</phase>
+                        <id>npm install</id>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>npm</goal>
                         </goals>
+
                         <configuration>
-                            <workingDirectory>./src/main/webapp/</workingDirectory>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>install</argument>
-                            </arguments>
-                            <skip>${javaOnly}</skip>
+                            <arguments>install</arguments>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>Grunt</id>
+                        <id>gulp build</id>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>gulp</goal>
                         </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <executable>node_modules/.bin/gulp${filesuffix}</executable>
-                            <workingDirectory>./src/main/webapp/</workingDirectory>
-                            <skip>${javaOnly}</skip>
-                        </configuration>
                     </execution>
 
                 </executions>
+
+                <configuration>
+                    <nodeVersion>v7.6.0</nodeVersion>
+                    <workingDirectory>src/main/webapp</workingDirectory>
+                </configuration>
             </plugin>
 
         </plugins>
@@ -299,26 +302,4 @@
         <finalName>scrum_poker</finalName>
     </build>
 
-    <profiles>
-        <profile>
-            <id>default-profile</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <filesuffix/>
-            </properties>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <filesuffix>.cmd</filesuffix>
-            </properties>
-        </profile>
-    </profiles>
 </project>
