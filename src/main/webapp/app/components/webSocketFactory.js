@@ -39,7 +39,6 @@ angular.module('webSocketFactory', [])
 
 
             var connect = function (callback) {
-                $log.info('connect ws!!');
                 $stomp.connect(endpoint)
                     .then(function (frame) {
                         if (callback) {

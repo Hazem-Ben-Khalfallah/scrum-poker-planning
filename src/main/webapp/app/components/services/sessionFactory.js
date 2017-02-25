@@ -5,7 +5,9 @@ angular.module('sessionFactory', [])
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
                 $httpWrapper.post('/sessions', data, function (body, status, headers) {
+                    console.log('headers: ', headers);
                     var token = headers("jwt-token");
+                    console.log('token: ', token);
                     if (token) {
                         // store username and token in local storage to keep user logged in between page refreshes
                         $localStorage.currentUser = {

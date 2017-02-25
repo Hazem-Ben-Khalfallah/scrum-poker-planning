@@ -18,16 +18,15 @@ angular.module('$httpWrapper', [])
                     }
 
                     $http({url: url, method: "GET"})
-                        .success(function (body, status, headers, httpResponse) {
-                            $log.info('[' + status + ']' + ' GET: ' + url + ' ', angular.toJson(body));
-                            onSuccess(body, status, headers);
-                        })
-                        .error(function (body, status, headers, httpResponse) {
-                            $log.error('GET: ' + ' [' + status + '] ' + url);
-                            if (status == 401) {
+                        .then(function (response) {
+                            $log.info('[' + response.status + ']' + ' GET: ' + url + ' ', response.data);
+                            onSuccess(response.data, response.status, response.headers);
+                        }, function (response) {
+                            $log.error('GET: ' + ' [' + response.status + '] ' + url);
+                            if (response.status == 401) {
                                 disconnectUser();
                             }
-                            onError(body, status);
+                            onError(response.data, response.status);
                         });
                 },
                 post: function (url, params, onSuccess, onError) {
@@ -40,16 +39,15 @@ angular.module('$httpWrapper', [])
                     }
 
                     $http.post(url, angular.fromJson(params))
-                        .success(function (body, status, headers, httpResponse) {
-                            $log.info('[' + status + ']' + ' POST: ' + url + ' ', angular.toJson(body));
-                            onSuccess(body, status, headers);
-                        })
-                        .error(function (body, status, headers, httpResponse) {
-                            $log.error('POST ' + ' [' + status + '] ' + url + ' ' + angular.toJson(body));
-                            if (status == 401) {
+                        .then(function (response) {
+                            $log.info('[' + response.status + ']' + ' POST: ' + url + ' ', response.data);
+                            onSuccess(response.data, response.status, response.headers);
+                        }, function (response) {
+                            $log.error('POST ' + ' [' + response.status + '] ' + url + ' ', response.data);
+                            if (response.status == 401) {
                                 disconnectUser();
                             }
-                            onError(body, status);
+                            onError(response.data, response.status);
                         });
                 },
                 'delete': function (url, onSuccess, onError) {
@@ -62,16 +60,15 @@ angular.module('$httpWrapper', [])
                     }
 
                     $http.delete(url)
-                        .success(function (body, status, headers, httpResponse) {
-                            $log.info('[' + status + ']' + ' DELETE: ' + url + ' ', angular.toJson(body));
-                            onSuccess(body, status, headers);
-                        })
-                        .error(function (body, status, headers, httpResponse) {
-                            $log.error('DELETE ' + ' [' + status + '] ' + url + ' ' + angular.toJson(body));
-                            if (status == 401) {
+                        .then(function (response) {
+                            $log.info('[' + response.status + ']' + ' DELETE: ' + url + ' ', response.data);
+                            onSuccess(response.data, response.status, response.headers);
+                        }, function (response) {
+                            $log.error('DELETE ' + ' [' + response.status + '] ' + url + ' ', response.data);
+                            if (response.status == 401) {
                                 disconnectUser();
                             }
-                            onError(body, status);
+                            onError(response.data, response.status);
                         });
                 }
             }
