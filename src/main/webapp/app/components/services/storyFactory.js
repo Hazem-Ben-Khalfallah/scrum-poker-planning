@@ -1,5 +1,7 @@
+"use strict";
+/*@ngInject*/
 angular.module('storyFactory', [])
-    .factory('storyFactory', ['$httpWrapper', function ($httpWrapper) {
+    .factory('storyFactory', function ($httpWrapper) {
         return {
             get: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
@@ -26,4 +28,4 @@ angular.module('storyFactory', [])
                 $httpWrapper.post(url, data, onSuccess, onError);
             }
         };
-    }]);
+    });

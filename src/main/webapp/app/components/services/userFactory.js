@@ -1,5 +1,7 @@
+"use strict";
+/*@ngInject*/
 angular.module('userFactory', [])
-    .factory('userFactory', ['$http', '$httpWrapper', '$localStorage', function ($http, $httpWrapper, $localStorage) {
+    .factory('userFactory', function ($http, $httpWrapper, $localStorage) {
         return {
             get: function (onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
@@ -43,4 +45,4 @@ angular.module('userFactory', [])
                 $httpWrapper.delete(url, onSuccess, onError);
             }
         };
-    }]);
+    });

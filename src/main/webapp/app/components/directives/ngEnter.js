@@ -1,3 +1,4 @@
+"use strict";
 var ngEnter = angular.module('ngEnter', []);
 
 ngEnter.directive('ngEnter', function () {

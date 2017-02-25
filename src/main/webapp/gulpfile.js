@@ -18,7 +18,9 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     wrapper = require('gulp-wrapper'),
     minifyCSS = require('gulp-csso'),
-    concatCss = require('gulp-concat-css');
+    concatCss = require('gulp-concat-css'),
+    ngAnnotate = require('gulp-ng-annotate');
+;
 
 
 gulp.task('css', function () {
@@ -64,6 +66,7 @@ gulp.task('js-app', function () {
         "app/app.js"
 
     ])
+        .pipe(ngAnnotate())
         .pipe(concat('app.js'))
         .pipe(uglify())
         .pipe(size({title: 'js-app'}))
@@ -77,5 +80,5 @@ gulp.task('clean', function () {
 
 
 gulp.task('default', function () {
-    return runSequence('clean', 'css', 'font');
+    return runSequence('clean', 'css', 'font', 'js-app');
 });

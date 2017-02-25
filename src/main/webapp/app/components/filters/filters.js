@@ -1,3 +1,4 @@
+"use strict";
 var storiesFilter = angular.module('storiesFilter', []);
 
 storiesFilter.filter('storiesFilter', function () { // register new filter

@@ -45,7 +45,6 @@ public class UserService {
      * @return return list of connected user on this session
      * @should check that the user is authenticated
      * @should return connected users only
-     *
      */
     public List<UserDto> listUsers() {
         final Principal user = authenticationService.checkAuthenticatedUser();

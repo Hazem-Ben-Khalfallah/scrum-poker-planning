@@ -1,3 +1,4 @@
+"use strict";
 var myApp = angular.module('scrumPokerApp', [
     'ngRoute',
     '$httpWrapper',
@@ -20,6 +21,7 @@ var myApp = angular.module('scrumPokerApp', [
     'notFoundCtrl'
 ]);
 
+/*@ngInject*/
 myApp.config(function ($routeProvider, $locationProvider) {
     // use the HTML5 History API
     $locationProvider.html5Mode(true);

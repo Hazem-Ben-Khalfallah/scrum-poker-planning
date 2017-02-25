@@ -1,7 +1,9 @@
+"use strict";
 var ngMessage = angular.module('ngMessage', []);
 
 ngMessage.directive('ngMessage', function () {
-    var messageController = ['$scope', '$timeout', function ($scope, $timeout) {
+    /*@ngInject*/
+    var messageController = function ($scope, $timeout) {
 
         $scope.hideMassage = function () {
             $scope.visible = false;
@@ -33,7 +35,7 @@ ngMessage.directive('ngMessage', function () {
                 }
             }, 1000);
         }
-    }];
+    };
     return {
         restrict: "E",
         scope: {

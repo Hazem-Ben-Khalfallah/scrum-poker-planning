@@ -1,5 +1,7 @@
+"use strict";
+/*@ngInject*/
 angular.module('sessionFactory', [])
-    .factory('sessionFactory', ['$http', '$httpWrapper', '$localStorage', function ($http, $httpWrapper, $localStorage) {
+    .factory('sessionFactory', function ($http, $httpWrapper, $localStorage) {
         return {
             create: function (data, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
@@ -27,4 +29,4 @@ angular.module('sessionFactory', [])
                 $httpWrapper.get(url, onSuccess, onError);
             }
         };
-    }]);
+    });
