@@ -7,6 +7,14 @@ angular.module('webSocketFactory', [])
             topicPrefix = '/topic',
             destinationPrefix = '/app';
 
+        // do not remove! will be inject from Gulp task
+        // usage: gulp --ws WS_URL
+        // setting ws url is optional
+        var wsPort = '@@inject_ws_port' || window.location.port,
+            wssPort = '@@inject_wss_port' || window.location.port,
+            port = window.location.protocol === 'http:' ? wsPort : wssPort,
+            websocketUrl = window.location.protocol + '//' + window.location.hostname + ':' + port;
+
         var isConnected = function () {
             return $stomp.stomp != null && $stomp.stomp.connected;
         };
@@ -40,7 +48,7 @@ angular.module('webSocketFactory', [])
 
 
         var connect = function (callback) {
-            $stomp.connect(endpoint)
+            $stomp.connect(websocketUrl + endpoint)
                 .then(function (frame) {
                     if (callback) {
                         callback(frame);

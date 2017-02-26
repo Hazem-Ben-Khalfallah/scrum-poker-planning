@@ -21,6 +21,8 @@
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
         <javaOnly>false</javaOnly>
+        <configure.ws>false</configure.ws>
+        <configure.wss>false</configure.wss>
     </properties>
 
     <dependencies>
@@ -287,6 +289,9 @@
                         <goals>
                             <goal>gulp</goal>
                         </goals>
+                        <configuration>
+                            <arguments>--ws ${configure.ws} --wss ${configure.wss}</arguments>
+                        </configuration>
                     </execution>
 
                 </executions>

@@ -19,8 +19,9 @@ var gulp = require('gulp'),
     wrapper = require('gulp-wrapper'),
     minifyCSS = require('gulp-csso'),
     concatCss = require('gulp-concat-css'),
-    ngAnnotate = require('gulp-ng-annotate');
-;
+    ngAnnotate = require('gulp-ng-annotate'),
+    replace = require('gulp-replace-task'),
+    argv = require('yargs').argv;
 
 
 gulp.task('css', function () {
@@ -52,27 +53,26 @@ gulp.task('js-libs', function () {
 });
 
 gulp.task('js-app', function () {
+    var wsPort = argv.ws && argv.ws != 'false' ? argv.ws : '';
+    var wssPort = argv.wss && argv.wss != 'false' ? argv.wss : '';
     return gulp.src([
-        "app/components/cards.js",
-        "app/components/utils.js",
-        "app/components/webSocketFactory.js",
-        "app/components/filters/filters.js",
-        "app/components/services/storyFactory.js",
-        "app/components/directives/ngEnter.js",
-        "app/components/directives/message/ngMessage.js",
-        "app/components/services/voteFactory.js",
-        "app/components/services/userFactory.js",
-        "app/components/dashboard/modalService.js",
-        "app/components/services/sessionFactory.js",
-        "app/components/home/homeController.js",
-        "app/components/login/loginController.js",
-        "app/components/dashboard/dashboardController.js",
-        "app/components/404/notFoundCtrl.js",
-        "app/app.js"
+        'app/**/*.js'
 
     ])
         .pipe(ngAnnotate())
-        .pipe(concat('app.js'))
+        .pipe(concat('scrumPoker.js'))
+        .pipe(replace({
+            patterns: [
+                {
+                    match: 'inject_ws_port',
+                    replacement: wsPort
+                },
+                {
+                    match: 'inject_wss_port',
+                    replacement: wssPort
+                }
+            ]
+        }))
         .pipe(uglify())
         .pipe(size({title: 'js-app'}))
         .pipe(gulp.dest('dist'));
@@ -83,7 +83,10 @@ gulp.task('clean', function () {
         .pipe(clean());
 });
 
+gulp.task('build', function () {
+    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs');
+});
 
 gulp.task('default', function () {
-    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs');
+    return runSequence('build');
 });
