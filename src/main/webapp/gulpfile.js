@@ -24,7 +24,7 @@ var gulp = require('gulp'),
 
 
 gulp.task('css', function () {
-    return gulp.src(['style/semantic-ui/*.css', 'style/*.css'])
+    return gulp.src(['node_modules/semantic-ui-css/semantic.css', 'style/*.css'])
         .pipe(concatCss("app.css"))
         .pipe(minifyCSS())
         .pipe(size({title: 'css'}))
@@ -32,14 +32,19 @@ gulp.task('css', function () {
 });
 
 gulp.task('font', function () {
-    return gulp.src(['style/semantic-ui/fonts/*'])
+    return gulp.src(['node_modules/semantic-ui-css/themes/default/assets/fonts/*'])
         .pipe(size({title: 'fonts'}))
-        .pipe(gulp.dest('dist/fonts'));
+        .pipe(gulp.dest('dist/themes/default/assets/fonts'));
 });
 
-gulp.task('js-vendors', function () {
-    return gulp.src(['app/vendors/jquery/*.js', 'app/vendors/semantic-ui/*.js', 'app/vendors/clipboard/*.js',
-        'node_modules/angular/angular.min.js', 'node_modules/angular-route/angular-route.min.js', 'node_modules/ng-stomp/dist/ng-stomp.standalone.min.js',
+gulp.task('js-libs', function () {
+    return gulp.src([
+        'node_modules/jquery/dist/jquery.min.js',
+        'node_modules/semantic-ui-css/semantic.min.js',
+        'node_modules/clipboard/dist/clipboard.min.js',
+        'node_modules/angular/angular.min.js',
+        'node_modules/angular-route/angular-route.min.js',
+        'node_modules/ng-stomp/dist/ng-stomp.standalone.min.js',
         'node_modules/ngstorage/ngStorage.min.js'])
         .pipe(concat('libs.js'))
         .pipe(size({title: 'js-libs'}))
@@ -80,5 +85,5 @@ gulp.task('clean', function () {
 
 
 gulp.task('default', function () {
-    return runSequence('clean', 'css', 'font', 'js-app');
+    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs');
 });
