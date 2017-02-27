@@ -79,13 +79,11 @@ gulp.task('js-app', function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('html', function () {
+gulp.task('templates', function () {
     gulp.src('app/**/*.html')
         .pipe(html2string({
-            createObj: true, // Indicate wether to define the global object that stores
-                             // the global template strings
-            objName: 'TEMPLATES'  // Name of the global template store variable
-                                  //say the converted string for myTemplate.html will be saved to TEMPLATE['myTemplate.html']
+            createObj: true,
+            objName: 'TEMPLATES'
         }))
         .pipe(rename({extname: '.js'}))
         .pipe(concat('templates.js'))
@@ -100,7 +98,7 @@ gulp.task('clean', function () {
 });
 
 gulp.task('build', function () {
-    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs', 'html');
+    return runSequence('clean', 'css', 'font', 'templates', 'js-app', 'js-libs');
 });
 
 gulp.task('default', function () {
