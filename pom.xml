@@ -302,6 +302,19 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <packagingExcludes>
+                        /node/**/*,
+                        /node_modules/**/*,
+                        /app/**/*,
+                        /style/**/*
+                    </packagingExcludes>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <finalName>scrum_poker</finalName>
