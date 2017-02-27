@@ -28,21 +28,21 @@ myApp.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider
         .when('/static/home/:sessionId', {
-            templateUrl: 'app/components/home/home.html',
+            template: TEMPLATES['app/components/home/home.html'],
             controller: 'homeCtrl',
             resolve: homeController.resolve
         })
         .when('/static/login', {
-            templateUrl: 'app/components/login/login.html',
+            template: TEMPLATES['app/components/login/login.html'],
             controller: 'loginCtrl',
             resolve: loginController.resolve
         })
         .when('/static/dashboard', {
-            templateUrl: 'app/components/dashboard/dashboard.html',
+            template: TEMPLATES['app/components/dashboard/dashboard.html'],
             controller: 'dashboardCtrl'
         })
         .when('/static/404', {
-            templateUrl: 'app/components/404/404.html',
+            template: TEMPLATES['app/components/404/404.html'],
             controller: 'notFoundCtrl'
         })
         .when('/', {

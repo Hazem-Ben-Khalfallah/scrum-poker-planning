@@ -16,6 +16,7 @@
     "gulp-concat-css": "^2.3.0",
     "gulp-cssnano": "^2.1.2",
     "gulp-csso": "^2.0.0",
+    "gulp-html2string": "^0.1.1",
     "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.2",
     "gulp-include": "^2.3.1",

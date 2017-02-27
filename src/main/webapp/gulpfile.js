@@ -21,7 +21,8 @@ var gulp = require('gulp'),
     concatCss = require('gulp-concat-css'),
     ngAnnotate = require('gulp-ng-annotate'),
     replace = require('gulp-replace-task'),
-    argv = require('yargs').argv;
+    argv = require('yargs').argv,
+    html2string = require('gulp-html2string');
 
 
 gulp.task('css', function () {
@@ -78,13 +79,28 @@ gulp.task('js-app', function () {
         .pipe(gulp.dest('dist'));
 });
 
+gulp.task('html', function () {
+    gulp.src('app/**/*.html')
+        .pipe(html2string({
+            createObj: true, // Indicate wether to define the global object that stores
+                             // the global template strings
+            objName: 'TEMPLATES'  // Name of the global template store variable
+                                  //say the converted string for myTemplate.html will be saved to TEMPLATE['myTemplate.html']
+        }))
+        .pipe(rename({extname: '.js'}))
+        .pipe(concat('templates.js'))
+        .pipe(uglify())
+        .pipe(size({title: 'html'}))
+        .pipe(gulp.dest('dist'));
+});
+
 gulp.task('clean', function () {
     return gulp.src(['dist/*', 'tmp/*'])
         .pipe(clean());
 });
 
 gulp.task('build', function () {
-    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs');
+    return runSequence('clean', 'css', 'font', 'js-app', 'js-libs', 'html');
 });
 
 gulp.task('default', function () {
