@@ -43,6 +43,6 @@ ngMessage.directive('ngMessage', function () {
             visible: "@"
         },
         controller: messageController,
-        template: TEMPLATES["/app/components/directives/message/message.html"]
+        template: TEMPLATES["app/components/directives/message/message.html"]
     };
 });

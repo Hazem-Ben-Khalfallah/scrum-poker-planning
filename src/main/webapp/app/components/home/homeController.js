@@ -435,6 +435,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         $scope.users = users;
 
         $scope.theme = session.cardTheme;
+        $scope.extension = $scope.theme == 'redbooth'? 'svg' : 'png';
 
         //get session info
         $scope.sprintName = session.sprintName;

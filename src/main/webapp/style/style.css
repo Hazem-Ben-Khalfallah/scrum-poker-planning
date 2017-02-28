@@ -109,3 +109,7 @@
 .link {
     cursor: pointer;
 }
+
+.card-selected {
+    background-color: white !important;
+}

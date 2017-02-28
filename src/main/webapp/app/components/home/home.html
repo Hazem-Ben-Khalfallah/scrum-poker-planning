@@ -21,7 +21,7 @@
         <a class="ui green ribbon label" ng-hide="currentStory.ended">Vote in progress</a>
         <a class="ui red ribbon label" ng-show="currentStory.ended">Vote has ended</a>
 
-        <img src="/app/components/home/img/jira.png">
+        <img src="/images/jira.png">
 
         <div class="content" ng-show="stories.length > 0">
             {{currentStory.storyName}}
@@ -47,11 +47,15 @@
                 <div class="ui card"
                      ng-class="getColor(user.vote)"
                      ng-repeat="user in users">
-                    <div class="image" ng-class="{'vote-active': user.hasVoted}" ng-hide="currentStory.ended">
-                        <img src="/app/components/home/img/cardback.svg">
+                    <div class="image" ng-hide="currentStory.ended || user.hasVoted">
+                        <img src="/images/cardback.svg">
+                    </div>
+
+                    <div class="image card-selected" ng-hide="currentStory.ended || !user.hasVoted">
+                        <img src="/images/cardback-selected.svg">
                     </div>
                     <div class="image" ng-show="currentStory.ended && theme != 'none'">
-                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.png" ng-if="theme != 'none'">
+                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.{{extension}}" ng-if="theme != 'none'">
                     </div>
                     <div class="content">
                         <i class="right floated remove icon link" ng-if="currentUser.admin"
@@ -83,7 +87,7 @@
                      ng-click="selectCard(card)"
                      ng-repeat="card in cards">
                     <div class="image" data-ng-show="theme != 'none'">
-                        <img ng-src="/images/{{theme}}/{{card.index}}.png" ng-if="theme != 'none'">
+                        <img ng-src="/images/{{theme}}/{{card.index}}.{{extension}}" ng-if="theme != 'none'">
                     </div>
                     <div class="content">
                         <div class="ui inverted active dimmer" ng-show="card.selected && loading">

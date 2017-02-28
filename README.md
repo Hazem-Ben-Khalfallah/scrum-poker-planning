@@ -31,6 +31,10 @@ you should generate a war file using following command.
 mvn clean install -Dconfigure.ws=8000 -Dconfigure.wss=8443
 ```
 
-#Credits
+#Developed by
 - Khaireddine Rezgui
 - Hazem Ben Khalfallah
+
+#Credits
+Special thanks to Redbooth team for their creative card set.
+https://github.com/redbooth/Scrum-poker-cards
