@@ -77,11 +77,6 @@
     }
 }
 
-.vote-active {
-    background-color: #656565 !important;
-    border: 2px solid #515151 !important;
-}
-
 .add-story-button {
     width: 135px;
     background-color: white;
@@ -112,4 +107,8 @@
 
 .card-selected {
     background-color: white !important;
+}
+
+.ui.radio.checkbox{
+    margin-right: 5%;
 }
