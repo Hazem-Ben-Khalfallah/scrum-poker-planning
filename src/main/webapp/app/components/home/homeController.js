@@ -226,8 +226,8 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     };
 
     $scope.getStats = function () {
-        $scope.min = {value: '-', unit: ''};
-        $scope.max = {value: '-', unit: ''};
+        $scope.min = '-';
+        $scope.max = '-';
         $scope.mean = '-';
         if ($scope.currentStory.ended) {
             var min = angular.undefined,
@@ -237,50 +237,41 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
                 index;
             angular.forEach($scope.votes, function (vote) {
                 index = $scope.getIndex(Types.card, {id: vote.value});
-                if (index > 0) {
+                if (index >= 0) {
                     var card = $scope.cards[index];
-                    sum += card.value * convertToHours(card.unit); // add value in hours
+                    sum += card.value; // add value in hours
                     totalValidVotes++;
-                    if (!max || index > max) {
+                    if (!angular.isDefined(max) || index > max) {
                         max = index;
                     }
-                    if (!min || index < min) {
-                        min = index
+                    if (!angular.isDefined(min) || index < min) {
+                        min = index;
+                        console.log("min: ", index);
                     }
                 }
             });
 
-            var unit;
-            if (min) {
-                unit = $scope.cards[min].unit;
-                $scope.min.value = $scope.cards[min].value;
-                $scope.min.unit = unit;
+            if (angular.isDefined(min)) {
+                $scope.min = $scope.toHumanReadableValue($scope.cards[min].value);
             }
 
 
-            if (max) {
-                unit = $scope.cards[max].unit;
-                $scope.max.value = $scope.cards[max].value;
-                $scope.max.unit = unit;
+            if (angular.isDefined(max)) {
+                $scope.max = $scope.toHumanReadableValue($scope.cards[max].value);
             }
 
             if (totalValidVotes > 0) {
                 var mean = sum / totalValidVotes;
-                $scope.mean = prettify(mean);
+                $scope.mean = $scope.toHumanReadableValue(mean);
             }
         }
     };
 
-    function convertToHours(unit) {
-        if (unit === 'h')
-            return 1;
-        if (unit === 'd')
-            return 8; // 8h / day
-        else
-            return 40; // 40h / week
-    }
+    $scope.toHumanReadableValue = function (value) {
+        return $scope.cardSet == 'time' ? toHumanDuration(value) : value;
+    };
 
-    function prettify(durationInHours) {
+    function toHumanDuration(durationInHours) {
         durationInHours = Math.floor(durationInHours);
         var weeks = Math.floor(durationInHours / 40);
         var days = Math.floor((durationInHours % 40) / 8);
@@ -435,10 +426,11 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         $scope.users = users;
 
         $scope.theme = session.cardTheme;
-        $scope.extension = $scope.theme == 'redbooth'? 'svg' : 'png';
+        $scope.extension = $scope.theme == 'redbooth' ? 'svg' : 'png';
 
         //get session info
         $scope.sprintName = session.sprintName;
+        $scope.cardSet = session.cardSet;
         if (session.cardSet == 'time') {
             $scope.cards = cards.time;
         } else if (session.cardSet == 'fibonacci') {

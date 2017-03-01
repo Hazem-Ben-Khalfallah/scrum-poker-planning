@@ -47,15 +47,25 @@
                 <div class="ui card"
                      ng-class="getColor(user.vote)"
                      ng-repeat="user in users">
-                    <div class="image" ng-hide="currentStory.ended || user.hasVoted">
+                    <!-- Dimmed card-->
+                    <div class="blurring dimmable image dimmed" ng-hide="currentStory.ended || user.hasVoted">
+                        <img src="/images/cardback.svg">
+                        <div class="ui inverted dimmer transition visible active">
+                            <div class="content">
+                                <div class="center">
+                                    <div class="ui white disabled inverted button">Select a card</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- hidden card selected-->
+                    <div class="image card-selected" ng-hide="currentStory.ended || !user.hasVoted">
                         <img src="/images/cardback.svg">
                     </div>
-
-                    <div class="image card-selected" ng-hide="currentStory.ended || !user.hasVoted">
-                        <img src="/images/cardback-selected.svg">
-                    </div>
+                    <!-- visible card selected-->
                     <div class="image" ng-show="currentStory.ended && theme != 'none'">
-                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.{{extension}}" ng-if="theme != 'none'">
+                        <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.{{extension}}"
+                             ng-if="theme != 'none'">
                     </div>
                     <div class="content">
                         <i class="right floated remove icon link" ng-if="currentUser.admin"
@@ -66,8 +76,7 @@
                             <p class="text-overflow">{{user.username}}</p>
 
                             <p ng-show="currentStory.ended">
-                                {{getCard(user.vote).value}}
-                                <span class="meta lowercase">{{getCard(user.vote).unit}}</span>
+                                <span class="meta lowercase">{{toHumanReadableValue(getCard(user.vote).value)}}</span>
                             </p>
                         </div>
                     </div>
@@ -95,8 +104,7 @@
                         </div>
                         <div class="header capitalize center-text text-overflow clip"
                              ng-hide="card.selected && loading">
-                            {{card.value}}
-                            <span class="meta lowercase">{{card.unit}}</span>
+                            <span class="meta lowercase">{{toHumanReadableValue(card.value)}}</span>
                         </div>
                     </div>
                 </div>
@@ -121,7 +129,7 @@
                         Min
                     </div>
                     <div class="text value lowercase">
-                        {{min.value}} {{min.unit}}
+                        {{min}}
                     </div>
                 </div>
 
@@ -130,7 +138,7 @@
                         Max
                     </div>
                     <div class="text value lowercase">
-                        {{max.value}} {{max.unit}}
+                        {{max}}
                     </div>
                 </div>
 

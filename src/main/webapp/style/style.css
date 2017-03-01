@@ -109,6 +109,14 @@
     background-color: white !important;
 }
 
-.ui.radio.checkbox{
+.ui.radio.checkbox {
     margin-right: 5%;
+}
+
+.ui.header .ui.label {
+    margin-left: 0 !important;
+}
+
+.ui.ribbon.label:after {
+    border-right-color: inherit !important;
 }
