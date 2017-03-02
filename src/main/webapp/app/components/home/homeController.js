@@ -246,29 +246,28 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
                     }
                     if (!angular.isDefined(min) || index < min) {
                         min = index;
-                        console.log("min: ", index);
                     }
                 }
             });
 
             if (angular.isDefined(min)) {
-                $scope.min = $scope.toHumanReadableValue($scope.cards[min].value);
+                $scope.min = $scope.toHumanReadableValue($scope.cards[min]);
             }
 
 
             if (angular.isDefined(max)) {
-                $scope.max = $scope.toHumanReadableValue($scope.cards[max].value);
+                $scope.max = $scope.toHumanReadableValue($scope.cards[max]);
             }
 
             if (totalValidVotes > 0) {
                 var mean = sum / totalValidVotes;
-                $scope.mean = $scope.toHumanReadableValue(mean);
+                $scope.mean = $scope.toHumanReadableValue({value: mean});
             }
         }
     };
 
-    $scope.toHumanReadableValue = function (value) {
-        return $scope.cardSet == 'time' ? toHumanDuration(value) : value;
+    $scope.toHumanReadableValue = function (card) {
+        return ($scope.cardSet == 'time' && !card.skip) ? toHumanDuration(card.value) : card.value;
     };
 
     function toHumanDuration(durationInHours) {

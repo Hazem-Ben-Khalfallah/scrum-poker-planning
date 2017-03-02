@@ -76,7 +76,7 @@
                             <p class="text-overflow">{{user.username}}</p>
 
                             <p ng-show="currentStory.ended">
-                                <span class="meta lowercase">{{toHumanReadableValue(getCard(user.vote).value)}}</span>
+                                <span class="meta lowercase">{{toHumanReadableValue(getCard(user.vote))}}</span>
                             </p>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="header capitalize center-text text-overflow clip"
                              ng-hide="card.selected && loading">
-                            <span class="meta lowercase">{{toHumanReadableValue(card.value)}}</span>
+                            <span class="meta lowercase">{{toHumanReadableValue(card)}}</span>
                         </div>
                     </div>
                 </div>
