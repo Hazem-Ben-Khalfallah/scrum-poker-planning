@@ -7,11 +7,11 @@ Scrum Poker is a powerful tool to make faster and more accurate estimations and 
 
 This app can be used in scrum poker planning sessions anywhere. It includes the numbered cards along with Pass, break and ? cards. 3 types of cards set can be selected when creating a voting session.
 
-#Demo
+## Demo
 You are welcome to use this free app on: 
 http://pokerscrum.herokuapp.com/
 
-#Snapshots
+## Snapshots
 - Configure Poker Planning stories
 
 ![Configuration dashboard](./snapshots/planning-poker-configuration.jpg)
@@ -24,17 +24,17 @@ http://pokerscrum.herokuapp.com/
 
 ![Display results](./snapshots/vote-end.jpg)
 
-#War file generation for Openshift
+## War file generation for Openshift
 For all WebSocket connections on OpenShift, you need to use port 8000 (for Secured sessions it would be 8443).
 you should generate a war file using following command.
 ```bash
 mvn clean install -Dconfigure.ws=8000 -Dconfigure.wss=8443
 ```
 
-#Developed by
-- Khaireddine Rezgui
+## Developed by
 - Hazem Ben Khalfallah
+- Khaireddine Rezgui
 
-#Credits
+## Credits
 Special thanks to Redbooth team for their creative card set.
 https://github.com/redbooth/Scrum-poker-cards
