@@ -66,10 +66,11 @@ public class UserService {
      * @should throw and error if sessionId is not valid
      * @should throw an exception if username already used in  the given sessionId with connected status
      * @should create new user if sessionId and username are valid
-     * @should reconnect user if he was previously disconnected
+     * @should reconnect user and generate valid token if he was previously disconnected
+     * @should reconnect admin and generate valid token if he has previously logged out
      * @should send a websocket notification
      */
-    public DefaultResponse connectUser(UserDto userDto, Consumer<String> connectionConsumer) {
+    public UserDto connectUser(UserDto userDto, Consumer<String> connectionConsumer) {
         if (StringUtils.isEmpty(userDto.getSessionId())) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "Session should not be null or empty");
         }
@@ -91,6 +92,7 @@ public class UserService {
             if (!userEntity.isConnected()) {
                 userEntity.setConnected(true);
                 userRepository.save(userEntity);
+                userDto.setIsAdmin(userEntity.isAdmin());
             } else {
                 LOGGER.error("username {} already used in session {}", userDto.getUsername(), userDto.getSessionId());
                 throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, "Username already used");
@@ -99,9 +101,10 @@ public class UserService {
         }
         webSocketSender.sendNotification(userDto.getSessionId(), WsTypes.USER_CONNECTED, userDto);
         // generate JWT token
-        final String token = jwtService.generate(userDto.getSessionId(), userDto.getUsername(), UserRole.VOTER);
+        final UserRole userRole = userEntity.isAdmin() ? UserRole.SESSION_ADMIN : UserRole.VOTER;
+        final String token = jwtService.generate(userDto.getSessionId(), userDto.getUsername(), userRole);
         connectionConsumer.accept(token);
-        return DefaultResponse.ok();
+        return userDto;
     }
 
     /**

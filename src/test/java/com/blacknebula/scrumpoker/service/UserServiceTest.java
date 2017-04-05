@@ -14,6 +14,8 @@ import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.JwtPayload;
+import com.blacknebula.scrumpoker.security.JwtService;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
@@ -46,6 +48,8 @@ public class UserServiceTest extends ApplicationTest {
     private WebSocketSender webSocketSender;
     @Autowired
     private SecurityContext securityContext;
+    @Autowired
+    private JwtService jwtService;
 
     @Before
     public void setUp() throws Exception {
@@ -257,11 +261,11 @@ public class UserServiceTest extends ApplicationTest {
     }
 
     /**
-     * @verifies reconnect user if he was previously disconnected
+     * @verifies reconnect user and generate valid token if he was previously disconnected
      * @see UserService#connectUser(UserDto, Consumer)
      */
     @Test
-    public void connectUser_shouldReconnectUserIfHeWasPreviouslyDisconnected() throws Exception {
+    public void connectUser_shouldReconnectUserAndGenerateValidTokenIfHeWasPreviouslyDisconnected() throws Exception {
         // given
         final String sessionId = "sessionId";
         final SessionEntity sessionEntity = SessionEntityBuilder.builder()
@@ -274,6 +278,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withUsername(username)
                 .withSessionId(sessionId)
                 .withConnected(false)
+                .withAdmin(false)
                 .build();
         userRepository.save(existingDisconnectedUser);
 
@@ -283,13 +288,58 @@ public class UserServiceTest extends ApplicationTest {
                 .build();
 
         // when
-        userService.connectUser(userDto, (t) -> {
+        UserDto result = userService.connectUser(userDto, (token) -> {
+            // then
+            checkJwtToken(token, userDto.getUsername(), userDto.getSessionId(), UserRole.VOTER);
         });
 
         // then
+        Assertions.assertThat(result.isAdmin()).isFalse();
         final List<UserEntity> users = userRepository.findUsersBySessionId(userDto.getSessionId());
         Assertions.assertThat(users).hasSize(1);
         Assertions.assertThat(users.get(0).isConnected()).isTrue();
+        Assertions.assertThat(users.get(0).isAdmin()).isFalse();
+    }
+
+    /**
+     * @verifies reconnect admin and generate valid token if he has previously logged out
+     * @see UserService#connectUser(UserDto, Consumer)
+     */
+    @Test
+    public void connectUser_shouldReconnectAdminAndGenerateValidTokenIfHeHasPreviouslyLoggedOut() throws Exception {
+        // given
+        final String sessionId = "sessionId";
+        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
+                .withSessionId(sessionId)
+                .build();
+        sessionRepository.save(sessionEntity);
+
+        final String username = "Leo";
+        final UserEntity disconnectedAdmin = UserEntityBuilder.builder()
+                .withUsername(username)
+                .withSessionId(sessionId)
+                .withConnected(false)
+                .withAdmin(true)
+                .build();
+        userRepository.save(disconnectedAdmin);
+
+        final UserDto userDto = UserDtoBuilder.builder()
+                .withSessionId(sessionId)
+                .withUsername(username)
+                .build();
+
+        // when
+        final UserDto result = userService.connectUser(userDto, (token) -> {
+            // then
+            checkJwtToken(token, userDto.getUsername(), userDto.getSessionId(), UserRole.SESSION_ADMIN);
+        });
+
+        // then
+        Assertions.assertThat(result.isAdmin()).isTrue();
+        final List<UserEntity> users = userRepository.findUsersBySessionId(userDto.getSessionId());
+        Assertions.assertThat(users).hasSize(1);
+        Assertions.assertThat(users.get(0).isConnected()).isTrue();
+        Assertions.assertThat(users.get(0).isAdmin()).isTrue();
     }
 
     /**
@@ -659,5 +709,14 @@ public class UserServiceTest extends ApplicationTest {
 
         // then
         verify(webSocketSender).sendNotification(principal.getSessionId(), WsTypes.USER_DISCONNECTED, username);
+    }
+
+    private void checkJwtToken(String token, String username, String sessionId, UserRole userRole) {
+        // then
+        final JwtPayload payload = jwtService.parse(token);
+        Assertions.assertThat(payload).isNotNull();
+        Assertions.assertThat(payload.getUsername()).isEqualTo(username);
+        Assertions.assertThat(payload.getSessionId()).isEqualTo(sessionId);
+        Assertions.assertThat(payload.getRole()).isEqualTo(userRole.name());
     }
 }

@@ -18,11 +18,12 @@ angular.module('userFactory', [])
                     if (token) {
                         // store username and token in local storage to keep user logged in between page refreshes
                         $localStorage.currentUser = {
-                            username: data.username,
-                            sessionId: data.sessionId,
-                            admin: false,
+                            username: body.username,
+                            sessionId: body.sessionId,
+                            admin: body.admin,
                             token: token
                         };
+                        console.log('localstorage: ', $localStorage.currentUser);
                     }
                     onSuccess(body);
                 }, onError);

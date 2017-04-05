@@ -36,7 +36,7 @@ public class UserRestController {
      */
     @RequestMapping(value = "/users/connect", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<DefaultResponse> connect(@RequestBody UserDto userDto, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<UserDto> connect(@RequestBody UserDto userDto, HttpServletResponse httpServletResponse) {
         return new ResponseEntity<>(userService.connectUser(userDto,
                 (token) -> httpServletResponse.addHeader(SecurityContext.Headers.JWT_TOKEN, token)), HttpStatus.OK);
     }
