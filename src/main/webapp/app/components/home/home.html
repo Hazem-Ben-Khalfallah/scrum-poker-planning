@@ -48,7 +48,7 @@
                      ng-class="getColor(user.vote)"
                      ng-repeat="user in users">
                     <!-- Dimmed card-->
-                    <div class="blurring dimmable image dimmed" ng-hide="currentStory.ended || user.hasVoted">
+                    <div class="blurring dimmable image dimmed" ng-hide="user.hasVoted">
                         <img src="/images/cardback.svg">
                         <div class="ui inverted dimmer transition visible active">
                             <div class="content">
@@ -63,7 +63,7 @@
                         <img src="/images/cardback.svg">
                     </div>
                     <!-- visible card selected-->
-                    <div class="image" ng-show="currentStory.ended && theme != 'none'">
+                    <div class="image" ng-show="currentStory.ended && user.hasVoted && theme != 'none'">
                         <img ng-src="/images/{{theme}}/{{getCard(user.vote).index}}.{{extension}}"
                              ng-if="theme != 'none'">
                     </div>
@@ -75,7 +75,7 @@
                         <div class="header capitalize center-text">
                             <p class="text-overflow">{{user.username}}</p>
 
-                            <p ng-show="currentStory.ended">
+                            <p ng-show="currentStory.ended && user.hasVoted">
                                 <span class="meta lowercase">{{toHumanReadableValue(getCard(user.vote))}}</span>
                             </p>
                         </div>
