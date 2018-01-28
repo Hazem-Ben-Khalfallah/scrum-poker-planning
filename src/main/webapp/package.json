@@ -1,11 +1,14 @@
 {
   "name": "scrum_poker",
-  "homepage": "localhost",
+  "homepage": "https://github.com/Hazem-Ben-Khalfallah/scrum-poker-planning",
   "author": {
-    "name": "Hazem_Khairy",
-    "email": "khaireddine120@gmail.com"
+    "name": "Hazem Ben Khalfallah",
+    "email": "benkhalfallahhazem@gmail.com"
   },
-  "version": "0.0.0",
+  "description": "Scrum pocker front end app",
+  "license": "LGPL-3.0",
+  "repository": "https://github.com/Hazem-Ben-Khalfallah/scrum-poker-planning",
+  "version": "1.0.0",
   "engines": {
     "node": ">= 0.10.0"
   },
@@ -35,7 +38,7 @@
     "angular": "^1.6.2",
     "angular-route": "^1.6.2",
     "clipboard": "^1.6.0",
-    "jquery": "^1.11.3",
+    "jquery": "^3.0.0",
     "ng-stomp": "^0.4.0",
     "ngstorage": "^0.3.11",
     "semantic-ui-css": "^2.2.9"
