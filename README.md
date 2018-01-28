@@ -1,4 +1,6 @@
-[![codecov](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning/branch/master/graph/badge.svg)](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning) [![Build Status](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning.svg?branch=master)](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning)
+[![codecov](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning/branch/master/graph/badge.svg)](https://codecov.io/gh/Hazem-Ben-Khalfallah/scrum-poker-planning) 
+[![Build Status](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning.svg?branch=master)](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d48d7dd87ff36de3b049/maintainability)](https://codeclimate.com/github/Hazem-Ben-Khalfallah/scrum-poker-planning/maintainability)
 
 # Scrum Poker application
 Vote your stories instantly & get the result in a blink!
