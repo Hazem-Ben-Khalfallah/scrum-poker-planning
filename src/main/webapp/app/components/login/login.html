@@ -37,15 +37,26 @@
                                                    data-ng-model="sessionId">
                                         </div>
                                     </div>
+
+                                    <div class="ui big green labeled icon button" data-ng-click="connect()">
+                                        <i class="signup icon"></i>
+                                        Join session
+                                    </div>
                                 </div>
-                                <div class="ui horizontal divider">
-                                    Or
-                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui vertical divider home">
+                            Or
+                        </div>
+
+                        <div class="column">
+                            <div class="ui center aligned basic segment">
                                 <!-- create session -->
                                 <h4 class="ui dividing header">Create session</h4>
-                                <div class="ui big green labeled icon button" data-ng-click="newSession()">
+                                <div class="ui big green labeled icon basic button newSession" data-ng-click="newSession()">
                                     <i class="wizard icon"></i>
-                                    Let's go
+                                    New session
                                 </div>
                             </div>
                         </div>

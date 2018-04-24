@@ -120,3 +120,11 @@
 .ui.ribbon.label:after {
     border-right-color: inherit !important;
 }
+
+.ui.vertical.divider.home {
+    margin: 0 15px;
+}
+
+.newSession {
+    margin-top: 12% !important;
+}

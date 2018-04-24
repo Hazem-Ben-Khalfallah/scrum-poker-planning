@@ -267,10 +267,17 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     };
 
     $scope.toHumanReadableValue = function (card) {
+        if (!card) {
+            return;
+        }
         return ($scope.cardSet == 'time' && !card.skip) ? toHumanDuration(card.value) : card.value;
     };
 
     function toHumanDuration(durationInHours) {
+        if (!card.value) {
+            console.log("###");
+            console.log(card);
+        }
         durationInHours = Math.floor(durationInHours);
         var weeks = Math.floor(durationInHours / 40);
         var days = Math.floor((durationInHours % 40) / 8);
