@@ -89,18 +89,11 @@ var cards = {
             index: 10
         },
         {
-            id: "?",
-            value: '?',
-            color: 'grey',
-            skip: true,
-            index: 11
-        },
-        {
             id: "break",
             value: 'break',
             color: 'grey',
             skip: true,
-            index: 12
+            index: 11
         }
     ],
     fibonacci: [
@@ -172,18 +165,11 @@ var cards = {
             index: 10
         },
         {
-            id: "?",
-            value: '?',
-            color: 'grey',
-            skip: true,
-            index: 11
-        },
-        {
             id: "break",
             value: 'break',
             color: 'grey',
             skip: true,
-            index: 12
+            index: 11
         }
     ],
     modifiedFibonacci: [
@@ -261,18 +247,11 @@ var cards = {
             index: 11
         },
         {
-            id: "?",
-            value: '?',
-            color: 'grey',
-            skip: true,
-            index: 12
-        },
-        {
             id: "break",
             value: 'break',
             color: 'grey',
             skip: true,
-            index: 13
+            index: 12
         }
     ]
 };
