@@ -274,10 +274,6 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     };
 
     function toHumanDuration(durationInHours) {
-        if (!card.value) {
-            console.log("###");
-            console.log(card);
-        }
         durationInHours = Math.floor(durationInHours);
         var weeks = Math.floor(durationInHours / 40);
         var days = Math.floor((durationInHours % 40) / 8);
