@@ -80,10 +80,12 @@
 .add-story-button {
     width: 135px;
     background-color: white;
+    height: 40px;
 }
 
 .add-story-input {
     width: 130px;
+    margin-top: 2px !important;
 }
 
 .hide-ended-stories {
