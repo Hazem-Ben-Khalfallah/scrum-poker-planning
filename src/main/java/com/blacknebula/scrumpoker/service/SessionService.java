@@ -78,7 +78,7 @@ public class SessionService {
         }
 
         if (CardSetEnum.toEnum(sessionCreationDto.getCardSet()) == null) {
-            throw new CustomException(CustomErrorCode.BAD_ARGS, "Username should not be null");
+            throw new CustomException(CustomErrorCode.BAD_ARGS, "CardSet should not be null");
         }
 
         //save session

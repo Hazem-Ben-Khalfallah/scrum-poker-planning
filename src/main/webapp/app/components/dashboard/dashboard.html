@@ -15,17 +15,21 @@
                         <label>Choose card set</label>
 
                         <div class="field">
-                            <div class="ui radio checkbox">
+                            <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="cardSet" name="card-set" value="time">
                                 <label>Time ( 1h, 2h, 4h, 1d, 2d, 3d, 4d, 1w, ?, Pass, Break )</label>
                             </div>
-                            <div class="ui radio checkbox">
+                            <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="cardSet" name="card-set" value="fibonacci">
                                 <label>Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass, Break)</label>
                             </div>
-                            <div class="ui radio checkbox">
+                            <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="cardSet" name="card-set" value="modifiedFibonacci">
                                 <label>Modified Fibonacci ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass,Break)</label>
+                            </div>
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="cardSet" name="card-set" value="vote">
+                                <label>Vote ( Yes, Meh, No)</label>
                             </div>
                         </div>
                     </div>
@@ -59,6 +63,10 @@
                             <div class="ui radio checkbox">
                                 <input type="radio" ng-model="cardTheme" name="card-theme" value="redbooth">
                                 <label>Redbooth &copy;</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input type="radio" ng-model="cardTheme" name="card-theme" value="colors">
+                                <label>Colors</label>
                             </div>
                         </div>
 

@@ -172,6 +172,26 @@ var cards = {
             index: 11
         }
     ],
+    vote: [
+        {
+            id: "vote-0",
+            value: "Yes",
+            color: 'green',
+            index: 0
+        },
+        {
+            id: "vote-1",
+            value: "Meh!",
+            color: 'yellow',
+            index: 1
+        },
+        {
+            id: "vote-2",
+            value: "No",
+            color: 'red',
+            index: 2
+        }
+    ],
     modifiedFibonacci: [
         {
             id: "mfib-0",

@@ -437,6 +437,8 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             $scope.cards = cards.time;
         } else if (session.cardSet == 'fibonacci') {
             $scope.cards = cards.fibonacci;
+        } else if (session.cardSet == 'vote') {
+            $scope.cards = cards.vote;
         } else {
             $scope.cards = cards.modifiedFibonacci;
         }

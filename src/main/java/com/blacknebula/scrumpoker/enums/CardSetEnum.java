@@ -2,7 +2,7 @@ package com.blacknebula.scrumpoker.enums;
 
 
 public enum CardSetEnum {
-    TIME("time"), FIBONACCI("fibonacci"), MODIFIED_FIBONACCI("modifiedFibonacci");
+    TIME("time"), FIBONACCI("fibonacci"), MODIFIED_FIBONACCI("modifiedFibonacci"), VOTE("vote");
 
     private final String value;
 
