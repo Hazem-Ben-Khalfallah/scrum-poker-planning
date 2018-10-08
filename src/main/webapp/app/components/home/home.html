@@ -150,7 +150,19 @@
                         {{mean}}
                     </div>
                 </div>
+
             </div>
+            <div class="ui mini statistics">
+                <div ng-repeat="group in groups" class="ui blue statistic">
+                    <div class="label">
+                        {{group.value}}
+                    </div>
+                    <div class="text value lowercase">
+                        {{group.count}}
+                    </div>
+                </div>
+            </div>
+
             <!-- info zone -->
             <div class="ui top attached tabular menu">
                 <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'stories'}"

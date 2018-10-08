@@ -229,43 +229,58 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         $scope.min = '-';
         $scope.max = '-';
         $scope.mean = '-';
-        if ($scope.currentStory.ended) {
-            var min = angular.undefined,
-                max = angular.undefined,
-                sum = 0,
-                totalValidVotes = 0,
-                index;
-            angular.forEach($scope.votes, function (vote) {
-                index = $scope.getIndex(Types.card, {id: vote.value});
-                if (index >= 0) {
-                    var card = $scope.cards[index];
-                    sum += card.value; // add value in hours
-                    totalValidVotes++;
-                    if (!angular.isDefined(max) || index > max) {
-                        max = index;
-                    }
-                    if (!angular.isDefined(min) || index < min) {
-                        min = index;
-                    }
+        $scope.groups = {};
+        if (!$scope.currentStory.ended) {
+            return;
+        }
+        var min = angular.undefined,
+            max = angular.undefined,
+            sum = 0,
+            totalValidVotes = 0,
+            groups = {},
+            index;
+        angular.forEach($scope.votes, function (vote) {
+            index = $scope.getIndex(Types.card, {id: vote.value});
+            if (index >= 0) {
+                var card = $scope.cards[index];
+                sum += card.value; // add value in hours
+                totalValidVotes++;
+                if (!angular.isDefined(max) || index > max) {
+                    max = index;
                 }
-            });
-
-            if (angular.isDefined(min)) {
-                $scope.min = $scope.toHumanReadableValue($scope.cards[min]);
-            }
-
-
-            if (angular.isDefined(max)) {
-                $scope.max = $scope.toHumanReadableValue($scope.cards[max]);
-            }
-
-            if (totalValidVotes > 0) {
-                var mean = '-';
-                if (!isNaN(sum)) {
-                    mean = sum / totalValidVotes;
+                if (!angular.isDefined(min) || index < min) {
+                    min = index;
                 }
-                $scope.mean = $scope.toHumanReadableValue({value: mean});
+
+                if (groups.hasOwnProperty(card.value)) {
+                    groups[card.value.toString()].count++;
+                } else {
+                    groups[card.value.toString()] = {
+                        value: card.value,
+                        count: 1
+                    };
+                }
             }
+        });
+
+        console.log(Object.values(groups));
+        $scope.groups = Object.values(groups);
+
+        if (angular.isDefined(min)) {
+            $scope.min = $scope.toHumanReadableValue($scope.cards[min]);
+        }
+
+
+        if (angular.isDefined(max)) {
+            $scope.max = $scope.toHumanReadableValue($scope.cards[max]);
+        }
+
+        if (totalValidVotes > 0) {
+            var mean = '-';
+            if (!isNaN(sum)) {
+                mean = sum / totalValidVotes;
+            }
+            $scope.mean = $scope.toHumanReadableValue({value: mean});
         }
     };
 
