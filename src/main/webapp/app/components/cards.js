@@ -177,19 +177,19 @@ var cards = {
             id: "vote-0",
             value: "Yes",
             color: 'green',
-            index: 0
+            index: 4
         },
         {
             id: "vote-1",
-            value: "Meh!",
+            value: "Hold",
             color: 'yellow',
-            index: 1
+            index: 6
         },
         {
             id: "vote-2",
             value: "No",
             color: 'red',
-            index: 2
+            index: 8
         }
     ],
     modifiedFibonacci: [
