@@ -23,7 +23,6 @@ angular.module('userFactory', [])
                             admin: body.admin,
                             token: token
                         };
-                        console.log('localstorage: ', $localStorage.currentUser);
                     }
                     onSuccess(body);
                 }, onError);

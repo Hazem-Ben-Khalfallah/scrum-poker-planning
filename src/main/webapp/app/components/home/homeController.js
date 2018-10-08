@@ -260,7 +260,10 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             }
 
             if (totalValidVotes > 0) {
-                var mean = sum / totalValidVotes;
+                var mean = '-';
+                if (!isNaN(sum)) {
+                    mean = sum / totalValidVotes;
+                }
                 $scope.mean = $scope.toHumanReadableValue({value: mean});
             }
         }
