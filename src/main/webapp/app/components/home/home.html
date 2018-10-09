@@ -165,17 +165,24 @@
 
             <!-- info zone -->
             <div class="ui top attached tabular menu">
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'stories'}"
+                <div class="item text-overflow" style="width: 25%" ng-class="{active: info.selected == 'stories'}"
                      ng-click="info.selected = 'stories'">
                     <i class="icon tasks"></i>
                     Stories
                 </div>
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'users'}"
+                <div class="item text-overflow" style="width: 25%" ng-class="{active: info.selected == 'users'}"
                      ng-click="info.selected = 'users'">
                     <i class="icon users"></i>
                     Users
                 </div>
-                <div class="item text-overflow" style="width: 33%" ng-class="{active: info.selected == 'share'}"
+                <div class="item text-overflow" style="width: 25%"
+                     ng-if="currentUser.admin"
+                     ng-class="{active: info.selected == 'settings'}"
+                     ng-click="info.selected = 'settings'">
+                    <i class="icon settings"></i>
+                    Settings
+                </div>
+                <div class="item text-overflow" style="width: 25%" ng-class="{active: info.selected == 'share'}"
                      ng-click="info.selected = 'share'">
                     <i class="icon share alternate"></i>
                     Share
@@ -254,6 +261,47 @@
             <div class="ui bottom attached tab segment" ng-class="{active: info.selected == 'users'}">
                 <div class="ui list">
                     <div class="item capitalize" ng-repeat="user in users">{{user.username}}</div>
+                </div>
+            </div>
+            <!-- settings -->
+            <div class="ui bottom attached tab segment"
+                 ng-if="currentUser.admin"
+                 ng-class="{active: info.selected == 'settings'}">
+                <div class="ui form">
+                    <!-- Change card themes-->
+                    <div class="grouped fields">
+                        <label>Change cards Theme</label>
+                        <div class="field">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme" value="none">
+                                <label>None</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme" value="star-wars">
+                                <label>Star wars</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme" value="super-heroes">
+                                <label>Super heroes</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme" value="redbooth">
+                                <label>Redbooth &copy;</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme" value="colors">
+                                <label>Colors</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- share -->

@@ -2,11 +2,13 @@ package com.blacknebula.scrumpoker.service;
 
 import com.blacknebula.scrumpoker.dto.SessionCreationDto;
 import com.blacknebula.scrumpoker.dto.SessionDto;
+import com.blacknebula.scrumpoker.dto.ThemeDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.blacknebula.scrumpoker.enums.UserRole;
+import com.blacknebula.scrumpoker.enums.WsTypes;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
@@ -17,6 +19,7 @@ import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.utils.DateUtils;
 import com.blacknebula.scrumpoker.utils.HashId;
 import com.blacknebula.scrumpoker.utils.StringUtils;
+import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,8 @@ public class SessionService {
     private JwtService jwtService;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private WebSocketSender webSocketSender;
 
 
     @Value("${application.id}")
@@ -55,7 +60,7 @@ public class SessionService {
     public SessionDto getSession() {
         // check also session validity
         final Principal user = authenticationService.checkAuthenticatedUser();
-        final SessionEntity sessionEntity = sessionRepository.findSessionBySessionId(user.getSessionId());
+        final SessionEntity sessionEntity = sessionRepository.findOne(user.getSessionId());
         return new SessionDto(sessionEntity);
     }
 
@@ -104,5 +109,21 @@ public class SessionService {
         sessionCreationDto.setSessionId(sessionEntity.getSessionId());
 
         return sessionCreationDto;
+    }
+
+    /**
+     * @param themeDto new session theme
+     * @return themeDto
+     * @should check that the user is authenticated as admin
+     * @should update session theme
+     * @should send a websocket notification
+     */
+    public ThemeDto setTheme(ThemeDto themeDto) {
+        final Principal principal = authenticationService.checkAuthenticatedAdmin();
+        final SessionEntity sessionEntity = sessionRepository.findOne(principal.getSessionId());
+        sessionEntity.setCardTheme(themeDto.getCardTheme());
+        sessionRepository.save(sessionEntity);
+        webSocketSender.sendNotification(sessionEntity.getSessionId(), WsTypes.THEME_CHANGED, themeDto);
+        return themeDto;
     }
 }

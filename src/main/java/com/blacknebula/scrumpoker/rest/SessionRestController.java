@@ -1,6 +1,7 @@
 package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.dto.SessionCreationDto;
+import com.blacknebula.scrumpoker.dto.ThemeDto;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.dto.SessionDto;
 import com.blacknebula.scrumpoker.service.SessionService;
@@ -39,5 +40,17 @@ public class SessionRestController {
     public ResponseEntity<SessionCreationDto> createSession(@RequestBody SessionCreationDto sessionCreationDto, HttpServletResponse httpServletResponse) {
         return new ResponseEntity<>(sessionService.createSession(sessionCreationDto,
                 (token) -> httpServletResponse.addHeader(SecurityContext.Headers.JWT_TOKEN, token)), HttpStatus.OK);
+    }
+
+    /**
+     * @param themeDto the new session theme
+     * @return ThemeDto
+     * @should return 200 status
+     * @should return valid error status if an exception has been thrown
+     */
+    @RequestMapping(value = "/sessions/theme", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseEntity<ThemeDto> setSessionTheme(@RequestBody ThemeDto themeDto, HttpServletResponse httpServletResponse) {
+        return new ResponseEntity<>(sessionService.setTheme(themeDto), HttpStatus.OK);
     }
 }
