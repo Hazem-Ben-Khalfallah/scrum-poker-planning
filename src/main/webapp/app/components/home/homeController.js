@@ -32,8 +32,9 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     };
 
     $scope.getIndex = function (type, item) {
+        var i, len;
         if (type === Types.story) {
-            for (var i = 0, len = $scope.stories.length; i < len; i++) {
+            for (i = 0, len = $scope.stories.length; i < len; i++) {
                 if ($scope.stories[i].storyId === item.storyId) {
                     return i;
                 }
@@ -42,7 +43,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         }
 
         if (type === Types.vote) {
-            for (var i = 0, len = $scope.votes.length; i < len; i++) {
+            for (i = 0, len = $scope.votes.length; i < len; i++) {
                 if ($scope.votes[i].voteId === item.voteId) {
                     return i;
                 }
@@ -51,7 +52,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         }
 
         if (type === Types.user) {
-            for (var i = 0, len = $scope.users.length; i < len; i++) {
+            for (i = 0, len = $scope.users.length; i < len; i++) {
                 if ($scope.users[i].username === item.username) {
                     return i;
                 }
@@ -60,7 +61,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         }
 
         if (type === Types.card) {
-            for (var i = 0, len = $scope.cards.length; i < len; i++) {
+            for (i = 0, len = $scope.cards.length; i < len; i++) {
                 if (!$scope.cards[i].skip && $scope.cards[i].id === item.id) {
                     return i;
                 }
@@ -103,7 +104,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             $scope.newStory.storyName = session.storyNamePrefix + $scope.newStory.storyName;
         }
         $scope.newStory.order = $scope.stories.length + 1;
-        storyFactory.create($scope.newStory, function (data) {
+        storyFactory.create($scope.newStory, function () {
             $scope.newStory = {};
         });
     };
@@ -138,7 +139,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
                 $scope.votes[index] = response;
             }
             $scope.currentVote = response;
-        }, function (error, status) {
+        }, function (error) {
             $scope.loading = false;
             $scope.currentVote = {};
             animateCard(card);
@@ -161,7 +162,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
                 animateCard(card);
                 highlightVotes();
             }
-        }, function (error, status) {
+        }, function (error) {
             $scope.loading = false;
             $scope.showMassage(error.exception);
         });
@@ -206,7 +207,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     $scope.getCard = function (id) {
         var selectCard;
         for (var i = 0, len = $scope.cards.length; i < len; i++) {
-            if ($scope.cards[i].id == id) {
+            if ($scope.cards[i].id === id) {
                 selectCard = $scope.cards[i];
                 break;
             }
@@ -288,7 +289,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         if (!card) {
             return;
         }
-        return ($scope.cardSet == 'time' && !card.skip) ? toHumanDuration(card.value) : card.value;
+        return ($scope.cardSet === 'time' && !card.skip) ? toHumanDuration(card.value) : card.value;
     };
 
     function toHumanDuration(durationInHours) {
@@ -344,7 +345,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             }
 
         } else if (item.type === Events.vote_added) {
-            if (!$scope.currentStory || $scope.currentStory.storyId != item.data.storyId) {
+            if (!$scope.currentStory || $scope.currentStory.storyId !== item.data.storyId) {
                 return;
             }
             index = $scope.getIndex(Types.vote, item.data);
@@ -400,7 +401,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             $scope.currentVote = angular.undefined;
 
             for (var i = 0, len = $scope.votes.length; i < len; i++) {
-                if ($scope.votes[i].username == $scope.currentUser.username) {
+                if ($scope.votes[i].username === $scope.currentUser.username) {
                     $scope.currentVote = $scope.votes[i];
                     break;
                 }
@@ -446,16 +447,16 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         $scope.users = users;
 
         $scope.theme = session.cardTheme;
-        $scope.extension = $scope.theme == 'redbooth' ? 'svg' : 'png';
+        $scope.extension = $scope.theme === 'redbooth' ? 'svg' : 'png';
 
         //get session info
         $scope.sprintName = session.sprintName;
         $scope.cardSet = session.cardSet;
-        if (session.cardSet == 'time') {
+        if (session.cardSet === 'time') {
             $scope.cards = cards.time;
-        } else if (session.cardSet == 'fibonacci') {
+        } else if (session.cardSet === 'fibonacci') {
             $scope.cards = cards.fibonacci;
-        } else if (session.cardSet == 'vote') {
+        } else if (session.cardSet === 'vote') {
             $scope.cards = cards.vote;
         } else {
             $scope.cards = cards.modifiedFibonacci;
@@ -492,7 +493,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             user.vote = angular.undefined;
             for (var i = 0, len = $scope.votes.length; i < len; i++) {
                 vote = $scope.votes[i];
-                if (vote.username == user.username) {
+                if (vote.username === user.username) {
                     user.hasVoted = true;
                     user.vote = vote.value;
                     break;
@@ -504,7 +505,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
 
     function highlightCard() {
         for (var i = 0, len = $scope.votes.length; i < len; i++) {
-            if ($scope.votes[i].username == $scope.currentUser.username) {
+            if ($scope.votes[i].username === $scope.currentUser.username) {
                 var card = $scope.getCard($scope.votes[i].value);
                 animateCard(card);
                 break;
