@@ -192,8 +192,6 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
     };
 
     $scope.endVote = function () {
-        if (!$scope.currentStory.ended)
-            return;
         storyFactory.endStory($scope.currentStory.storyId, function (response) {
             if (response.status === 'OK') {
                 $scope.getStats();
@@ -264,7 +262,6 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             }
         });
 
-        console.log(Object.values(groups));
         $scope.groups = Object.values(groups);
 
         if (angular.isDefined(min)) {
