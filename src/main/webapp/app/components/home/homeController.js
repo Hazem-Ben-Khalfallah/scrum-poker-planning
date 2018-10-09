@@ -15,12 +15,13 @@ var Events = {
     story_removed: "STORY_REMOVED",
     story_ended: "STORY_ENDED",
     user_connected: "USER_CONNECTED",
-    user_disconnected: "USER_DISCONNECTED"
+    user_disconnected: "USER_DISCONNECTED",
+    theme_changed: "THEME_CHANGED"
 };
 
 /*@ngInject*/
 homeController.controller('homeCtrl', function ($http, $log, $scope, $localStorage, $location, $timeout,
-                                                webSocketFactory, storyFactory, voteFactory, userFactory, session, users, stories) {
+                                                webSocketFactory, storyFactory, voteFactory, userFactory, sessionFactory, session, users, stories) {
 
     $scope.logout = function () {
         userFactory.disconnect(function (response) {
@@ -289,23 +290,17 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         return ($scope.cardSet === 'time' && !card.skip) ? toHumanDuration(card.value) : card.value;
     };
 
-    function toHumanDuration(durationInHours) {
-        durationInHours = Math.floor(durationInHours);
-        var weeks = Math.floor(durationInHours / 40);
-        var days = Math.floor((durationInHours % 40) / 8);
-        var hours = durationInHours - days * 8 - weeks * 40;
-        var duration = '';
-        if (weeks > 0) {
-            duration += weeks + ' w ';
+    $scope.changeTheme = function (theme) {
+        if (angular.isUndefined(theme)) {
+            return;
         }
-        if (days > 0) {
-            duration += days + ' d ';
-        }
-        if (hours > 0) {
-            duration += hours + ' h';
-        }
-        return duration;
-    }
+        var data = {
+            cardTheme: theme
+        };
+        sessionFactory.setTheme(data, function (response) {
+            setTheme(response.cardTheme)
+        });
+    };
 
     $scope.banUser = function (user) {
         if (!user || $scope.currentUser.username === user.username) {
@@ -384,9 +379,40 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
                     $scope.users.splice(index, 1);
                 }
             }
+        } else if (item.type === Events.theme_changed) {
+            // set new theme
+            console.log(item.data);
+            setTheme(item.data.cardTheme);
+
         }
         $scope.$apply();
     };
+
+    function setTheme(theme) {
+        if (angular.isUndefined(theme)) {
+            return;
+        }
+        $scope.theme = theme;
+        $scope.extension = ($scope.theme === 'redbooth') ? 'svg' : 'png';
+    }
+
+    function toHumanDuration(durationInHours) {
+        durationInHours = Math.floor(durationInHours);
+        var weeks = Math.floor(durationInHours / 40);
+        var days = Math.floor((durationInHours % 40) / 8);
+        var hours = durationInHours - days * 8 - weeks * 40;
+        var duration = '';
+        if (weeks > 0) {
+            duration += weeks + ' w ';
+        }
+        if (days > 0) {
+            duration += days + ' d ';
+        }
+        if (hours > 0) {
+            duration += hours + ' h';
+        }
+        return duration;
+    }
 
     function getVotes() {
         if (!$scope.currentStory)
@@ -443,8 +469,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         //get users
         $scope.users = users;
 
-        $scope.theme = session.cardTheme;
-        $scope.extension = $scope.theme === 'redbooth' ? 'svg' : 'png';
+        setTheme(session.cardTheme);
 
         //get session info
         $scope.sprintName = session.sprintName;

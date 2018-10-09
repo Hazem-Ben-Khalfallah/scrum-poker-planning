@@ -71,6 +71,27 @@ angular.module('$httpWrapper', [])
                         }
                         onError(response.data, response.status);
                     });
+            },
+            put: function (url, params, onSuccess, onError) {
+                onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
+
+                if ($localStorage.currentUser && $localStorage.currentUser.token) {
+                    // add jwt token to auth header for all requests made by the $http service
+                    $http.defaults.headers.common.Authorization = 'Bearer ' + $localStorage.currentUser.token;
+                }
+
+                $http.put(url, angular.fromJson(params))
+                    .then(function (response) {
+                        $log.info('[' + response.status + ']' + ' PUT: ' + url + ' ', response.data);
+                        onSuccess(response.data, response.status, response.headers);
+                    }, function (response) {
+                        $log.error('PUT ' + ' [' + response.status + '] ' + url + ' ', response.data);
+                        if (response.status == 401) {
+                            disconnectUser();
+                        }
+                        onError(response.data, response.status);
+                    });
             }
         }
     });

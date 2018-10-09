@@ -25,6 +25,12 @@ angular.module('sessionFactory', [])
                 onError = onError || angular.noop;
                 var url = '/sessions';
                 $httpWrapper.get(url, onSuccess, onError);
+            },
+            setTheme: function (data, onSuccess, onError) {
+                onSuccess = onSuccess || angular.noop;
+                onError = onError || angular.noop;
+                var url = '/sessions/theme';
+                $httpWrapper.put(url, data, onSuccess, onError);
             }
         };
     });
