@@ -1,0 +1,20 @@
+version: '3.0'
+services:
+  mongodb:
+    container_name: mongocontainer
+    image: mongo:3.6
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - /tmp/data/scrumPokerDB:/data/db
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+
+  poker:
+    build: .
+    ports:
+      - 28080:8080
+    depends_on:
+      - mongodb
