@@ -13,6 +13,26 @@ This app can be used in scrum poker planning sessions anywhere. It includes the 
 You are welcome to use this free app on: 
 http://pokerscrum.herokuapp.com/
 
+## How to run locally
+### Prerequisites
+- **Maven**: [How to install Maven?](https://maven.apache.org/install.html) 
+- **Docker** & **Docker Compose**: [How to install Docker compose?](https://docs.docker.com/compose/install/)
+
+### Build and Run 
+1- Checkout the source code
+
+2- Build with maven
+```bash
+mvn clean install -DskipTests
+```
+
+3- Use docker compose to build a docker image and run the app in a container
+```bash
+docker-compose up
+```
+
+4- Open your preferred browser and go to [localhost:28080](localhost:28080) 
+
 ## How to use this app
 1- In login page, click on **New Session** button to configure a new Poker planning session
 
