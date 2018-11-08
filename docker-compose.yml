@@ -1,8 +1,8 @@
 version: '3.0'
 services:
   mongodb:
-    container_name: mongocontainer
     image: mongo:3.6
+    container_name: mongo
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
@@ -13,7 +13,9 @@ services:
     command: mongod --smallfiles --logpath=/dev/null # --quiet
 
   poker:
-    build: .
+    image: blacknebula/scrum-poker:1.0
+    container_name: scrum-poker
+    #build: .
     ports:
       - 28080:8080
     depends_on:
