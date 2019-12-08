@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.verify;
@@ -56,7 +55,6 @@ public class SessionServiceTest extends ApplicationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Mockito.reset(securityContext);
         Mockito.reset(webSocketSender);
     }
 
@@ -67,7 +65,7 @@ public class SessionServiceTest extends ApplicationTest {
     @Test
     public void getSession_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             // when
             sessionService.getSession();
@@ -104,7 +102,7 @@ public class SessionServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         //when
         final SessionDto session = sessionService.getSession();
@@ -184,7 +182,8 @@ public class SessionServiceTest extends ApplicationTest {
         Assertions.assertThat(createdSession).isNotNull();
         Assertions.assertThat(createdSession.getSessionId()).isNotNull();
 
-        final SessionEntity sessionEntity = sessionRepository.findOne(createdSession.getSessionId());
+        final SessionEntity sessionEntity = sessionRepository.findById(createdSession.getSessionId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found"));
         Assertions.assertThat(sessionEntity).isNotNull();
         Assertions.assertThat(sessionEntity.getSessionId()).isNotNull();
         Assertions.assertThat(sessionEntity.getCardSet().name()).isEqualTo(sessionCreationDto.getCardSet());
@@ -246,7 +245,7 @@ public class SessionServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final ThemeDto themeDto = ThemeDto.newBuilder()
                 .cardTheme("new Theme")
@@ -289,7 +288,7 @@ public class SessionServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String newTheme = "new Theme";
         final ThemeDto themeDto = ThemeDto.newBuilder()
@@ -300,7 +299,8 @@ public class SessionServiceTest extends ApplicationTest {
         sessionService.setTheme(themeDto);
 
         // then
-        final SessionEntity updatedSession = sessionRepository.findOne(sessionId);
+        final SessionEntity updatedSession = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found"));
         Assertions.assertThat(updatedSession).isNotNull();
         Assertions.assertThat(updatedSession.getCardTheme()).isEqualTo(newTheme);
 
@@ -332,7 +332,7 @@ public class SessionServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String newTheme = "new Theme";
         final ThemeDto themeDto = ThemeDto.newBuilder()

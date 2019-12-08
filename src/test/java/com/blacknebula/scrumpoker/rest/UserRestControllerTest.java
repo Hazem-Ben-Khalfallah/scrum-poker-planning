@@ -20,16 +20,13 @@ import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.core.IsNull;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author hazem
@@ -46,7 +43,6 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -74,14 +70,14 @@ public class UserRestControllerTest extends AppIntegrationTest {
                         .withUsername("Leander")
                         .build())
                 .build();
-        userRepository.save(users);
+        userRepository.saveAll(users);
 
         final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final List<UserDto> response = givenJsonClient()
@@ -101,7 +97,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void listUsers_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -198,7 +194,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final DefaultResponse response = givenJsonClient()
@@ -224,7 +220,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withUsername("Leo")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -274,7 +270,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final DefaultResponse response = givenJsonClient()
@@ -316,7 +312,7 @@ public class UserRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()

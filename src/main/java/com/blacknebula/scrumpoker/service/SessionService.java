@@ -20,7 +20,6 @@ import com.blacknebula.scrumpoker.utils.DateUtils;
 import com.blacknebula.scrumpoker.utils.HashId;
 import com.blacknebula.scrumpoker.utils.StringUtils;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,22 +34,30 @@ import java.util.function.Consumer;
 @Service
 public class SessionService {
 
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private StoryRepository storyRepository;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
-    private WebSocketSender webSocketSender;
+    private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
+    private final StoryRepository storyRepository;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
+    private final WebSocketSender webSocketSender;
 
+    private final String applicationId;
 
-    @Value("${application.id}")
-    private String applicationId;
+    public SessionService(SessionRepository sessionRepository,
+                          UserRepository userRepository,
+                          StoryRepository storyRepository,
+                          JwtService jwtService,
+                          AuthenticationService authenticationService,
+                          WebSocketSender webSocketSender,
+                          @Value("${application.id}") String applicationId) {
+        this.sessionRepository = sessionRepository;
+        this.userRepository = userRepository;
+        this.storyRepository = storyRepository;
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+        this.webSocketSender = webSocketSender;
+        this.applicationId = applicationId;
+    }
 
     /**
      * @return sessionDto
@@ -60,7 +67,8 @@ public class SessionService {
     public SessionDto getSession() {
         // check also session validity
         final Principal user = authenticationService.checkAuthenticatedUser();
-        final SessionEntity sessionEntity = sessionRepository.findOne(user.getSessionId());
+        final SessionEntity sessionEntity = sessionRepository.findById(user.getSessionId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found"));
         return new SessionDto(sessionEntity);
     }
 
@@ -96,7 +104,7 @@ public class SessionService {
         //save stories
         if (!CollectionUtils.isEmpty(sessionCreationDto.getStories())) {
             final List<StoryEntity> storyEntities = sessionCreationDto.toStories(sessionEntity.getSessionId());
-            storyRepository.save(storyEntities);
+            storyRepository.saveAll(storyEntities);
         }
         //save user
         final UserEntity userEntity = new UserEntity(sessionCreationDto.getUsername(), sessionEntity.getSessionId(), true);
@@ -120,7 +128,9 @@ public class SessionService {
      */
     public ThemeDto setTheme(ThemeDto themeDto) {
         final Principal principal = authenticationService.checkAuthenticatedAdmin();
-        final SessionEntity sessionEntity = sessionRepository.findOne(principal.getSessionId());
+        final SessionEntity sessionEntity = sessionRepository.findById(principal.getSessionId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found"));
+        ;
         sessionEntity.setCardTheme(themeDto.getCardTheme());
         sessionRepository.save(sessionEntity);
         webSocketSender.sendNotification(sessionEntity.getSessionId(), WsTypes.THEME_CHANGED, themeDto);

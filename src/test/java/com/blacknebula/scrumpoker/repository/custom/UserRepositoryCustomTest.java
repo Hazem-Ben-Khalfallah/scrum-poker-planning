@@ -1,10 +1,10 @@
 package com.blacknebula.scrumpoker.repository.custom;
 
 import com.blacknebula.scrumpoker.ApplicationTest;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +22,7 @@ public class UserRepositoryCustomTest extends ApplicationTest {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
     }
 
 
@@ -37,7 +38,7 @@ public class UserRepositoryCustomTest extends ApplicationTest {
                 .add(createUser(sessionId, "Leo"))
                 .add(createUser(sessionId, "Leander"))
                 .build();
-        userRepository.save(users);
+        userRepository.saveAll(users);
 
         // when
         final List<UserEntity> usersBySessionId = userRepository.findUsersBySessionId(sessionId);

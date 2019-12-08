@@ -1,13 +1,18 @@
 package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.AppIntegrationTest;
-import com.blacknebula.scrumpoker.builders.*;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
+import com.blacknebula.scrumpoker.builders.StoryCreationDtoBuilder;
+import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
 import com.blacknebula.scrumpoker.dto.StoryDto;
+import com.blacknebula.scrumpoker.entity.SessionEntity;
+import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.blacknebula.scrumpoker.enums.ResponseStatus;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
@@ -17,17 +22,13 @@ import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author hazem
@@ -46,7 +47,6 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -76,7 +76,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final List<StoryEntity> stories = ImmutableList.<StoryEntity>builder()
                 .add(StoryEntityBuilder.builder()
@@ -88,7 +88,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                         .withStoryId("story-2")
                         .build())
                 .build();
-        storyRepository.save(stories);
+        storyRepository.saveAll(stories);
 
         // when
         final List<StoryDto> response = givenJsonClient()
@@ -110,7 +110,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void listStories_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -151,7 +151,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -199,7 +199,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -240,7 +240,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -288,7 +288,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -329,7 +329,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story-name")
@@ -376,7 +376,7 @@ public class StoryRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withOrder(2)

@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,6 @@ public class UserServiceTest extends ApplicationTest {
     public void setUp() throws Exception {
         super.setUp();
         Mockito.reset(webSocketSender);
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -65,7 +63,7 @@ public class UserServiceTest extends ApplicationTest {
     @Test
     public void listUsers_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             // when
             userService.listUsers();
@@ -102,14 +100,14 @@ public class UserServiceTest extends ApplicationTest {
                         .withConnected(false)
                         .build())
                 .build();
-        userRepository.save(users);
+        userRepository.saveAll(users);
 
         final Principal principal = PrincipalBuilder.builder()
                 .withUsername(username)
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final List<UserDto> connectedUsers = userService.listUsers();
@@ -375,7 +373,7 @@ public class UserServiceTest extends ApplicationTest {
     @Test
     public void disconnectUser_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         // given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             //when
             userService.disconnectUser();
@@ -412,7 +410,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         userService.disconnectUser();
@@ -448,7 +446,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         // when
         userService.disconnectUser();
 
@@ -483,7 +481,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             //when
             userService.ban("username");
@@ -521,7 +519,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             //when
@@ -561,7 +559,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             //when
@@ -610,7 +608,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         userService.ban(username);
@@ -656,7 +654,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         userService.ban(username);
@@ -702,7 +700,7 @@ public class UserServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         userService.ban(username);

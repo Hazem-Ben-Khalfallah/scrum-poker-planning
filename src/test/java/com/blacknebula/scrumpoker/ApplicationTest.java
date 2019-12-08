@@ -1,19 +1,19 @@
 package com.blacknebula.scrumpoker;
 
-import com.mongodb.BasicDBObject;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@WebAppConfiguration
-@IntegrationTest
-public abstract class ApplicationTest extends SpringTest {
+public abstract class ApplicationTest {
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -28,11 +28,9 @@ public abstract class ApplicationTest extends SpringTest {
      * Remove all data from collections (expect system collections). Faster than
      * a simple dropDatabase.
      */
-    private void clearMongo() throws Exception {
-
-        mongoTemplate.getDb().getCollectionNames().stream().filter(name -> !name.startsWith("system.")).forEach(name -> {
-            mongoTemplate.getDb().getCollection(name).remove(new BasicDBObject());
-        });
+    private void clearMongo() {
+        mongoTemplate.getDb().drop();
     }
 
 }
+

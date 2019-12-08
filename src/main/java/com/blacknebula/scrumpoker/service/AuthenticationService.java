@@ -4,10 +4,10 @@ import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
+import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class AuthenticationService {
             throw new CustomException(CustomErrorCode.UNAUTHORIZED, "username should not be null or empty");
         }
 
-        if (!sessionRepository.exists(user.getSessionId())) {
+        if (!sessionRepository.existsById(user.getSessionId())) {
             LOGGER.error("session not found with id = {}", user.getSessionId());
             throw new CustomException(CustomErrorCode.UNAUTHORIZED, "Invalid session id");
         }

@@ -2,7 +2,6 @@ package com.blacknebula.scrumpoker.repository.custom;
 
 
 import com.blacknebula.scrumpoker.repository.DAOResponse;
-import com.blacknebula.scrumpoker.repository.impl.GenericRepositoryImpl;
 
 import java.io.Serializable;
 import java.util.List;
@@ -41,7 +40,6 @@ public interface GenericRepositoryCustom<T, ID extends Serializable> {
      * @return the object  with the new Id
      * @should insert the object in the collection
      * @should generate a new id even if the id field is not set
-     *
      */
     T create(T t);
 
@@ -70,7 +68,6 @@ public interface GenericRepositoryCustom<T, ID extends Serializable> {
      * @param value value to be set
      * @return MongoDAOResponse
      * @should update field on selected document with given value
-     * @should not perform an update if id does not exists
      */
     DAOResponse update(ID id, String field, Object value);
 
@@ -94,14 +91,7 @@ public interface GenericRepositoryCustom<T, ID extends Serializable> {
      * @param inc   value to add
      * @return MongoDAOResponse
      * @should increment numeric field with given value
-     * @should not perform an update if id does not exists
      */
     DAOResponse increment(ID id, String field, Number inc);
 
-    /**
-     * creates bulk operation builder
-     * @return BulkBuilder
-     * @should execute bulk operations
-     */
-    GenericRepositoryImpl<T, ID>.BulkBuilder bulk();
 }

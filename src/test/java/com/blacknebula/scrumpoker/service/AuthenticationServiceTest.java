@@ -2,25 +2,22 @@ package com.blacknebula.scrumpoker.service;
 
 import com.blacknebula.scrumpoker.ApplicationTest;
 import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.enums.UserRole;
-import com.blacknebula.scrumpoker.exception.CustomException;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
 import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
+import com.blacknebula.scrumpoker.entity.UserEntity;
+import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
+import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
+import com.blacknebula.scrumpoker.repository.UserRepository;
+import com.blacknebula.scrumpoker.security.Principal;
+import com.blacknebula.scrumpoker.security.SecurityContext;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
 
 /**
  * @author hazem
@@ -38,7 +35,6 @@ public class AuthenticationServiceTest extends ApplicationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -47,7 +43,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
      */
     @Test
     public void checkAuthenticatedUser_shouldThrowAnExceptionIfUserIsNotAuthenticated() throws Exception {
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
 
         try {
             // when
@@ -70,7 +66,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
                 .withSessionId("sessionId")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             authenticationService.checkAuthenticatedUser();
@@ -92,7 +88,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
                 .withUsername("username")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             authenticationService.checkAuthenticatedUser();
@@ -128,7 +124,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             authenticationService.checkAuthenticatedUser();
@@ -165,7 +161,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -190,7 +186,7 @@ public class AuthenticationServiceTest extends ApplicationTest {
                 .withSessionId("invalid_session_id")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             authenticationService.checkAuthenticatedUser();
             Assert.fail("shouldThrowAnExceptionIfSessionDoesNotExistWithGivenSessionId");

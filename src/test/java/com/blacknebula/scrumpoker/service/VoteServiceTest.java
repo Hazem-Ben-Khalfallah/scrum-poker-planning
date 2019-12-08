@@ -1,25 +1,30 @@
 package com.blacknebula.scrumpoker.service;
 
-import com.blacknebula.scrumpoker.builders.*;
-import com.blacknebula.scrumpoker.dto.VoteCreationDto;
-import com.blacknebula.scrumpoker.entity.VoteEntity;
-import com.blacknebula.scrumpoker.enums.UserRole;
-import com.blacknebula.scrumpoker.enums.WsTypes;
-import com.blacknebula.scrumpoker.repository.StoryRepository;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.google.common.collect.ImmutableList;
 import com.blacknebula.scrumpoker.ApplicationTest;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
+import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
+import com.blacknebula.scrumpoker.builders.VoteCreationDtoBuilder;
+import com.blacknebula.scrumpoker.builders.VoteEntityBuilder;
+import com.blacknebula.scrumpoker.dto.VoteCreationDto;
 import com.blacknebula.scrumpoker.dto.VoteDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
 import com.blacknebula.scrumpoker.entity.StoryEntity;
 import com.blacknebula.scrumpoker.entity.UserEntity;
+import com.blacknebula.scrumpoker.entity.VoteEntity;
+import com.blacknebula.scrumpoker.enums.UserRole;
+import com.blacknebula.scrumpoker.enums.WsTypes;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
 import com.blacknebula.scrumpoker.repository.SessionRepository;
+import com.blacknebula.scrumpoker.repository.StoryRepository;
+import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.repository.VoteRepository;
+import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
+import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +33,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +60,6 @@ public class VoteServiceTest extends ApplicationTest {
     public void setUp() throws Exception {
         super.setUp();
         Mockito.reset(webSocketSender);
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -66,7 +69,7 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void listVotes_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             // when
             voteService.listVotes("storyId");
@@ -103,7 +106,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -122,7 +125,7 @@ public class VoteServiceTest extends ApplicationTest {
                         .withVoteId("vote2")
                         .build())
                 .build();
-        voteRepository.save(votes);
+        voteRepository.saveAll(votes);
 
         try {
             // when
@@ -160,7 +163,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -198,7 +201,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             //when
@@ -236,7 +239,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -255,7 +258,7 @@ public class VoteServiceTest extends ApplicationTest {
                         .withVoteId("vote2")
                         .build())
                 .build();
-        voteRepository.save(votes);
+        voteRepository.saveAll(votes);
 
         //when
         final List<VoteDto> foundVotes = voteService.listVotes(storyId);
@@ -269,7 +272,7 @@ public class VoteServiceTest extends ApplicationTest {
     @Test
     public void delete_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         // given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             //when
             voteService.delete("vote_id");
@@ -305,7 +308,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -342,7 +345,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -394,7 +397,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -447,7 +450,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -500,13 +503,13 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         voteService.delete(voteId);
 
         // then
-        Assertions.assertThat(voteRepository.exists(voteId)).isFalse();
+        Assertions.assertThat(voteRepository.existsById(voteId)).isFalse();
     }
 
     /**
@@ -549,7 +552,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         voteService.delete(voteId);
@@ -570,7 +573,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withStoryId("story_id")
                 .build();
 
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
 
         try {
             // when
@@ -611,7 +614,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             voteService.saveVote(voteCreationDto);
@@ -651,7 +654,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // then
             voteService.saveVote(voteCreationDto);
@@ -692,7 +695,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -701,7 +704,7 @@ public class VoteServiceTest extends ApplicationTest {
         } catch (CustomException e) {
             // then
             Assertions.assertThat(e.getCustomErrorCode()).isEqualTo(CustomErrorCode.OBJECT_NOT_FOUND);
-            Assertions.assertThat(e.getMessage()).startsWith("story not found");
+            Assertions.assertThat(e.getMessage()).startsWith("Story not found");
         }
     }
 
@@ -742,7 +745,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -791,7 +794,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             voteService.saveVote(voteCreationDto);
@@ -840,7 +843,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -898,13 +901,14 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         voteService.saveVote(voteCreationDto);
 
         //then
-        voteEntity = voteRepository.findOne(voteEntity.getVoteId());
+        voteEntity = voteRepository.findById(voteEntity.getVoteId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Vote not found"));
         Assertions.assertThat(voteEntity).isNotNull();
         Assertions.assertThat(voteEntity.getValue()).isEqualTo(voteCreationDto.getValue());
     }
@@ -946,14 +950,15 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final VoteCreationDto createdVote = voteService.saveVote(voteCreationDto);
 
         // then
         Assertions.assertThat(createdVote.getVoteId()).isNotNull();
-        final VoteEntity voteEntity = voteRepository.findOne(createdVote.getVoteId());
+        final VoteEntity voteEntity = voteRepository.findById(createdVote.getVoteId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Vote not found"));
         Assertions.assertThat(voteEntity).isNotNull();
         Assertions.assertThat(voteEntity.getStoryId()).isEqualTo(createdVote.getStoryId());
         Assertions.assertThat(voteEntity.getValue()).isEqualTo(createdVote.getValue());
@@ -996,7 +1001,7 @@ public class VoteServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final VoteCreationDto createdVote = voteService.saveVote(voteCreationDto);

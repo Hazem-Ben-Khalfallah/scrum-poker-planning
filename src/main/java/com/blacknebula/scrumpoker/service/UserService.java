@@ -15,7 +15,6 @@ import com.blacknebula.scrumpoker.utils.StringUtils;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +28,23 @@ import java.util.stream.Collectors;
 public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private WebSocketSender webSocketSender;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
+    private final WebSocketSender webSocketSender;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
+
+    public UserService(UserRepository userRepository,
+                       SessionRepository sessionRepository,
+                       WebSocketSender webSocketSender,
+                       JwtService jwtService,
+                       AuthenticationService authenticationService) {
+        this.userRepository = userRepository;
+        this.sessionRepository = sessionRepository;
+        this.webSocketSender = webSocketSender;
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+    }
 
 
     /**
@@ -78,8 +84,8 @@ public class UserService {
         if (StringUtils.isEmpty(userDto.getUsername(), true)) {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "Username should not be null or empty");
         }
-        if (!sessionRepository.exists(userDto.getSessionId())) {
-            LOGGER.error("session not found with id = " + userDto.getSessionId());
+        if (!sessionRepository.existsById(userDto.getSessionId())) {
+            LOGGER.error("session not found with id = {}", userDto.getSessionId());
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Invalid session id");
         }
 

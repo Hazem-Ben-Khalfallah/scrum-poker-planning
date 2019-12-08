@@ -8,7 +8,6 @@ import com.blacknebula.scrumpoker.entity.def.StoryEntityDef;
 import com.blacknebula.scrumpoker.enums.WsTypes;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
 import com.blacknebula.scrumpoker.exception.CustomException;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.StoryRepository;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.utils.StringUtils;
@@ -16,7 +15,6 @@ import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,12 +28,17 @@ import java.util.Objects;
 public class StoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(StoryService.class);
 
-    @Autowired
-    private StoryRepository storyRepository;
-    @Autowired
-    private WebSocketSender webSocketSender;
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final StoryRepository storyRepository;
+    private final WebSocketSender webSocketSender;
+    private final AuthenticationService authenticationService;
+
+    public StoryService(StoryRepository storyRepository,
+                        WebSocketSender webSocketSender,
+                        AuthenticationService authenticationService) {
+        this.storyRepository = storyRepository;
+        this.webSocketSender = webSocketSender;
+        this.authenticationService = authenticationService;
+    }
 
     /**
      * @return list of stories
@@ -68,7 +71,8 @@ public class StoryService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
 
-        final StoryEntity storyEntity = storyRepository.findOne(storyId);
+        final StoryEntity storyEntity = storyRepository.findById(storyId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found"));
         if (Objects.isNull(storyEntity)) {
             LOGGER.error("story not found with id = {}", storyId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
@@ -79,7 +83,7 @@ public class StoryService {
             throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "User is not the session admin");
         }
 
-        storyRepository.delete(storyId);
+        storyRepository.deleteById(storyId);
         webSocketSender.sendNotification(storyEntity.getSessionId(), WsTypes.STORY_REMOVED, storyId);
         return DefaultResponse.ok();
     }
@@ -125,7 +129,8 @@ public class StoryService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
 
-        final StoryEntity storyEntity = storyRepository.findOne(storyId);
+        final StoryEntity storyEntity = storyRepository.findById(storyId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found"));
         if (Objects.isNull(storyEntity)) {
             LOGGER.error("story not found with id = {}", storyId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found ");
