@@ -15,7 +15,6 @@ import com.blacknebula.scrumpoker.utils.StringUtils;
 import com.blacknebula.scrumpoker.websocket.WebSocketSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,14 +28,20 @@ import java.util.Objects;
 public class VoteService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VoteService.class);
 
-    @Autowired
-    private VoteRepository voteRepository;
-    @Autowired
-    private StoryRepository storyRepository;
-    @Autowired
-    private WebSocketSender webSocketSender;
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final VoteRepository voteRepository;
+    private final StoryRepository storyRepository;
+    private final WebSocketSender webSocketSender;
+    private final AuthenticationService authenticationService;
+
+    public VoteService(VoteRepository voteRepository,
+                       StoryRepository storyRepository,
+                       WebSocketSender webSocketSender,
+                       AuthenticationService authenticationService) {
+        this.voteRepository = voteRepository;
+        this.storyRepository = storyRepository;
+        this.webSocketSender = webSocketSender;
+        this.authenticationService = authenticationService;
+    }
 
     /**
      * @param storyId storyId
@@ -54,7 +59,8 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "storyId should not be null or empty");
         }
 
-        final StoryEntity storyEntity = storyRepository.findOne(storyId);
+        final StoryEntity storyEntity = storyRepository.findById(storyId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found"));
         if (storyEntity == null) {
             LOGGER.error("no story found with given Id {}", storyId);
             throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found");
@@ -92,7 +98,8 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.BAD_ARGS, "voteId should not be null or empty");
         }
 
-        final VoteEntity voteEntity = voteRepository.findOne(voteId);
+        final VoteEntity voteEntity = voteRepository.findById(voteId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Vote not found"));
 
         if (Objects.isNull(voteEntity)) {
             LOGGER.error("no vote found with id = {}", voteId);
@@ -107,7 +114,7 @@ public class VoteService {
             throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "Permission denied");
         }
 
-        voteRepository.delete(voteId);
+        voteRepository.deleteById(voteId);
         webSocketSender.sendNotification(voteEntity.getSessionId(), WsTypes.VOTE_REMOVED, voteId);
         return DefaultResponse.ok();
     }
@@ -159,11 +166,12 @@ public class VoteService {
     }
 
     private void checkStoryStatus(String storyId) {
-        final StoryEntity storyEntity = storyRepository.findOne(storyId);
-        if (storyEntity == null) {
-            LOGGER.error("story not found with id = {}", storyId);
-            throw new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "story not found");
-        } else if (storyEntity.isEnded()) {
+        final StoryEntity storyEntity = storyRepository.findById(storyId)
+                .orElseThrow(() -> {
+                    LOGGER.error("story not found with id = {}", storyId);
+                    return new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found");
+                });
+        if (storyEntity.isEnded()) {
             LOGGER.error("story with id = {} has been already ended", storyId);
             throw new CustomException(CustomErrorCode.PERMISSION_DENIED, "story has been ended");
         }

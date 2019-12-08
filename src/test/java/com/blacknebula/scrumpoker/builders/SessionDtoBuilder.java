@@ -1,8 +1,8 @@
 package com.blacknebula.scrumpoker.builders;
 
+import com.blacknebula.scrumpoker.dto.SessionDto;
 import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.dto.SessionDto;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class SessionDtoBuilder {
     }
 
     public class SessionStoriesBuilder {
-        private ImmutableList.Builder<String> builder = ImmutableList.<String>builder();
+        private ImmutableList.Builder<String> builder = ImmutableList.builder();
         private SessionDtoBuilder sessionDtoBuilder;
 
         public SessionStoriesBuilder(SessionDtoBuilder sessionDtoBuilder) {

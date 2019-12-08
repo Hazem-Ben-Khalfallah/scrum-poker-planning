@@ -2,11 +2,12 @@ package com.blacknebula.scrumpoker.repository.impl;
 
 import com.blacknebula.scrumpoker.repository.DAOResponse;
 import com.mongodb.WriteResult;
+import com.mongodb.client.result.UpdateResult;
 
 public class MongoDAOResponse implements DAOResponse {
     private Integer nAffected;
 
-    public MongoDAOResponse() {
+    public MongoDAOResponse(UpdateResult result) {
 
     }
 

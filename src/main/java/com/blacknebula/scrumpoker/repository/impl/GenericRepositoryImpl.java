@@ -1,22 +1,23 @@
 package com.blacknebula.scrumpoker.repository.impl;
 
 import com.blacknebula.scrumpoker.repository.custom.GenericRepositoryCustom;
-import com.mongodb.*;
+import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public abstract class GenericRepositoryImpl<T, ID extends Serializable> implements GenericRepositoryCustom<T, ID> {
 
@@ -32,7 +33,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
         return mongoTemplate.getCollectionName(getTClass());
     }
 
-    protected DBCollection getCollection() {
+    protected MongoCollection<Document> getCollection() {
         return mongoTemplate.getCollection(getCollectionName());
     }
 
@@ -81,7 +82,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
                 up.set(entry.getKey(), entry.getValue());
             }
         }
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
+        UpdateResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
         return new MongoDAOResponse(result);
     }
 
@@ -97,7 +98,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
         Query q = idQuery(id);
         Update up = new Update();
         up.inc(field, inc);
-        WriteResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
+        UpdateResult result = this.mongoTemplate.updateFirst(q, up, this.getTClass());
         return new MongoDAOResponse(result);
 
     }
@@ -119,71 +120,4 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
         this.mongoTemplate.save(t);
     }
 
-    @Override
-    public BulkBuilder bulk() {
-        return new BulkBuilder();
-    }
-
-    public class BulkBuilder {
-        private BulkWriteOperation bulk;
-
-        public BulkBuilder() {
-            bulk = getCollection().initializeOrderedBulkOperation();
-        }
-
-        /**
-         * builder method to insert a list of entities
-         * @param entities entities to insert
-         * @return BulkBuilder
-         */
-        public BulkBuilder insert(List<T> entities) {
-            bulkAll(entities, (T t) -> {
-                bulk.insert(toDbObject(t));
-            });
-            return this;
-        }
-
-        /**
-         * builder method to update a list of entities
-         * @param entities entities to updated
-         * @return BulkBuilder
-         */
-        public BulkBuilder update(List<T> entities) {
-            bulkAll(entities, (T t) -> {
-                DBObject dbO = toDbObject(t);
-                bulk.find(new BasicDBObject(MONGO_ID, dbO.get(MONGO_ID))).updateOne(new BasicDBObject("$set", dbO));
-            });
-            return this;
-        }
-
-        /**
-         * builder method to insert/update a list of entities
-         * @param entities entities to updated
-         * @return BulkBuilder
-         */
-        public BulkBuilder upsert(List<T> entities) {
-            bulkAll(entities, (T t) -> {
-                DBObject dbO = toDbObject(t);
-                bulk.find(new BasicDBObject(MONGO_ID, dbO.get(MONGO_ID))) //
-                        .upsert() //
-                        .updateOne(new BasicDBObject("$set", dbO));
-            });
-            return this;
-        }
-
-        private void bulkAll(List<T> entities, Consumer<T> func) {
-            Assert.notEmpty(entities);
-            entities.stream().forEach(t -> {
-                func.accept(t);
-            });
-        }
-
-        /**
-         * execute bulk action
-         * @return BulkWriteResult
-         */
-        public BulkWriteResult execute() {
-            return bulk.execute();
-        }
-    }
 }

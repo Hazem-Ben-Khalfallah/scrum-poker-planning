@@ -1,8 +1,8 @@
 package com.blacknebula.scrumpoker.repository.custom;
 
+import com.blacknebula.scrumpoker.ApplicationTest;
 import com.blacknebula.scrumpoker.builders.VoteEntityBuilder;
 import com.blacknebula.scrumpoker.entity.VoteEntity;
-import com.blacknebula.scrumpoker.ApplicationTest;
 import com.blacknebula.scrumpoker.repository.VoteRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;

@@ -45,7 +45,7 @@ public class SessionCreationDtoBuilder {
     }
 
     public class SessionStoriesBuilder {
-        private ImmutableList.Builder<String> builder = ImmutableList.<String>builder();
+        private ImmutableList.Builder<String> builder = ImmutableList.builder();
         private SessionCreationDtoBuilder sessionDtoBuilder;
 
         public SessionStoriesBuilder(SessionCreationDtoBuilder sessionDtoBuilder) {

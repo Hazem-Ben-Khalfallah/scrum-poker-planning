@@ -1,7 +1,7 @@
 package com.blacknebula.scrumpoker.builders;
 
-import com.blacknebula.scrumpoker.enums.CardSetEnum;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
+import com.blacknebula.scrumpoker.enums.CardSetEnum;
 
 /**
  * @author hazem

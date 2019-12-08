@@ -1,33 +1,36 @@
 package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.AppIntegrationTest;
-import com.blacknebula.scrumpoker.builders.*;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
+import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
+import com.blacknebula.scrumpoker.builders.VoteCreationDtoBuilder;
+import com.blacknebula.scrumpoker.builders.VoteEntityBuilder;
+import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.VoteCreationDto;
+import com.blacknebula.scrumpoker.dto.VoteDto;
+import com.blacknebula.scrumpoker.entity.SessionEntity;
+import com.blacknebula.scrumpoker.entity.StoryEntity;
+import com.blacknebula.scrumpoker.entity.UserEntity;
 import com.blacknebula.scrumpoker.entity.VoteEntity;
+import com.blacknebula.scrumpoker.enums.ResponseStatus;
 import com.blacknebula.scrumpoker.enums.UserRole;
+import com.blacknebula.scrumpoker.repository.SessionRepository;
 import com.blacknebula.scrumpoker.repository.StoryRepository;
 import com.blacknebula.scrumpoker.repository.UserRepository;
 import com.blacknebula.scrumpoker.repository.VoteRepository;
 import com.blacknebula.scrumpoker.security.Principal;
 import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.google.common.collect.ImmutableList;
-import com.blacknebula.scrumpoker.dto.DefaultResponse;
-import com.blacknebula.scrumpoker.dto.VoteDto;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.enums.ResponseStatus;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
 import static com.blacknebula.scrumpoker.exception.CustomErrorCode.OBJECT_NOT_FOUND;
 import static com.blacknebula.scrumpoker.exception.CustomErrorCode.UNAUTHORIZED;
@@ -51,7 +54,6 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -81,7 +83,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -100,7 +102,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                         .withVoteId("vote2")
                         .build())
                 .build();
-        voteRepository.save(votes);
+        voteRepository.saveAll(votes);
 
         // when
         final List<VoteDto> response = givenJsonClient()
@@ -141,7 +143,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -198,7 +200,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final DefaultResponse response = givenJsonClient()
@@ -238,7 +240,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()
@@ -290,7 +292,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final VoteDto response = givenJsonClient()
@@ -324,7 +326,7 @@ public class VoteRestControllerTest extends AppIntegrationTest {
                 .withSessionId("sessionId")
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         // when
         final ErrorResponse errorResponse = givenJsonClient()

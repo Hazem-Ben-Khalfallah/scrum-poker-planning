@@ -1,7 +1,11 @@
 package com.blacknebula.scrumpoker.service;
 
 import com.blacknebula.scrumpoker.ApplicationTest;
-import com.blacknebula.scrumpoker.builders.*;
+import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
+import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
+import com.blacknebula.scrumpoker.builders.StoryCreationDtoBuilder;
+import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
+import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
 import com.blacknebula.scrumpoker.dto.StoryDto;
 import com.blacknebula.scrumpoker.entity.SessionEntity;
@@ -26,7 +30,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 
@@ -52,7 +55,6 @@ public class StoryServiceTest extends ApplicationTest {
     public void setUp() throws Exception {
         super.setUp();
         Mockito.reset(webSocketSender);
-        Mockito.reset(securityContext);
     }
 
     /**
@@ -62,7 +64,7 @@ public class StoryServiceTest extends ApplicationTest {
     @Test
     public void listStories_shouldCheckThatTheUserIsAuthenticated() throws Exception {
         //given
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.empty());
+        securityContext.setPrincipal(null);
         try {
             // when
             storyService.listStories();
@@ -99,7 +101,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final List<StoryEntity> stories = ImmutableList.<StoryEntity>builder()
                 .add(StoryEntityBuilder.builder()
@@ -111,7 +113,7 @@ public class StoryServiceTest extends ApplicationTest {
                         .withStoryId("story-2")
                         .build())
                 .build();
-        storyRepository.save(stories);
+        storyRepository.saveAll(stories);
 
         // when
         final List<StoryDto> foundStories = storyService.listStories();
@@ -146,7 +148,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -184,7 +186,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             storyService.delete("invalid_story_id");
@@ -221,7 +223,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
                 .withStoryId("story-1")
@@ -233,7 +235,7 @@ public class StoryServiceTest extends ApplicationTest {
         storyService.delete(storyEntity.getStoryId());
 
         // then
-        Assertions.assertThat(storyRepository.exists(storyEntity.getStoryId())).isFalse();
+        Assertions.assertThat(storyRepository.existsById(storyEntity.getStoryId())).isFalse();
     }
 
     /**
@@ -262,7 +264,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             storyService.delete("story_id");
@@ -307,7 +309,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
         try {
             // when
             storyService.delete(storyId);
@@ -345,7 +347,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
                 .withSessionId(sessionId)
@@ -386,7 +388,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .build();
@@ -426,7 +428,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("   ")
@@ -467,7 +469,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story_name")
@@ -509,7 +511,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story-name")
@@ -521,7 +523,8 @@ public class StoryServiceTest extends ApplicationTest {
 
         // then
         Assertions.assertThat(createdStory.getStoryId()).isNotNull();
-        final StoryEntity storyEntity = storyRepository.findOne(createdStory.getStoryId());
+        final StoryEntity storyEntity = storyRepository.findById(createdStory.getStoryId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found"));
         Assertions.assertThat(storyEntity).isNotNull();
         Assertions.assertThat(storyEntity.getStoryName()).isEqualTo(storyCreationDto.getStoryName());
         Assertions.assertThat(storyEntity.getOrder()).isEqualTo(storyCreationDto.getOrder());
@@ -553,7 +556,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story-name")
@@ -594,7 +597,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -632,7 +635,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -670,7 +673,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.VOTER)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -716,7 +719,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         try {
             // when
@@ -755,7 +758,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()
@@ -768,7 +771,8 @@ public class StoryServiceTest extends ApplicationTest {
         storyService.endStory(storyId);
 
         // then
-        final StoryEntity foundStory = storyRepository.findOne(storyId);
+        final StoryEntity foundStory = storyRepository.findById(storyId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Story not found"));
         Assertions.assertThat(foundStory.isEnded()).isTrue();
     }
 
@@ -798,7 +802,7 @@ public class StoryServiceTest extends ApplicationTest {
                 .withSessionId(sessionId)
                 .withRole(UserRole.SESSION_ADMIN)
                 .build();
-        Mockito.when(securityContext.getAuthenticationContext()).thenReturn(Optional.of(principal));
+        securityContext.setPrincipal(principal);
 
         final String storyId = "storyId";
         final StoryEntity storyEntity = StoryEntityBuilder.builder()

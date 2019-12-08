@@ -1,7 +1,6 @@
 package com.blacknebula.scrumpoker.repository.custom;
 
 import com.blacknebula.scrumpoker.ApplicationTest;
-import com.blacknebula.scrumpoker.Is;
 import com.blacknebula.scrumpoker.builders.VoteEntityBuilder;
 import com.blacknebula.scrumpoker.entity.VoteEntity;
 import com.blacknebula.scrumpoker.entity.def.VoteEntityDef;
@@ -9,7 +8,7 @@ import com.blacknebula.scrumpoker.repository.DAOResponse;
 import com.blacknebula.scrumpoker.repository.VoteRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mongodb.BulkWriteResult;
+import com.google.common.collect.Lists;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,7 @@ public class GenericRepositoryCustomTest extends ApplicationTest {
     @Test
     public void findOne_shouldReturnNullIdIdIsNotValid() throws Exception {
         // when
-        final VoteEntity foundVote = voteRepository.findOne("invalid_id");
+        final VoteEntity foundVote = voteRepository.findOne("invalid_id", Lists.newArrayList());
 
         // then
         Assertions.assertThat(foundVote).isNull();
@@ -271,23 +270,9 @@ public class GenericRepositoryCustomTest extends ApplicationTest {
         final DAOResponse daoResponse = voteRepository.update(voteId, VoteEntityDef.VALUE, newValue);
 
         // then
-        Assertions.assertThat(daoResponse.getnAffected()).isEqualTo(1);
         final List<VoteEntity> createdVotes = voteRepository.findAll();
         Assertions.assertThat(createdVotes).hasSize(1);
         Assertions.assertThat(createdVotes.get(0).getValue()).isEqualTo(newValue);
-    }
-
-    /**
-     * @verifies not perform an update if id does not exists
-     * @see GenericRepositoryCustom#update(Serializable, String, Object)
-     */
-    @Test
-    public void update_shouldNotPerformAnUpdateIfIdDoesNotExists() throws Exception {
-        // when
-        final DAOResponse daoResponse = voteRepository.update("invalid_vote_id", VoteEntityDef.VALUE, "1d");
-        // then
-        Assertions.assertThat(daoResponse.getnAffected()).isEqualTo(0);
-
     }
 
     /**
@@ -316,7 +301,6 @@ public class GenericRepositoryCustomTest extends ApplicationTest {
                 .build());
 
         // then
-        Assertions.assertThat(daoResponse.getnAffected()).isEqualTo(1);
         final List<VoteEntity> createdVotes = voteRepository.findAll();
         Assertions.assertThat(createdVotes).hasSize(1);
         Assertions.assertThat(createdVotes.get(0).getValue()).isEqualTo(newValue);
@@ -343,95 +327,13 @@ public class GenericRepositoryCustomTest extends ApplicationTest {
         voteRepository.update(voteId, counterAttribute, 1);
 
         // when
-        final DAOResponse daoResponse = voteRepository.increment(voteId, counterAttribute, 1);
+        voteRepository.increment(voteId, counterAttribute, 1);
 
         // then
-        Assertions.assertThat(daoResponse.getnAffected()).isEqualTo(1);
         final Query q = new Query();
         q.addCriteria(Criteria.where("_id").is(voteId));
         final Map voteAsMap = mongoTemplate.findOne(q, Map.class, "vote");
         Assertions.assertThat(voteAsMap.get(counterAttribute)).isEqualTo(2);
     }
 
-    /**
-     * @verifies not perform an update if id does not exists
-     * @see GenericRepositoryCustom#increment(Serializable, String, Number)
-     */
-    @Test
-    public void increment_shouldNotPerformAnUpdateIfIdDoesNotExists() throws Exception {
-        // when
-        final String counterAttribute = "counter";
-        final DAOResponse daoResponse = voteRepository.increment("invalid_vote_id", counterAttribute, 1);
-        // then
-        Assertions.assertThat(daoResponse.getnAffected()).isEqualTo(0);
-    }
-
-    /**
-     * @verifies execute bulk operations
-     * @see GenericRepositoryCustom#bulk()
-     */
-    @Test
-    public void bulk_shouldExecuteBulkOperations() throws Exception {
-        // given
-        final List<VoteEntity> existingVotes = ImmutableList.<VoteEntity>builder()
-                .add(VoteEntityBuilder.builder()
-                        .withVoteId("vote-1")
-                        .withSessionId("session-1")
-                        .withStoryId("story-1")
-                        .withUsername("Leo")
-                        .withValue("1d")
-                        .build())
-                .add(VoteEntityBuilder.builder()
-                        .withVoteId("vote-2")
-                        .withSessionId("session-1")
-                        .withStoryId("story-2")
-                        .withUsername("Leo")
-                        .withValue("4h")
-                        .build())
-                .build();
-        voteRepository.insert(existingVotes);
-
-        // when
-        final BulkWriteResult bulkWriteResult = voteRepository.bulk()
-                .insert(ImmutableList.<VoteEntity>builder()
-                        .add(VoteEntityBuilder.builder()
-                                .withSessionId("session-1")
-                                .withStoryId("story-1")
-                                .withUsername("Leo")
-                                .withValue("1d")
-                                .build())
-                        .add(VoteEntityBuilder.builder()
-                                .withSessionId("session-1")
-                                .withStoryId("story-2")
-                                .withUsername("Leonidas")
-                                .withValue("4h")
-                                .build())
-                        .build())
-                .update(ImmutableList.<VoteEntity>builder()
-                        .add(VoteEntityBuilder.builder()
-                                .withVoteId("vote-1")
-                                .withSessionId("session-1-modified")
-                                .withStoryId("story-1")
-                                .withUsername("Leo")
-                                .withValue("1d")
-                                .build())
-                        .add(VoteEntityBuilder.builder()
-                                .withVoteId("vote-2")
-                                .withSessionId("session-2-modified")
-                                .withStoryId("story-2")
-                                .withUsername("Leonidas")
-                                .withValue("4h")
-                                .build())
-                        .build())
-                .execute();
-
-        // then
-        final List<VoteEntity> allVotes = voteRepository.findAll();
-        Assertions.assertThat(allVotes).hasSize(4);
-        allVotes.forEach(voteEntity -> {
-            if (Is.is(voteEntity.getVoteId()).in("vote-1", "vote-2")) {
-                Assertions.assertThat(voteEntity.getSessionId()).endsWith("modified");
-            }
-        });
-    }
 }
