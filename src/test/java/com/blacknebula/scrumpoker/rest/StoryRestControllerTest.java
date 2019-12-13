@@ -1,53 +1,48 @@
 package com.blacknebula.scrumpoker.rest;
 
-import com.blacknebula.scrumpoker.AppIntegrationTest;
-import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
-import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
 import com.blacknebula.scrumpoker.builders.StoryCreationDtoBuilder;
-import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
-import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
 import com.blacknebula.scrumpoker.dto.StoryDto;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.enums.ResponseStatus;
-import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
-import com.blacknebula.scrumpoker.repository.StoryRepository;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.security.SecurityContext;
+import com.blacknebula.scrumpoker.exception.CustomException;
+import com.blacknebula.scrumpoker.service.StoryService;
+import com.blacknebula.scrumpoker.utils.JsonSerializer;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author hazem
  */
-public class StoryRestControllerTest extends AppIntegrationTest {
+@RunWith(SpringRunner.class)
+@WebMvcTest(value = StoryRestController.class)
+@ActiveProfiles("test")
+public class StoryRestControllerTest {
 
     @Autowired
-    private StoryRepository storyRepository;
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SecurityContext securityContext;
+    private MockMvc mockMvc;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-    }
+    @MockBean
+    private StoryService storyService;
 
     /**
      * @verifies return 200 status
@@ -57,50 +52,27 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @SuppressWarnings("unchecked")
     public void listStories_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
+        final List<StoryDto> stories = ImmutableList.<StoryDto>builder()
+                .add(new StoryDto()
+                        .setSessionId("sessionId")
+                        .setStoryId("story-1"))
+                .add(new StoryDto()
+                        .setSessionId("sessionId")
+                        .setStoryId("story-2"))
                 .build();
-        sessionRepository.save(sessionEntity);
+        Mockito.when(storyService.listStories())
+                .thenReturn(stories);
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/stories"))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(stories));
 
-        final List<StoryEntity> stories = ImmutableList.<StoryEntity>builder()
-                .add(StoryEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withStoryId("story-1")
-                        .build())
-                .add(StoryEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withStoryId("story-2")
-                        .build())
-                .build();
-        storyRepository.saveAll(stories);
-
-        // when
-        final List<StoryDto> response = givenJsonClient()
-                .queryParam("sessionId", sessionId)
-                .get("/stories")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(List.class);
-
-        // then
-        Assertions.assertThat(response).hasSize(2);
     }
 
     /**
@@ -110,17 +82,18 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void listStories_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //given
-        securityContext.setPrincipal(null);
+        Mockito.when(storyService.listStories())
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .get("/stories")
-                .then()
-                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/stories"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories");
     }
@@ -132,45 +105,21 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void delete_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(storyService.delete(anyString()))
+                .thenReturn(defaultResponse);
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
-        final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .withStoryId(storyId)
-                .build();
-        storyRepository.save(storyEntity);
 
         // when
-        final DefaultResponse response = givenJsonClient()
-                .delete("/stories/{storyId}", storyId)
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(DefaultResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/stories/{storyId}", "storyId")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(defaultResponse));
     }
 
     /**
@@ -180,38 +129,22 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        Mockito.when(storyService.delete(anyString()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .delete("/stories/{storyId}", "invalid_story_id")
-                .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/stories/{storyId}", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
-        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories/invalid_story_id");
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories/1");
     }
 
     /**
@@ -221,45 +154,21 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void endStory_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(storyService.endStory(anyString()))
+                .thenReturn(defaultResponse);
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
-        final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .withStoryId(storyId)
-                .build();
-        storyRepository.save(storyEntity);
 
         // when
-        final DefaultResponse response = givenJsonClient()
-                .post("/stories/{storyId}", storyId)
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(DefaultResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .post("/stories/{storyId}", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(defaultResponse));
     }
 
     /**
@@ -269,38 +178,23 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void endStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(storyService.endStory(anyString()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .post("/stories/{storyId}", "invalid_story_id")
-                .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .post("/stories/{storyId}", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
-        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories/invalid_story_id");
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories/1");
     }
 
     /**
@@ -310,43 +204,25 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void createStory_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
                 .withStoryName("story-name")
                 .withOrder(2)
                 .build();
+        Mockito.when(storyService.createStory(any(StoryCreationDto.class)))
+                .thenReturn(storyCreationDto);
+
 
         // when
-        final StoryDto response = givenJsonClient()
-                .body(storyCreationDto)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/stories")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(StoryDto.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(storyCreationDto)))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response.getStoryId()).isNotNull();
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(storyCreationDto));
 
     }
 
@@ -357,41 +233,25 @@ public class StoryRestControllerTest extends AppIntegrationTest {
     @Test
     public void createStory_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
         final StoryCreationDto storyCreationDto = StoryCreationDtoBuilder.builder()
+                .withStoryName("story-name")
                 .withOrder(2)
                 .build();
+        Mockito.when(storyService.createStory(any(StoryCreationDto.class)))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        /// when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .body(storyCreationDto)
+
+        // when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/stories")
-                .then()
-                .statusCode(CustomErrorCode.BAD_ARGS.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(storyCreationDto)))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/stories");
     }

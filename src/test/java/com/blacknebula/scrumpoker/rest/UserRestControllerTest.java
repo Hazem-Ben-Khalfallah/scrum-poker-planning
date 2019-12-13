@@ -1,93 +1,75 @@
 package com.blacknebula.scrumpoker.rest;
 
-import com.blacknebula.scrumpoker.AppIntegrationTest;
-import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
-import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
-import com.blacknebula.scrumpoker.builders.UserDtoBuilder;
-import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.UserDto;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.enums.ResponseStatus;
-import com.blacknebula.scrumpoker.enums.UserRole;
 import com.blacknebula.scrumpoker.exception.CustomErrorCode;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.security.SecurityContext;
+import com.blacknebula.scrumpoker.exception.CustomException;
+import com.blacknebula.scrumpoker.service.UserService;
+import com.blacknebula.scrumpoker.utils.JsonSerializer;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
-import org.hamcrest.core.IsNull;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author hazem
  */
-public class UserRestControllerTest extends AppIntegrationTest {
+@RunWith(SpringRunner.class)
+@WebMvcTest(value = UserRestController.class)
+@ActiveProfiles("test")
+public class UserRestControllerTest {
 
     @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SecurityContext securityContext;
+    private MockMvc mockMvc;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-    }
+    @MockBean
+    private UserService userService;
 
     /**
      * @verifies return 200 status
      * @see UserRestController#listUsers()
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void listUsers_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
+        final List<UserDto> users = ImmutableList.<UserDto>builder()
+                .add(new UserDto()
+                        .setSessionId("sessionId")
+                        .setUsername("Leo"))
+                .add(new UserDto()
+                        .setSessionId("sessionId")
+                        .setUsername("Leander"))
                 .build();
-        sessionRepository.save(sessionEntity);
+        Mockito.when(userService.listUsers())
+                .thenReturn(users);
 
-        final String username = "Leo";
-        final List<UserEntity> users = ImmutableList.<UserEntity>builder()
-                .add(UserEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withUsername(username)
-                        .build())
-                .add(UserEntityBuilder.builder()
-                        .withSessionId(sessionId)
-                        .withUsername("Leander")
-                        .build())
-                .build();
-        userRepository.saveAll(users);
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/users"))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
-        // when
-        final List<UserDto> response = givenJsonClient()
-                .get("/users")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(List.class);
-
-        Assertions.assertThat(response).hasSize(2);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(users));
     }
 
     /**
@@ -96,18 +78,19 @@ public class UserRestControllerTest extends AppIntegrationTest {
      */
     @Test
     public void listUsers_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
-        //given
-        securityContext.setPrincipal(null);
+        // given
+        Mockito.when(userService.listUsers())
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .get("/users")
-                .then()
-                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/users"))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users");
     }
@@ -119,29 +102,24 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void connect_shouldReturn200StatusAndANotNullJwtToken() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final UserDto userDto = new UserDto()
+                .setSessionId("sessionId")
+                .setUsername("Leo");
+        Mockito.when(userService.connectUser(any(UserDto.class), any()))
+                .thenReturn(userDto);
 
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withSessionId(sessionId)
-                .withUsername("Leo")
-                .build();
 
         // when
-        final UserDto response = givenJsonClient()
-                .body(userDto)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/users/connect")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .header(SecurityContext.Headers.JWT_TOKEN, IsNull.notNullValue())
-                .extract()
-                .as(UserDto.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(userDto)))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(userDto));
     }
 
     /**
@@ -151,20 +129,24 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void connect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final UserDto userDto = UserDtoBuilder.builder()
-                .withUsername("Leo")
-                .build();
+        final UserDto userDto = new UserDto()
+                .setSessionId("sessionId")
+                .setUsername("Leo");
+        Mockito.when(userService.connectUser(any(UserDto.class), any()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
+
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .body(userDto)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/users/connect")
-                .then()
-                .statusCode(CustomErrorCode.BAD_ARGS.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(userDto)))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/connect");
     }
@@ -176,37 +158,21 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void disconnect_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(userService.disconnectUser())
+                .thenReturn(defaultResponse);
 
-        final String username = "Leo";
-        final UserEntity userEntity = UserEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .withUsername(username)
-                .build();
-        userRepository.save(userEntity);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final DefaultResponse response = givenJsonClient()
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/users/disconnect")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(DefaultResponse.class);
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(defaultResponse));
     }
 
     /**
@@ -216,21 +182,20 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void disconnect_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("Leo")
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
+        Mockito.when(userService.disconnectUser())
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
+
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/users/disconnect")
-                .then()
-                .statusCode(CustomErrorCode.UNAUTHORIZED.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/disconnect");
     }
@@ -242,47 +207,21 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void ban_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(userService.ban(anyString()))
+                .thenReturn(defaultResponse);
 
-        final String adminUsername = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(adminUsername)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .withAdmin(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final String username = "Mike";
-        final UserEntity user = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(user);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(adminUsername)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final DefaultResponse response = givenJsonClient()
-                .delete("/users/ban/{username}", username)
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(DefaultResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/users/ban/{username}", "mike")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(defaultResponse));
     }
 
     /**
@@ -292,38 +231,21 @@ public class UserRestControllerTest extends AppIntegrationTest {
     @Test
     public void ban_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        Mockito.when(userService.ban(anyString()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .withAdmin(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .delete("/users/ban/{username}", "invalid_username")
-                .then()
-                .statusCode(CustomErrorCode.OBJECT_NOT_FOUND.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/users/ban/{username}", "mike")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
-        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/ban/invalid_username");
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/users/ban/mike");
     }
 }
