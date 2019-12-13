@@ -20,27 +20,30 @@ public class UserDto {
         this.sessionId = sessionId;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
-
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public UserDto setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
+    public UserDto setSessionId(String sessionId) {
         this.sessionId = sessionId;
+        return this;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public UserDto setAdmin(boolean admin) {
+        isAdmin = admin;
+        return this;
     }
 }

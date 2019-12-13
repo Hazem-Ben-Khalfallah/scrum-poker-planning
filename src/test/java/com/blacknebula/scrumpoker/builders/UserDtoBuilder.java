@@ -34,7 +34,7 @@ public class UserDtoBuilder {
         final UserDto userDto = new UserDto();
         userDto.setUsername(username);
         userDto.setSessionId(sessionId);
-        userDto.setIsAdmin(admin);
+        userDto.setAdmin(admin);
         return userDto;
     }
 }

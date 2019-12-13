@@ -28,40 +28,45 @@ public class VoteDto {
         return voteId;
     }
 
-    public void setVoteId(String voteId) {
+    public VoteDto setVoteId(String voteId) {
         this.voteId = voteId;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+        return this;
     }
 
     public String getStoryId() {
         return storyId;
     }
 
-    public void setStoryId(String storyId) {
+    public VoteDto setStoryId(String storyId) {
         this.storyId = storyId;
+        return this;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public VoteDto setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return this;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public VoteDto setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public VoteDto setValue(String value) {
         this.value = value;
+        return this;
     }
 
     @Override

@@ -1,120 +1,78 @@
 package com.blacknebula.scrumpoker.rest;
 
-import com.blacknebula.scrumpoker.AppIntegrationTest;
-import com.blacknebula.scrumpoker.builders.PrincipalBuilder;
-import com.blacknebula.scrumpoker.builders.SessionEntityBuilder;
-import com.blacknebula.scrumpoker.builders.StoryEntityBuilder;
-import com.blacknebula.scrumpoker.builders.UserEntityBuilder;
 import com.blacknebula.scrumpoker.builders.VoteCreationDtoBuilder;
-import com.blacknebula.scrumpoker.builders.VoteEntityBuilder;
 import com.blacknebula.scrumpoker.dto.DefaultResponse;
 import com.blacknebula.scrumpoker.dto.ErrorResponse;
 import com.blacknebula.scrumpoker.dto.VoteCreationDto;
 import com.blacknebula.scrumpoker.dto.VoteDto;
-import com.blacknebula.scrumpoker.entity.SessionEntity;
-import com.blacknebula.scrumpoker.entity.StoryEntity;
-import com.blacknebula.scrumpoker.entity.UserEntity;
-import com.blacknebula.scrumpoker.entity.VoteEntity;
-import com.blacknebula.scrumpoker.enums.ResponseStatus;
-import com.blacknebula.scrumpoker.enums.UserRole;
-import com.blacknebula.scrumpoker.repository.SessionRepository;
-import com.blacknebula.scrumpoker.repository.StoryRepository;
-import com.blacknebula.scrumpoker.repository.UserRepository;
-import com.blacknebula.scrumpoker.repository.VoteRepository;
-import com.blacknebula.scrumpoker.security.Principal;
-import com.blacknebula.scrumpoker.security.SecurityContext;
+import com.blacknebula.scrumpoker.exception.CustomErrorCode;
+import com.blacknebula.scrumpoker.exception.CustomException;
+import com.blacknebula.scrumpoker.service.VoteService;
+import com.blacknebula.scrumpoker.utils.JsonSerializer;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-import static com.blacknebula.scrumpoker.exception.CustomErrorCode.OBJECT_NOT_FOUND;
-import static com.blacknebula.scrumpoker.exception.CustomErrorCode.UNAUTHORIZED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author hazem
  */
-public class VoteRestControllerTest extends AppIntegrationTest {
+@RunWith(SpringRunner.class)
+@WebMvcTest(value = VoteRestController.class)
+@ActiveProfiles("test")
+public class VoteRestControllerTest {
 
     @Autowired
-    private VoteRepository voteRepository;
-    @Autowired
-    private StoryRepository storyRepository;
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SecurityContext securityContext;
+    private MockMvc mockMvc;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-    }
+    @MockBean
+    private VoteService voteService;
 
     /**
      * @verifies return 200 status
      * @see VoteRestController#listVote(String)
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void listVote_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
         final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withStoryId(storyId)
-                .withSessionId(sessionId)
+        final List<VoteDto> votes = ImmutableList.<VoteDto>builder()
+                .add(new VoteDto()
+                        .setStoryId(storyId)
+                        .setVoteId("vote1"))
+                .add(new VoteDto()
+                        .setStoryId(storyId)
+                        .setVoteId("vote2"))
                 .build();
-        storyRepository.save(storyEntity);
+        Mockito.when(voteService.listVotes(anyString()))
+                .thenReturn(votes);
 
-        final List<VoteEntity> votes = ImmutableList.<VoteEntity>builder()
-                .add(VoteEntityBuilder.builder()
-                        .withStoryId(storyId)
-                        .withVoteId("vote1")
-                        .build())
-                .add(VoteEntityBuilder.builder()
-                        .withStoryId(storyId)
-                        .withVoteId("vote2")
-                        .build())
-                .build();
-        voteRepository.saveAll(votes);
-
-        // when
-        final List<VoteDto> response = givenJsonClient()
-                .queryParam("storyId", storyId)
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .get("/votes")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(List.class);
+                .param("storyId", storyId))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).hasSize(2);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(votes));
     }
 
     /**
@@ -124,37 +82,20 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Test
     public void listVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final String storyId = "storyId";
+        Mockito.when(voteService.listVotes(anyString()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final String username = "Leo";
-        final UserEntity connectedUser = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withConnected(true)
-                .build();
-        userRepository.save(connectedUser);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.SESSION_ADMIN)
-                .build();
-        securityContext.setPrincipal(principal);
-
-        // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .queryParam("storyId", "invalid_story_id")
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .get("/votes")
-                .then()
-                .statusCode(OBJECT_NOT_FOUND.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+                .param("storyId", storyId))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/votes");
     }
@@ -166,53 +107,21 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Test
     public void delete_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        final DefaultResponse defaultResponse = DefaultResponse.ok();
+        Mockito.when(voteService.delete(anyString()))
+                .thenReturn(defaultResponse);
 
-        final String username = "Leo";
-        final UserEntity userEntity = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .build();
-        userRepository.save(userEntity);
-
-        final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withStoryId(storyId)
-                .withSessionId(sessionId)
-                .build();
-        storyRepository.save(storyEntity);
-
-        final String voteId = "voteId";
-        final VoteEntity voteEntity = VoteEntityBuilder.builder()
-                .withStoryId(storyId)
-                .withVoteId(voteId)
-                .withSessionId(sessionId)
-                .withUsername(username)
-                .build();
-        voteRepository.save(voteEntity);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final DefaultResponse response = givenJsonClient()
-                .delete("/votes/{voteId}", voteId)
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(DefaultResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/votes/{voteId}", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getStatus()).isEqualTo(ResponseStatus.OK);
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(defaultResponse));
     }
 
     /**
@@ -222,37 +131,22 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Test
     public void delete_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
+        Mockito.when(voteService.delete(anyString()))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final String username = "Leo";
-        final UserEntity userEntity = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .build();
-        userRepository.save(userEntity);
-
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .delete("/votes/{voteId}", "invalid_vote_id")
-                .then()
-                .statusCode(OBJECT_NOT_FOUND.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/votes/{voteId}", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
-        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/votes/invalid_vote_id");
+        Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/votes/1");
     }
 
     /**
@@ -262,50 +156,25 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     @Test
     public void saveVote_shouldReturn200Status() throws Exception {
         // given
-        final String sessionId = "sessionId";
-        final SessionEntity sessionEntity = SessionEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .build();
-        sessionRepository.save(sessionEntity);
-
-        final String storyId = "storyId";
-        final StoryEntity storyEntity = StoryEntityBuilder.builder()
-                .withSessionId(sessionId)
-                .withStoryId(storyId)
-                .build();
-        storyRepository.save(storyEntity);
-
-        final String username = "username";
-        final UserEntity userEntity = UserEntityBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .build();
-        userRepository.save(userEntity);
-
         final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
-                .withStoryId(storyId)
+                .withStoryId("1")
                 .withValue("value")
                 .build();
+        Mockito.when(voteService.saveVote(any(VoteCreationDto.class)))
+                .thenReturn(voteCreationDto);
 
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername(username)
-                .withSessionId(sessionId)
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final VoteDto response = givenJsonClient()
-                .body(voteCreationDto)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/votes")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .as(VoteDto.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(voteCreationDto)))
+                //then
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.getVoteId()).isNotNull();
+        final String jsonContent = result.getResponse().getContentAsString();
+        Assertions.assertThat(jsonContent).isEqualTo(JsonSerializer.serialize(voteCreationDto));
 
     }
 
@@ -317,27 +186,24 @@ public class VoteRestControllerTest extends AppIntegrationTest {
     public void saveVote_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         // given
         final VoteCreationDto voteCreationDto = VoteCreationDtoBuilder.builder()
-                .withStoryId("storyId")
+                .withStoryId("1")
                 .withValue("value")
                 .build();
+        Mockito.when(voteService.saveVote(any(VoteCreationDto.class)))
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
-        final Principal principal = PrincipalBuilder.builder()
-                .withUsername("username")
-                .withSessionId("sessionId")
-                .withRole(UserRole.VOTER)
-                .build();
-        securityContext.setPrincipal(principal);
 
         // when
-        final ErrorResponse errorResponse = givenJsonClient()
-                .body(voteCreationDto)
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                 .post("/votes")
-                .then()
-                .statusCode(UNAUTHORIZED.getStatusCode())
-                .extract()
-                .as(ErrorResponse.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonSerializer.serialize(voteCreationDto)))
+                //then
+                .andExpect(status().isUnauthorized())
+                .andReturn();
 
-        // then
+        final String jsonContent = result.getResponse().getContentAsString();
+        final ErrorResponse errorResponse = JsonSerializer.toObject(jsonContent, ErrorResponse.class);
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.EXCEPTION)).isNotNull();
         Assertions.assertThat(errorResponse.get(ErrorResponse.Attributes.URI)).isEqualTo("/votes");
     }

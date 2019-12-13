@@ -22,44 +22,48 @@ public class StoryDto {
         this.ended = storyEntity.isEnded();
     }
 
-    public boolean isEnded() {
-        return ended;
+    public String getStoryId() {
+        return storyId;
     }
 
-    public void setEnded(boolean ended) {
-        this.ended = ended;
+    public StoryDto setStoryId(String storyId) {
+        this.storyId = storyId;
+        return this;
     }
 
     public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
+    public StoryDto setSessionId(String sessionId) {
         this.sessionId = sessionId;
-    }
-
-    public int getOrder() {
-
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public String getStoryId() {
-        return storyId;
-    }
-
-    public void setStoryId(String storyId) {
-        this.storyId = storyId;
+        return this;
     }
 
     public String getStoryName() {
         return storyName;
     }
 
-    public void setStoryName(String storyName) {
+    public StoryDto setStoryName(String storyName) {
         this.storyName = storyName;
+        return this;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public StoryDto setOrder(int order) {
+        this.order = order;
+        return this;
+    }
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public StoryDto setEnded(boolean ended) {
+        this.ended = ended;
+        return this;
     }
 }

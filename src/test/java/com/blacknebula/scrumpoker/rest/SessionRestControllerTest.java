@@ -70,7 +70,8 @@ public class SessionRestControllerTest {
     @Test
     public void getSession_shouldReturnValidErrorStatusIfAnExceptionHasBeenThrown() throws Exception {
         //given
-        Mockito.when(sessionService.getSession()).thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
+        Mockito.when(sessionService.getSession())
+                .thenThrow(new CustomException(CustomErrorCode.UNAUTHORIZED, "user not authenticated"));
 
         //when
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders

@@ -98,7 +98,7 @@ public class UserService {
             if (!userEntity.isConnected()) {
                 userEntity.setConnected(true);
                 userRepository.save(userEntity);
-                userDto.setIsAdmin(userEntity.isAdmin());
+                userDto.setAdmin(userEntity.isAdmin());
             } else {
                 LOGGER.error("username {} already used in session {}", userDto.getUsername(), userDto.getSessionId());
                 throw new CustomException(CustomErrorCode.DUPLICATE_IDENTIFIER, "Username already used");
