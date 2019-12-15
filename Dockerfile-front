@@ -19,6 +19,7 @@ RUN rm -rf /usr/share/nginx/html/*
 ## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
 COPY --from=builder /app/src/main/webapp/index.html /usr/share/nginx/html
 COPY --from=builder /app/src/main/webapp/dist/ /usr/share/nginx/html/dist/
+COPY --from=builder /app/src/main/webapp/images/ /usr/share/nginx/html/images/
 
 RUN echo "mainFileName=\"\$(ls /usr/share/nginx/html/dist/scrumPoker.js)\" && \
           envsubst '\$API_URL \$API_PORT ' < \${mainFileName} > main.tmp && \
