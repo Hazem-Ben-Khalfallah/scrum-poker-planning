@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 
-@RestController()
+@CrossOrigin
+@RestController
 public class StoryRestController {
 
     @Autowired
