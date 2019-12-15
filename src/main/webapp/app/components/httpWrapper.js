@@ -12,15 +12,13 @@ angular.module('$httpWrapper', [])
         function getUrl(uri){
             var host = window.location.hostname;
             var port = window.location.port;
-            if('${API_URL}'.length > 0){
+            if('${API_URL}'.indexOf('API_') < 0){
                 host = '${API_URL}';
             }
-            if('${API_PORT}'.length > 0){
+            if('${API_PORT}'.indexOf('API_') < 0){
                 port = '${API_PORT}';
             }
-            var url = window.location.protocol + '//' + host + ':' + port + uri;
-            console.log("++++++++ Url: "+url);
-            return url;
+            return window.location.protocol + '//' + host + ':' + port + uri;
         }
 
         return {

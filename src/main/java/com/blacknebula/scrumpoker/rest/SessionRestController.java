@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
-@CrossOrigin
+@CrossOrigin(exposedHeaders = {SecurityContext.Headers.JWT_TOKEN})
 @RestController
 public class SessionRestController {
 
