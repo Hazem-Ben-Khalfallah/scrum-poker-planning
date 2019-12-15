@@ -2,16 +2,32 @@
 /*@ngInject*/
 angular.module('$httpWrapper', [])
     .factory('$httpWrapper', function ($http, $localStorage, $location, $log) {
+
         function disconnectUser() {
             delete $localStorage.currentUser;
             $http.defaults.headers.common.Authorization = '';
             $location.path('/static/login');
         }
 
+        function getUrl(uri){
+            var host = window.location.hostname;
+            var port = window.location.port;
+            if('${API_URL}'.length > 0){
+                host = '${API_URL}';
+            }
+            if('${API_PORT}'.length > 0){
+                port = '${API_PORT}';
+            }
+            var url = window.location.protocol + '//' + host + ':' + port + uri;
+            console.log("++++++++ Url: "+url);
+            return url;
+        }
+
         return {
-            get: function (url, onSuccess, onError) {
+            get: function (uri, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
+                var url = getUrl(uri);
 
                 if ($localStorage.currentUser && $localStorage.currentUser.token) {
                     // add jwt token to auth header for all requests made by the $http service
@@ -30,9 +46,10 @@ angular.module('$httpWrapper', [])
                         onError(response.data, response.status);
                     });
             },
-            post: function (url, params, onSuccess, onError) {
+            post: function (uri, params, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
+                var url = getUrl(uri);
 
                 if ($localStorage.currentUser && $localStorage.currentUser.token) {
                     // add jwt token to auth header for all requests made by the $http service
@@ -51,9 +68,10 @@ angular.module('$httpWrapper', [])
                         onError(response.data, response.status);
                     });
             },
-            'delete': function (url, onSuccess, onError) {
+            'delete': function (uri, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
+                var url = getUrl(uri);
 
                 if ($localStorage.currentUser && $localStorage.currentUser.token) {
                     // add jwt token to auth header for all requests made by the $http service
@@ -72,9 +90,10 @@ angular.module('$httpWrapper', [])
                         onError(response.data, response.status);
                     });
             },
-            put: function (url, params, onSuccess, onError) {
+            put: function (uri, params, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
                 onError = onError || angular.noop;
+                var url = getUrl(uri);
 
                 if ($localStorage.currentUser && $localStorage.currentUser.token) {
                     // add jwt token to auth header for all requests made by the $http service

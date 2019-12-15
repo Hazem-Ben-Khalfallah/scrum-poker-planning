@@ -13,7 +13,19 @@ angular.module('webSocketFactory', [])
         var wsPort = '@@inject_ws_port' || window.location.port,
             wssPort = '@@inject_wss_port' || window.location.port,
             port = window.location.protocol === 'http:' ? wsPort : wssPort,
-            websocketUrl = window.location.protocol + '//' + window.location.hostname + ':' + port;
+            host = window.location.hostname;
+
+        if('${API_URL}'.length > 0){
+            host = '${API_URL}';
+        }
+
+        if('${API_PORT}'.length > 0){
+            port = '${API_PORT}';
+        }
+
+        var websocketUrl = window.location.protocol + '//' + host + ':' + port;
+
+        console.log("++++++++ websocketUrl: "+websocketUrl);
 
         var isConnected = function () {
             return $stomp.stomp != null && $stomp.stomp.connected;

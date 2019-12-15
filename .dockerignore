@@ -1,7 +1,5 @@
-!/target/scrum_poker.war
-
 .idea/
 data/
 logs/
 snapshots/
-src/
+target/

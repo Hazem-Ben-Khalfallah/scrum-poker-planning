@@ -12,11 +12,31 @@ services:
       - 27017:27017
     command: mongod --smallfiles --logpath=/dev/null # --quiet
 
-  poker:
-    image: blacknebula/scrum-poker:1.0
-    container_name: scrum-poker
-    #build: .
+  scrum-poker-api:
+    image: blacknebula/scrum-poker-api:2.0
+    container_name: scrum-poker-api
+    volumes:
+      - ~/.m2:/root/.m2
+    build:
+      context: .
+      dockerfile: Dockerfile-api
     ports:
-      - 28080:8080
+      - 9001:8080
     depends_on:
       - mongodb
+
+  scrum-poker-front:
+    image: blacknebula/scrum-poker-front:2.0
+    container_name: scrum-poker-front
+    volumes:
+      - ~/.m2:/root/.m2
+    build:
+      context: .
+      dockerfile: Dockerfile-front
+    environment:
+      API_URL: localhost
+      API_PORT: 9001
+    ports:
+      - 9000:80
+    depends_on:
+      - scrum-poker-api

@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar  target/scrum_poker.war
+web: java -Dserver.port=$PORT -jar /app/scrum_poker.jar
