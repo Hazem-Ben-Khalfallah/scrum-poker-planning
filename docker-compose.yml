@@ -15,8 +15,6 @@ services:
   scrum-poker-api:
     image: blacknebula/scrum-poker-api:2.0
     container_name: scrum-poker-api
-    volumes:
-      - ~/.m2:/root/.m2
     build:
       context: .
       dockerfile: Dockerfile-api
@@ -28,8 +26,6 @@ services:
   scrum-poker-front:
     image: blacknebula/scrum-poker-front:2.0
     container_name: scrum-poker-front
-    volumes:
-      - ~/.m2:/root/.m2
     build:
       context: .
       dockerfile: Dockerfile-front

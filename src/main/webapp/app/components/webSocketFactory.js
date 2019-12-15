@@ -15,17 +15,15 @@ angular.module('webSocketFactory', [])
             port = window.location.protocol === 'http:' ? wsPort : wssPort,
             host = window.location.hostname;
 
-        if('${API_URL}'.length > 0){
+        if('${API_URL}'.indexOf('API_') < 0){
             host = '${API_URL}';
         }
 
-        if('${API_PORT}'.length > 0){
+        if('${API_PORT}'.indexOf('API_') < 0){
             port = '${API_PORT}';
         }
 
         var websocketUrl = window.location.protocol + '//' + host + ':' + port;
-
-        console.log("++++++++ websocketUrl: "+websocketUrl);
 
         var isConnected = function () {
             return $stomp.stomp != null && $stomp.stomp.connected;

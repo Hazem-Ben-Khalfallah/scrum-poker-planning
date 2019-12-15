@@ -1,7 +1,7 @@
 "use strict";
 /*@ngInject*/
 angular.module('sessionFactory', [])
-    .factory('sessionFactory', function ($http, $httpWrapper, $localStorage) {
+    .factory('sessionFactory', function ($http, $httpWrapper, $localStorage, $log) {
         return {
             create: function (data, onSuccess, onError) {
                 onSuccess = onSuccess || angular.noop;
@@ -16,8 +16,10 @@ angular.module('sessionFactory', [])
                             admin: true,
                             token: token
                         };
+                        onSuccess(body);
+                    } else {
+                        $log.error("jwt-token header is empty");
                     }
-                    onSuccess(body);
                 }, onError);
             },
             get: function (onSuccess, onError) {

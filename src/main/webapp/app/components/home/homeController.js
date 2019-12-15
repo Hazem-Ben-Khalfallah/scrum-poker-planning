@@ -381,7 +381,6 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             }
         } else if (item.type === Events.theme_changed) {
             // set new theme
-            console.log(item.data);
             setTheme(item.data.cardTheme);
 
         }

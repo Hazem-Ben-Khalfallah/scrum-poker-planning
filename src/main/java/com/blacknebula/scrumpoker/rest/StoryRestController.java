@@ -2,6 +2,7 @@ package com.blacknebula.scrumpoker.rest;
 
 import com.blacknebula.scrumpoker.dto.StoryDto;
 import com.blacknebula.scrumpoker.dto.StoryCreationDto;
+import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
