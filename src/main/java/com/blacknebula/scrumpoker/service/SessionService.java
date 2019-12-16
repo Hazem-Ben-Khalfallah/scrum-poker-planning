@@ -130,7 +130,6 @@ public class SessionService {
         final Principal principal = authenticationService.checkAuthenticatedAdmin();
         final SessionEntity sessionEntity = sessionRepository.findById(principal.getSessionId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.OBJECT_NOT_FOUND, "Session not found"));
-        ;
         sessionEntity.setCardTheme(themeDto.getCardTheme());
         sessionRepository.save(sessionEntity);
         webSocketSender.sendNotification(sessionEntity.getSessionId(), WsTypes.THEME_CHANGED, themeDto);

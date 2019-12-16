@@ -5,9 +5,9 @@ import java.util.Random;
 public class ColorUtils {
 
     /**
+     * @return random hex color code
      * @should return a color code
      * @should return different color code when called twice
-     * @return random hex color code
      */
     public static String getRandomColor() {
         final Random ra = new Random();

@@ -1,21 +1,22 @@
 package com.blacknebula.scrumpoker.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class HashId {
 
     private static final String DEFAULT_ALPHABET = "xcS4F6h89aUbideAI7tkynuopqrXCgTE5GBKHLMjfRsz";
     private static final int[] PRIMES = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43};
     private static final int[] SEPS_INDICES = {0, 4, 8, 12};
-
+    private final ArrayList<Character> seps_ = new ArrayList<>();
+    private final ArrayList<Character> guards_ = new ArrayList<>();
     private String salt_ = "";
-
     private String alphabet_ = "";
-
     private int minHashLength_;
-
-    private ArrayList<Character> seps_ = new ArrayList<Character>();
-    private ArrayList<Character> guards_ = new ArrayList<Character>();
 
     public HashId() {
         this("");
@@ -42,7 +43,7 @@ public class HashId {
             minHashLength_ = minHashLength;
         }
 
-        alphabet_ = join(new LinkedHashSet<String>(Arrays.asList(alphabet.split(""))), "");
+        alphabet_ = join(new LinkedHashSet<>(Arrays.asList(alphabet.split(""))), "");
 
         if (alphabet_.length() < 4) {
             throw new IllegalArgumentException("Alphabet must contain at least 4 unique characters.");
@@ -122,7 +123,7 @@ public class HashId {
     }
 
     private static List<String> charArrayToStringList(char[] chars) {
-        ArrayList<String> list = new ArrayList<String>(chars.length);
+        ArrayList<String> list = new ArrayList<>(chars.length);
         for (char c : chars) {
             list.add(String.valueOf(c));
         }
@@ -130,7 +131,7 @@ public class HashId {
     }
 
     private static String join(long[] a, String delimiter) {
-        ArrayList<String> strList = new ArrayList<String>(a.length);
+        ArrayList<String> strList = new ArrayList<>(a.length);
         for (long l : a) {
             strList.add(String.valueOf(l));
         }
@@ -241,7 +242,7 @@ public class HashId {
     }
 
     private long[] decode(String hash) {
-        List<Long> ret = new ArrayList<Long>();
+        List<Long> ret = new ArrayList<>();
         String originalHash = hash;
 
         if (hash != null && !hash.isEmpty()) {

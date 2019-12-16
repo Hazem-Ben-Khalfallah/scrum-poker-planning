@@ -1,14 +1,8 @@
 package com.blacknebula.scrumpoker.repository.impl;
 
 import com.blacknebula.scrumpoker.repository.custom.GenericRepositoryCustom;
-import com.mongodb.DBObject;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONParseException;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -28,27 +22,6 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
     public abstract Class<T> getTClass();
 
     public abstract ID getId(T t);
-
-    protected String getCollectionName() {
-        return mongoTemplate.getCollectionName(getTClass());
-    }
-
-    protected MongoCollection<Document> getCollection() {
-        return mongoTemplate.getCollection(getCollectionName());
-    }
-
-    protected DBObject toDbObject(T entity) {
-        if (!(entity instanceof String)) {
-            return (DBObject) mongoTemplate.getConverter().convertToMongoType(entity);
-        } else {
-            try {
-                return (DBObject) JSON.parse((String) entity);
-            } catch (JSONParseException e) {
-                throw new MappingException("Could not parse given String to save into a JSON document!", e);
-            }
-        }
-    }
-
 
     @Override
     public T findOne(ID id, List<String> fields) {
