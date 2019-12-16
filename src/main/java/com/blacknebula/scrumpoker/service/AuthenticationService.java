@@ -11,7 +11,6 @@ import com.blacknebula.scrumpoker.security.SecurityContext;
 import com.blacknebula.scrumpoker.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,12 +22,17 @@ import java.util.Optional;
 public class AuthenticationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
 
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SecurityContext securityContext;
+    private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
+    private final SecurityContext securityContext;
+
+    public AuthenticationService(SessionRepository sessionRepository,
+                                 UserRepository userRepository,
+                                 SecurityContext securityContext) {
+        this.sessionRepository = sessionRepository;
+        this.userRepository = userRepository;
+        this.securityContext = securityContext;
+    }
 
     /**
      * @return connect user or throws an UNAUTHORIZED Exception

@@ -31,8 +31,7 @@ public class WebSocketSender {
      * Send a message to listeners (browsers) which are subscribers on suitable
      * topic. If brandCode is missing, no message is sent
      *
-     * @param topic : websocket topic@Autowired
-     *              private WebSocketSender webSocketSender;
+     * @param topic : websocket topic
      * @param type  request type
      * @param data  : message data
      * @return true if something has been sent through SimpMessagingTemplate ;

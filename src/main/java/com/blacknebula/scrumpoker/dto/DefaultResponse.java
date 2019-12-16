@@ -7,20 +7,13 @@ import com.blacknebula.scrumpoker.enums.ResponseStatus;
  */
 public class DefaultResponse {
 
-    private ResponseStatus status;
-
-    public DefaultResponse() {
-    }
+    private final ResponseStatus status;
 
     public DefaultResponse(ResponseStatus status) {
         this.status = status;
     }
 
-    public static DefaultResponse ok(){
-        return new DefaultResponse(ResponseStatus.OK);
-    }
-
-    public static DefaultResponse ko(){
+    public static DefaultResponse ok() {
         return new DefaultResponse(ResponseStatus.OK);
     }
 
@@ -28,7 +21,4 @@ public class DefaultResponse {
         return status;
     }
 
-    public void setStatus(ResponseStatus status) {
-        this.status = status;
-    }
 }

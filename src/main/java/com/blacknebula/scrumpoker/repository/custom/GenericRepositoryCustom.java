@@ -50,7 +50,6 @@ public interface GenericRepositoryCustom<T, ID extends Serializable> {
      * If not,it will be created.
      *
      * @param t the object to store in the collection.
-     * @return the object  with the new Id
      * @should insert the object in the collection if Id is not set
      * @should insert the object in the collection if Id is set but not found in the collection
      * @should update the object in the collection if Id is set and exists in the collection

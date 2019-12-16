@@ -1,36 +1,14 @@
 package com.blacknebula.scrumpoker.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public final class DateUtils {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DateUtils.class);
-
     private DateUtils() {
-    }
-
-    /**
-     * Returns a new Date without time information given date
-     *
-     * @param date : date for which one process is done
-     * @return date with time information set to noon
-     */
-    public static Date fromDateToDay(Date date) {
-        GregorianCalendar day = new GregorianCalendar();
-        day.setTime(date);
-        day.set(Calendar.HOUR_OF_DAY, 12);
-        day.set(Calendar.MINUTE, 0);
-        day.set(Calendar.SECOND, 0);
-        day.set(Calendar.MILLISECOND, 0);
-        return day.getTime();
     }
 
     /**
@@ -57,20 +35,6 @@ public final class DateUtils {
         return c.getTime();
     }
 
-    public static Date addHours(Date date, int hours) {
-        final Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.add(Calendar.HOUR_OF_DAY, hours);
-        return c.getTime();
-    }
-
-    public static Date addMinutes(Date date, int minutes) {
-        final Calendar now = Calendar.getInstance();
-        now.setTime(date);
-        now.add(Calendar.MINUTE, minutes);
-        return now.getTime();
-    }
-
     /**
      * add seconds to a date
      *
@@ -83,15 +47,6 @@ public final class DateUtils {
         c.setTime(date);
         c.add(Calendar.SECOND, seconds);
         return c.getTime();
-    }
-
-    public static Integer getCurrentCenturyFirstYear() {
-        final int current4DigitsYear = Integer.parseInt(DateUtils.format("yyyy"));
-        return (current4DigitsYear / 100) * 100;
-    }
-
-    public static Integer getCurrentYear() {
-        return Calendar.getInstance().get(Calendar.YEAR);
     }
 
     public static String format(String pattern) {

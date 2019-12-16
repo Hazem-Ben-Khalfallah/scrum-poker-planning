@@ -7,7 +7,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class ScrumPokerAuthenticationToken extends AbstractAuthenticationToken {
 
-    private Principal principal;
+    private final Principal principal;
     private Object credentials;
 
     public ScrumPokerAuthenticationToken(Principal principal) {
