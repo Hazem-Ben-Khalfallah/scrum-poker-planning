@@ -179,6 +179,15 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.3</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/com/blacknebula/scrumpoker/Application.*</exclude>
+                        <exclude>**/com/blacknebula/scrumpoker/config/**/*</exclude>
+                        <exclude>**/com/blacknebula/scrumpoker/dto/**/*</exclude>
+                        <exclude>**/com/blacknebula/scrumpoker/entity/**/*</exclude>
+                        <exclude>**/com/blacknebula/scrumpoker/exception/**/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
