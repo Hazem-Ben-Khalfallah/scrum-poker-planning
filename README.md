@@ -2,6 +2,8 @@
 [![Build Status](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning.svg?branch=master)](https://travis-ci.org/Hazem-Ben-Khalfallah/scrum-poker-planning)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d48d7dd87ff36de3b049/maintainability)](https://codeclimate.com/github/Hazem-Ben-Khalfallah/scrum-poker-planning/maintainability)
 
+![scrum-poker-planning](https://socialify.git.ci/Hazem-Ben-Khalfallah/scrum-poker-planning/image?description=1&descriptionEditable=A%20team%20friendly%20and%20realtime%20Scrum%20poker%20planning%20web%20app.&font=Raleway&forks=1&language=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark)
+
 # Scrum Poker application
 Vote your stories instantly & get the result in a blink!
 
