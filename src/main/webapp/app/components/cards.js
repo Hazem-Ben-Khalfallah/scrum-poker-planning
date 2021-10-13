@@ -82,8 +82,8 @@ var cards = {
             index: 9
         },
         {
-            id: "pass",
-            value: 'pass',
+            id: "skip",
+            value: 'skip',
             color: 'grey',
             skip: true,
             index: 10
@@ -158,8 +158,8 @@ var cards = {
             index: 9
         },
         {
-            id: "pass",
-            value: 'pass',
+            id: "skip",
+            value: 'skip',
             color: 'grey',
             skip: true,
             index: 10
@@ -189,7 +189,7 @@ var cards = {
             id: "vote-2",
             value: "No",
             color: 'red',
-            index: 11
+            index: 9
         }
     ],
     modifiedFibonacci: [
@@ -254,8 +254,8 @@ var cards = {
             index: 9
         },
         {
-            id: "pass",
-            value: 'pass',
+            id: "skip",
+            value: 'skip',
             color: 'grey',
             skip: true,
             index: 10
