@@ -320,6 +320,10 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
         });
     };
 
+    $scope.largeDeckNeeded = function () {
+        return $scope.cards.length > 3;
+    };
+
     $scope.consumeEvent = function (item) {
         $log.info(item);
         var index;

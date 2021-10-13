@@ -281,53 +281,53 @@
                         <div class="field">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
+                                       value="colors">
+                                <label>Colors</label>
+                            </div>
+                        </div>
+                        <div class="field" ng-show="largeDeckNeeded()">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
                                        value="star-wars">
                                 <label>Star wars</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
                                        value="super-heroes">
                                 <label>Super heroes</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
                                        value="redbooth">
                                 <label>Redbooth &copy;</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
                                        value="buildings">
                                 <label>Famous buildings</label>
                             </div>
                         </div>
-                        <div class="field">
-                            <div class="ui radio checkbox block">
-                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
-                                       value="colors">
-                                <label>Colors</label>
-                            </div>
-                        </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)" name="card-theme"
                                        value="card-clubs">
                                 <label>clubs (♣)</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)"  name="card-theme"
                                        value="card-diamonds">
                                 <label>diamonds (♦)</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)"  name="card-theme"
                                        qmvns
@@ -335,7 +335,7 @@
                                 <label>spades (♠)</label>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-show="largeDeckNeeded()">
                             <div class="ui radio checkbox block">
                                 <input type="radio" ng-model="theme" ng-change="changeTheme(theme)"  name="card-theme"
                                        value="card-hearts">

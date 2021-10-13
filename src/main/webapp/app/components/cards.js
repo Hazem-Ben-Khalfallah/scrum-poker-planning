@@ -200,78 +200,72 @@ var cards = {
             index: 0
         },
         {
-            id: "mfib-1/2",
-            value: 1 / 2,
-            color: 'blue',
-            index: 1
-        },
-        {
             id: "mfib-1",
             value: 1,
             color: 'blue',
-            index: 2
+            index: 1
         },
         {
             id: "mfib-2",
             value: 2,
             color: 'blue',
-            index: 3
+            index: 2
         },
         {
             id: "mfib-3",
             value: 3,
             color: 'blue',
-            index: 4
+            index: 3
         },
         {
             id: "mfib-5",
             value: 5,
             color: 'green',
-            index: 5
+            index: 4
         },
         {
             id: "mfib-8",
             value: 8,
             color: 'green',
-            index: 6
+            index: 5
         },
         {
             id: "mfib-13",
             value: 13,
             color: 'green',
-            index: 7
+            index: 6
         },
         {
             id: "mfib-20",
             value: 20,
             color: 'green',
-            index: 8
+            index: 7
         },
         {
             id: "mfib-40",
             value: 40,
             color: 'orange',
-            index: 9
+            index: 8
         },
         {
             id: "mfib-100",
             value: 100,
             color: 'orange',
-            index: 10
+            index: 9
         },
         {
             id: "pass",
             value: 'pass',
             color: 'grey',
             skip: true,
-            index: 11
+            index: 10
         },
         {
             id: "break",
             value: 'break',
             color: 'grey',
             skip: true,
-            index: 12
+            index: 11
         }
     ]
 };

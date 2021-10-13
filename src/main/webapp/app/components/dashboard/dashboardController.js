@@ -44,6 +44,16 @@ dashboardController.controller('dashboardCtrl', function ($scope, $location, $lo
         $scope.show_modal = true;
     };
 
+    $scope.largeDeckNeeded = function () {
+        return $scope.cardSet != 'vote';
+    };
+
+    $scope.onCardSetChange = function () {
+        if($scope.isVote()){
+            $scope.cardTheme = 'colors';
+        }
+    };
+
     $scope.closeModal = function () {
         $scope.show_modal = false;
     };
