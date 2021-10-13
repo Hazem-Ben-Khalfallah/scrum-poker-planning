@@ -8,6 +8,12 @@ var Types = {
     card: "card"
 };
 
+var SVG_THEMES = ['redbooth',
+    'card-clubs',
+    'card-diamonds',
+    'card-hearts',
+    'card-spades'];
+
 var Events = {
     vote_added: "VOTE_ADDED",
     vote_removed: "VOTE_REMOVED",
@@ -392,7 +398,7 @@ homeController.controller('homeCtrl', function ($http, $log, $scope, $localStora
             return;
         }
         $scope.theme = theme;
-        $scope.extension = ($scope.theme === 'redbooth') ? 'svg' : 'png';
+        $scope.extension = SVG_THEMES.includes($scope.theme) ? 'svg' : 'png';
     }
 
     function toHumanDuration(durationInHours) {
