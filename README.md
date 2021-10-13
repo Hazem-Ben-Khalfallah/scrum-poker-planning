@@ -73,5 +73,6 @@ mvn clean install -Dconfigure.ws=8000 -Dconfigure.wss=8443
 - Khaireddine Rezgui
 
 ## Credits
-Special thanks to Redbooth team for their creative card set.
-https://github.com/redbooth/Scrum-poker-cards
+Special thanks to Redbooth team for their [creative card set](https://github.com/redbooth/Scrum-poker-cards).
+
+Chris Aguilar for his [vector playing cards](https://sourceforge.net/projects/vector-cards/).
