@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="227px"
+   height="315px"
+   viewBox="0 0 227 315"
+   version="1.1"
+   id="svg94"
+   sodipodi:docname="0_.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata98">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Trim</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1030"
+     id="namedview96"
+     showgrid="false"
+     inkscape:zoom="2.6126984"
+     inkscape:cx="113.5"
+     inkscape:cy="157.5"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Page-1" />
+  <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title82">Trim</title>
+  <desc
+     id="desc84">Created with Sketch.</desc>
+  <defs
+     id="defs86" />
+  <g
+     id="Page-1"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd"
+     sketch:type="MSPage">
+    <path
+       style="fill:#d40000"
+       d="m 18.175665,71.302847 c -2.151351,-3.557192 -4.4146,-7.014605 -7.242915,-9.968034 2.828315,-2.953329 5.091564,-6.410741 7.242915,-9.968033 2.151251,3.557292 4.414501,7.014704 7.242815,9.968033 -2.828314,2.953429 -5.091564,6.410842 -7.242815,9.968034 z"
+       id="path6399-9"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#d40000"
+       d="m 206.12723,262.55413 c -2.15135,-3.5572 -4.4146,-7.01461 -7.24291,-9.96804 2.82831,-2.95333 5.09156,-6.41074 7.24291,-9.96803 2.15125,3.55729 4.4145,7.0147 7.24282,9.96803 -2.82832,2.95343 -5.09157,6.41084 -7.24282,9.96804 z"
+       id="path6403-1"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>
