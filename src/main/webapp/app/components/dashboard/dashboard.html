@@ -92,6 +92,10 @@
                                 <input type="radio" ng-model="cardTheme" name="card-theme" value="uno">
                                 <label>Uno &copy;</label>
                             </div>
+                            <div class="ui radio checkbox block" ng-show="largeDeckNeeded()">
+                                <input type="radio" ng-model="cardTheme" name="card-theme" value="game-of-thrones">
+                                <label>Game of Thrones</label>
+                            </div>
                         </div>
 
                         <div class="field">
