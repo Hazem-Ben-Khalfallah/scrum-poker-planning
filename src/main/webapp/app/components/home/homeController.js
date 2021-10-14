@@ -12,7 +12,8 @@ var SVG_THEMES = ['redbooth',
     'card-clubs',
     'card-diamonds',
     'card-hearts',
-    'card-spades'];
+    'card-spades',
+    'uno'];
 
 var Events = {
     vote_added: "VOTE_ADDED",
