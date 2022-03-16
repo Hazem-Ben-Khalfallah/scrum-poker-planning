@@ -349,6 +349,20 @@
                                 <label>Uno &copy;</label>
                             </div>
                         </div>
+                        <div class="field" ng-show="largeDeckNeeded()">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)"  name="card-theme"
+                                       value="game-of-thrones">
+                                <label>Game of Thrones &#x1F409;</label>
+                            </div>
+                        </div>
+                        <div class="field" ng-show="largeDeckNeeded()">
+                            <div class="ui radio checkbox block">
+                                <input type="radio" ng-model="theme" ng-change="changeTheme(theme)"  name="card-theme"
+                                       value="attack-on-titan">
+                                <label>Attack on Titan</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
