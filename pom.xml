@@ -14,7 +14,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <start-class>com.blacknebula.scrumpoker.Application</start-class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skip.unit.tests>false</skip.unit.tests>
