@@ -11,10 +11,6 @@ Scrum Poker is a powerful tool to make faster and more accurate estimations and 
 
 This app can be used in scrum poker planning sessions anywhere. It includes the numbered cards along with Pass, break and ? cards. 3 types of cards set can be selected when creating a voting session.
 
-## Demo
-You are welcome to use this free app on: 
-http://pokerscrum.herokuapp.com/
-
 ## How to run locally
 ### Prerequisites 
 - **Docker** & **Docker Compose**: [How to install Docker compose?](https://docs.docker.com/compose/install/)
