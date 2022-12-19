@@ -4,6 +4,11 @@
 
 ![scrum-poker-planning](https://socialify.git.ci/Hazem-Ben-Khalfallah/scrum-poker-planning/image?description=1&descriptionEditable=A%20team%20friendly%20and%20realtime%20Scrum%20poker%20planning%20web%20app.&font=Raleway&forks=1&language=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark)
 
+
+> :warning: Sorry, this application is not available any more on Heroku.
+> 
+> Starting November 28, 2022, free Heroku Dynos, free Heroku Postgres, and free Heroku Data for Redis® plans will no longer be available. Only with a paid account, the URL will still work after November 28th.
+
 # Scrum Poker application
 Vote your stories instantly & get the result in a blink!
 
